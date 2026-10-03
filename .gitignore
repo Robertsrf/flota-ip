@@ -1,0 +1,29 @@
+# Dependencias y builds
+node_modules/
+dist/
+dev-dist/
+coverage/
+playwright-report/
+test-results/
+
+# Variables de entorno (la llave secreta de Supabase nunca va al repo)
+.env
+.env.*
+!.env.example
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+
+# Datos que nunca se suben
+*.dump
+*.sql.gz
+backups/
+
+# Herramientas
+.impeccable/config.local.json
+.impeccable/live/
+.DS_Store
+Thumbs.db
+*.log

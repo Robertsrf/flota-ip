@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="es-VE">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opciones visuales Flota IP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Atkinson+Hyperlegible+Mono:wght@400;700&family=Atkinson+Hyperlegible+Next:wght@400;700;800&family=Overpass:wght@300..900&display=swap" rel="stylesheet">
+<style>
+/* ===== Shell de la página (neutral, para no sesgar la elección) ===== */
+:root{
+  --bg:#F5F5F3; --surface:#FFFFFF; --text:#1C1D1F; --muted:#5D6066; --line:#DCDDD8; --focus:#2457C5;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#141516;--surface:#1D1E20;--text:#ECECEA;--muted:#A3A5A8;--line:#34363A;--focus:#8FB0FF;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#141516;--surface:#1D1E20;--text:#ECECEA;--muted:#A3A5A8;--line:#34363A;--focus:#8FB0FF;color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+.page-head{padding:40px 0 24px;border-bottom:1px solid var(--line)}
+.page-head h1{font-size:1.75rem;line-height:1.2;margin:0 0 8px}
+.page-head p{margin:0 0 8px;max-width:72ch;color:var(--muted)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.toc a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);text-decoration:none;font-weight:600}
+.toc a:hover{border-color:var(--muted)}
+.theme-btn{font:inherit;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer}
+
+section.dir{padding:48px 0;border-bottom:1px solid var(--line)}
+.dir-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px 16px;justify-content:space-between}
+.dir-head h2{font-size:1.5rem;margin:0}
+.badge{display:inline-block;font-size:.8125rem;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:8px;vertical-align:middle}
+.badge.rec{border-color:currentColor;color:var(--text)}
+.mode-toggle{font:inherit;font-size:.9375rem;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text);cursor:pointer}
+.lead{max-width:72ch;margin:12px 0 24px}
+.grid-2{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+@media (min-width:900px){.grid-2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+h3{font-size:1.0625rem;margin:0 0 12px}
+.note{color:var(--muted);font-size:.9375rem;max-width:72ch}
+
+/* Paleta */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.sw{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.sw i{display:block;height:56px;border-bottom:1px solid var(--line)}
+.sw div{padding:8px 10px;font-size:.8125rem;line-height:1.4}
+.sw b{display:block;font-size:.875rem}
+.sw code{font-family:ui-monospace,Consolas,monospace;font-size:.8125rem}
+
+/* Espécimen tipográfico */
+.spec{background:var(--d-bg);color:var(--d-text);border:1px solid var(--line);border-radius:12px;padding:20px;font-family:var(--d-font)}
+.spec .big{font-size:3rem;line-height:1;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.spec .big small{font-size:1.25rem;font-weight:700;margin-left:6px}
+.spec p{margin:10px 0 0;font-size:1rem}
+.spec .meta{color:var(--d-muted);font-size:.875rem;margin-top:12px;font-family:system-ui,sans-serif}
+
+/* Mockups: contenedores */
+.mocks{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;margin-top:24px;align-items:start}
+@media (min-width:1000px){.mocks{grid-template-columns:320px minmax(0,1fr)}}
+.mock-label{font-size:.875rem;color:var(--muted);margin:0 0 8px}
+.phone{width:100%;max-width:340px;margin:0 auto;border:10px solid #2A2C30;border-radius:34px;overflow:hidden;background:var(--d-bg);color:var(--d-text);font-family:var(--d-font);min-height:640px;display:flex;flex-direction:column}
+.desk-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--d-bg)}
+.desk{min-width:820px;display:grid;grid-template-columns:160px 1fr;min-height:520px;color:var(--d-text);font-family:var(--d-font);background:var(--d-bg)}
+.num{font-variant-numeric:tabular-nums}
+.r{text-align:right}
+
+.firma{margin-top:24px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--text);border-radius:8px;padding:14px 16px;max-width:900px}
+.firma p{margin:0 0 6px}
+.firma p:last-child{margin:0}
+
+/* ===================== A. Ticket sellado ===================== */
+.dir-a{--d-bg:#F3F4F1;--d-surface:#FFFFFF;--d-surface2:#E4E6E1;--d-text:#1D2026;--d-muted:#5A606B;--d-accent:#4B3BA6;--d-on-accent:#FFFFFF;--d-danger:#B3261E;--d-ok:#1E6B47;--d-line:#C9CCC5;
+  --d-font:"Atkinson Hyperlegible Next",system-ui,sans-serif;--d-mono:"Atkinson Hyperlegible Mono",ui-monospace,monospace}
+.dir-a[data-mode="dark"]{--d-bg:#15171B;--d-surface:#1E2127;--d-surface2:#0E1013;--d-text:#ECEDE8;--d-muted:#A4A9B2;--d-accent:#A99CF0;--d-on-accent:#15171B;--d-danger:#F2867D;--d-ok:#6CC79A;--d-line:#343841}
+.a-top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--d-line);font-weight:700}
+.a-top a{color:var(--d-accent);text-decoration:underline;text-underline-offset:3px;font-weight:700}
+.a-screen{flex:1;background:var(--d-surface2);padding:16px 14px 20px;display:flex;flex-direction:column;gap:14px}
+.a-done{margin:0;font-size:1.25rem;font-weight:800}
+.ticket{position:relative;background:var(--d-surface);color:var(--d-text);font-family:var(--d-mono);font-size:.875rem;line-height:1.5;padding:16px 16px 26px;
+  -webkit-mask:radial-gradient(7px at 50% 100%,#0000 97%,#000) 50% / 16px 100%;mask:radial-gradient(7px at 50% 100%,#0000 97%,#000) 50% / 16px 100%}
+.ticket .row{display:flex;justify-content:space-between;gap:8px}
+.ticket .rule{border-top:2px dashed var(--d-line);margin:8px 0}
+.ticket .total{font-size:1.125rem;font-weight:700}
+.ticket .folio{font-weight:700}
+.stamp{display:inline-block;font-family:var(--d-font);font-weight:800;border:3px double currentColor;border-radius:6px;padding:0 10px;transform:rotate(-4deg);line-height:1.5;background:transparent}
+.stamp.ok{color:var(--d-ok)} .stamp.est{color:var(--d-accent)} .stamp.void{color:var(--d-danger)}
+.ticket .stamp{font-size:1.125rem;margin:2px 4px 0 0}
+.a-btn{font:inherit;font-weight:800;font-size:1.0625rem;min-height:64px;border-radius:10px;border:2px solid var(--d-accent);background:var(--d-accent);color:var(--d-on-accent);cursor:pointer}
+.a-side{background:var(--d-surface2);border-right:1px solid var(--d-line);padding:16px 0}
+.a-side .brand{font-weight:800;padding:0 16px 14px}
+.a-side a{display:block;padding:9px 16px;text-decoration:none;color:var(--d-text);border-left:4px solid transparent}
+.a-side a[aria-current]{border-left-color:var(--d-accent);font-weight:800;color:var(--d-accent)}
+.a-main{padding:18px 20px}
+.a-main h4{margin:0 0 12px;font-size:1.25rem}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--d-line);border-radius:8px;margin-bottom:16px;background:var(--d-surface)}
+.kpis > div{padding:10px 12px;border-right:1px solid var(--d-line)}
+.kpis > div:last-child{border-right:0}
+.kpis span{display:block;font-size:.8125rem;color:var(--d-muted)}
+.kpis b{display:block;white-space:nowrap;font-size:1.25rem;font-variant-numeric:tabular-nums}
+.kpis em{font-style:normal;font-size:.8125rem;color:var(--d-muted)}
+table.t{width:100%;border-collapse:collapse;font-size:.875rem;background:var(--d-surface)}
+table.t th{white-space:nowrap;font-weight:700;text-align:left;color:var(--d-muted);border-bottom:2px solid var(--d-line);padding:7px 6px;font-size:.8125rem}
+table.t td{white-space:nowrap;border-bottom:1px solid var(--d-line);padding:7px 6px;font-variant-numeric:tabular-nums}
+table.t .r{text-align:right}
+.mini-stamp{display:inline-block;font-weight:800;font-size:.8125rem;border:2px double currentColor;border-radius:4px;padding:0 6px;transform:rotate(-3deg)}
+.mini-stamp.ok{color:var(--d-ok)} .mini-stamp.est{color:var(--d-accent)} .mini-stamp.void{color:var(--d-danger)}
+tr.voided td{color:var(--d-muted);text-decoration:line-through;text-decoration-color:var(--d-danger)}
+tr.voided td:last-child{text-decoration:none}
+
+/* ===================== B. Señal vial ===================== */
+.dir-b{--d-bg:#FFFFFF;--d-surface:#FFFFFF;--d-surface2:#E7EAE6;--d-text:#22272B;--d-muted:#555C62;--d-sign:#0F5B3F;--d-on-sign:#FFFFFF;--d-warn:#F5C400;--d-danger:#C1121F;--d-line:#CDD2CD;--d-beam:#22272B;
+  --d-font:"Overpass",system-ui,sans-serif}
+.dir-b[data-mode="dark"]{--d-bg:#16191C;--d-surface:#22272B;--d-surface2:#2C3237;--d-text:#EEF0EE;--d-muted:#AAB1B6;--d-sign:#0F5B3F;--d-on-sign:#FFFFFF;--d-warn:#F5C400;--d-danger:#FF6B6B;--d-line:#3A4147;--d-beam:#5B646B}
+.b-sign{background:var(--d-sign);color:var(--d-on-sign);padding:18px 18px 20px;border-bottom:6px solid var(--d-beam)}
+.b-sign .who{display:flex;justify-content:space-between;font-weight:600;font-size:.9375rem;margin-bottom:18px}
+.b-sign .who a{color:var(--d-on-sign);text-underline-offset:3px}
+.b-sign .k{font-size:.9375rem;font-weight:600}
+.b-sign .dest{font-size:2.75rem;font-weight:900;line-height:1;margin:4px 0 10px;letter-spacing:-.01em}
+.b-sign .meta{font-size:1rem;font-weight:600;font-variant-numeric:tabular-nums;border-top:2px solid rgba(255,255,255,.55);padding-top:8px}
+.b-body{flex:1;padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--d-bg)}
+.b-unit{font-size:1rem}
+.b-unit b{font-size:1.125rem}
+.b-queue{background:var(--d-surface2);border-radius:6px;padding:10px 12px;font-size:.9375rem;font-weight:600}
+.b-btn{font:inherit;font-weight:800;font-size:1.125rem;min-height:72px;border-radius:8px;border:0;background:var(--d-sign);color:var(--d-on-sign);cursor:pointer}
+.b-btn2{font:inherit;font-weight:700;font-size:1rem;min-height:52px;border-radius:8px;border:2px solid var(--d-text);background:transparent;color:var(--d-text);cursor:pointer}
+.b-side{background:var(--d-sign);color:var(--d-on-sign);padding:16px 0}
+.b-side .brand{font-weight:900;font-size:1.125rem;padding:0 16px 14px}
+.b-side a{display:block;padding:9px 16px;color:var(--d-on-sign);text-decoration:none;font-weight:500}
+.b-side a[aria-current]{background:rgba(0,0,0,.28);font-weight:800;box-shadow:inset 4px 0 0 var(--d-on-sign)}
+.b-main{padding:18px 20px;background:var(--d-bg)}
+.b-main h4{margin:0 0 12px;font-size:1.375rem;font-weight:800}
+.b-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.b-kpis span{display:block;font-size:.8125rem;color:var(--d-muted);font-weight:600}
+.b-kpis b{display:block;white-space:nowrap;font-size:1.375rem;font-weight:800;font-variant-numeric:tabular-nums}
+.b-kpis em{font-style:normal;font-size:.8125rem;color:var(--d-muted)}
+.gantry{margin-bottom:16px}
+.gantry .beam{height:8px;background:var(--d-beam);border-radius:2px}
+.gantry .panels{display:flex;gap:14px;padding:0 14px}
+.gantry .panel{flex:0 1 220px;background:var(--d-sign);color:var(--d-on-sign);border:2px solid var(--d-on-sign);outline:2px solid var(--d-sign);border-radius:8px;padding:10px 12px;margin-top:6px}
+.gantry .panel small{display:block;font-size:.8125rem;font-weight:600}
+.gantry .panel b{display:block;font-size:1.5rem;font-weight:900;line-height:1.1}
+.gantry .panel span{font-size:.8125rem;font-variant-numeric:tabular-nums}
+.gantry h5,.b-alerts h5{margin:0 0 8px;font-size:.9375rem}
+.b-alerts{display:grid;gap:8px}
+.alert{display:flex;gap:10px;align-items:center;font-size:.9375rem;padding:8px 10px;border:1px solid var(--d-line);border-radius:6px;background:var(--d-surface)}
+.diamond{flex:none;width:22px;height:22px;background:var(--d-warn);border:2px solid #22272B;transform:rotate(45deg);display:grid;place-items:center}
+.diamond i{transform:rotate(-45deg);font-style:normal;font-weight:900;font-size:.8125rem;color:#22272B}
+
+/* ===================== C. Informe IP ===================== */
+.dir-c{--d-bg:#F3F5F8;--d-surface:#FFFFFF;--d-navy:#1B2A4A;--d-on-navy:#FFFFFF;--d-text:#172033;--d-muted:#5B6577;--d-needle:#B07A12;--d-up:#1D7A4E;--d-down:#B8322A;--d-line:#D5DAE3;--d-band:#D9DFEA;
+  --d-font:"Archivo",system-ui,sans-serif}
+.dir-c[data-mode="dark"]{--d-bg:#0F1729;--d-surface:#16213A;--d-navy:#1B2A4A;--d-on-navy:#FFFFFF;--d-text:#E8ECF3;--d-muted:#A5AFC2;--d-needle:#E0A93B;--d-up:#5CC492;--d-down:#F28B82;--d-line:#2C3A5A;--d-band:#2C3A5A}
+.c-top{background:var(--d-navy);color:var(--d-on-navy);padding:14px 16px;display:flex;justify-content:space-between;font-weight:600}
+.c-top a{color:var(--d-on-navy);text-underline-offset:3px}
+.c-body{flex:1;padding:16px;display:flex;flex-direction:column;gap:14px}
+.c-card{background:var(--d-surface);border:1px solid var(--d-line);border-radius:8px;padding:14px}
+.c-card h4{margin:0 0 4px;font-size:1.25rem;font-stretch:100%}
+.c-card p{margin:0;color:var(--d-muted);font-variant-numeric:tabular-nums}
+.c-btn{font:inherit;font-weight:700;font-size:1.0625rem;min-height:64px;border-radius:8px;border:0;background:var(--d-navy);color:var(--d-on-navy);cursor:pointer}
+.dir-c[data-mode="dark"] .c-btn{background:#E8ECF3;color:#0F1729}
+.c-side{background:var(--d-navy);color:var(--d-on-navy);padding:16px 0}
+.c-side .brand{font-weight:800;padding:0 16px 14px}
+.c-side a{display:block;padding:9px 16px;color:#C9D2E3;text-decoration:none}
+.c-side a[aria-current]{color:#fff;font-weight:700;background:rgba(255,255,255,.08);box-shadow:inset 3px 0 0 var(--d-needle)}
+.c-main{padding:18px 20px}
+.c-main h4{margin:0 0 12px;font-size:1.375rem;font-stretch:100%}
+.c-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.c-kpis > div{background:var(--d-surface);border:1px solid var(--d-line);border-radius:6px;padding:10px 12px}
+.c-kpis span{display:block;font-size:.8125rem;color:var(--d-muted)}
+.c-kpis b{display:block;white-space:nowrap;font-size:1.25rem;font-variant-numeric:tabular-nums}
+.up{color:var(--d-up);font-size:.8125rem;font-weight:600} .down{color:var(--d-down);font-size:.8125rem;font-weight:600}
+table.tc{width:100%;border-collapse:collapse;font-size:.875rem;background:var(--d-surface);font-stretch:87.5%}
+table.tc th{white-space:nowrap;text-align:left;color:var(--d-muted);font-weight:600;border-bottom:2px solid var(--d-line);padding:8px}
+table.tc td{white-space:nowrap;border-bottom:1px solid var(--d-line);padding:6px 8px;font-variant-numeric:tabular-nums;vertical-align:middle}
+table.tc .r{text-align:right}
+.regla text{font:600 10px "Archivo",system-ui,sans-serif;fill:var(--d-muted)}
+
+/* ===== Botón En ruta (demo neutral) ===== */
+.demo{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;margin-top:16px}
+@media (min-width:860px){.demo{grid-template-columns:1fr 1fr}}
+.dphone{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;max-width:380px;width:100%;position:relative;min-height:330px}
+.dphone h3{margin-bottom:4px}
+.dcard{border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:12px}
+.switch-row{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-weight:700;font-size:1.125rem}
+.switch{width:64px;height:36px;border-radius:999px;border:2px solid var(--muted);background:var(--bg);position:relative;cursor:pointer;padding:0}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:var(--muted);transition:transform .2s}
+.switch[aria-checked="true"]{background:#1E6B47;border-color:#1E6B47}
+.switch[aria-checked="true"]::after{transform:translateX(28px);background:#fff}
+.status{font-weight:700;margin:10px 0}
+.status .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--muted);margin-right:8px}
+.status.on .dot{background:#1E6B47}
+.big-btn{font:inherit;font-weight:800;font-size:1.125rem;width:100%;min-height:64px;border-radius:10px;border:2px solid var(--text);background:var(--text);color:var(--surface);cursor:pointer;margin-top:8px}
+.big-btn.inv{background:transparent;color:var(--text)}
+.sheet{margin-top:12px;border:2px solid var(--text);border-radius:10px;padding:12px}
+.sheet p{margin:0 0 8px;font-size:.9375rem}
+.sheet .acts{display:flex;gap:8px}
+.sheet button{font:inherit;font-weight:700;min-height:48px;padding:0 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);cursor:pointer}
+.sheet button.pri{background:var(--text);color:var(--surface);border-color:var(--text)}
+.toast{position:absolute;left:16px;right:16px;bottom:16px;background:var(--text);color:var(--surface);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.toast button{font:inherit;font-weight:800;min-height:44px;padding:0 12px;border-radius:8px;border:1px solid var(--surface);background:transparent;color:var(--surface);cursor:pointer}
+[hidden]{display:none!important}
+footer{padding:32px 0 48px;color:var(--muted);font-size:.9375rem}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header class="page-head">
+  <div class="wrap">
+    <h1>Flota IP: opciones visuales para la Fase 0</h1>
+    <p>Tres direcciones para el sistema de control de flota de Distribuidora y Suministros IP. Cada una muestra su paleta, su tipografía, una pantalla del chofer y un trozo del dashboard. El texto completo, con principios y riesgos, está en <code>docs/OPCIONES.md</code>.</p>
+    <p>Las cifras son ilustrativas: salen de los casos de prueba T1–T10 y de camiones <code>DEMO</code>, no de datos de IP.</p>
+    <nav class="toc" aria-label="Secciones">
+      <a href="#dir-a">A. Ticket sellado</a>
+      <a href="#dir-b">B. Señal vial</a>
+      <a href="#dir-c">C. Informe IP</a>
+      <a href="#en-ruta">Botón "En ruta"</a>
+      <button class="theme-btn" type="button" id="themeBtn">Cambiar tema de la página</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ===================== A ===================== -->
+<section class="dir dir-a" id="dir-a" data-mode="light" aria-labelledby="ha">
+  <div class="wrap">
+    <div class="dir-head">
+      <h2 id="ha">A. Ticket sellado <span class="badge">Asignada por el sorteo</span></h2>
+      <button class="mode-toggle" type="button" aria-pressed="false">Ver en modo oscuro</button>
+    </div>
+    <p class="lead">El papel térmico del ticket de la estación y el sello húmedo de la oficina venezolana. Cada viaje cerrado "imprime" su ticket y queda sellado con la calidad del dato.</p>
+    <div class="grid-2">
+      <div>
+        <h3>Paleta</h3>
+        <div class="swatches">
+          <div class="sw"><i style="background:#F3F4F1"></i><div><b>Papel térmico</b><code>#F3F4F1</code><br>Fondo</div></div>
+          <div class="sw"><i style="background:#1D2026"></i><div><b>Tinta térmica</b><code>#1D2026</code><br>Texto y cifras<br>14,8:1</div></div>
+          <div class="sw"><i style="background:#5A606B"></i><div><b>Gris de copia</b><code>#5A606B</code><br>Secundario<br>5,7:1</div></div>
+          <div class="sw"><i style="background:#4B3BA6"></i><div><b>Sello morado</b><code>#4B3BA6</code><br>Acción, "Estimado"<br>7,7:1</div></div>
+          <div class="sw"><i style="background:#B3261E"></i><div><b>Sello rojo</b><code>#B3261E</code><br>Anulado, error<br>5,9:1</div></div>
+          <div class="sw"><i style="background:#1E6B47"></i><div><b>Verde surtidor</b><code>#1E6B47</code><br>"Exacto"<br>5,9:1</div></div>
+        </div>
+      </div>
+      <div>
+        <h3>Tipografía</h3>
+        <div class="spec">
+          <div class="big">5,00<small>km/L</small></div>
+          <p>Placa DEMO-001, km 10.400. Pares que confunden: 0 O 1 l I 5 S 8 B</p>
+          <p style="font-family:var(--d-mono)">TOTAL ........... $ 48,00</p>
+          <div class="meta">Atkinson Hyperlegible Next para interfaz y cifras; Atkinson Hyperlegible Mono solo dentro del ticket</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mocks">
+      <div>
+        <p class="mock-label">Chofer: después de finalizar la ruta (360 px)</p>
+        <div class="phone">
+          <div class="a-top"><span>Pedro</span><a href="#dir-a">Dashboard</a></div>
+          <div class="a-screen">
+            <p class="a-done">Ruta finalizada</p>
+            <div class="ticket" role="group" aria-label="Ticket del viaje V-0142">
+              <div class="row"><span>Flota IP</span><span class="folio">V-0142</span></div>
+              <div>DEMO-003 (Camión 3)</div>
+              <div class="row" style="align-items:center"><span>Ruta a Valera</span><span class="stamp ok" aria-label="Calidad: exacto">Exacto</span></div>
+              <div class="rule"></div>
+              <div class="row"><span>Salida 07:40</span><span>km 10.000</span></div>
+              <div class="row"><span>Llegada 13:05</span><span>km 10.400</span></div>
+              <div class="row"><span>Recorrido</span><span>400 km</span></div>
+              <div class="rule"></div>
+              <div class="row"><span>Al salir</span><span>Lleno (200 L)</span></div>
+              <div class="row"><span>Carga final</span><span>80,00 L × $0,60</span></div>
+              <div class="row"><span>Consumo</span><span>80,00 L</span></div>
+              <div class="row"><span>Rendimiento</span><span>5,00 km/L</span></div>
+              <div class="row"><span></span><span>20,00 L/100 km</span></div>
+              <div class="row"><span>Costo por km</span><span>$ 0,1200</span></div>
+              <div class="rule"></div>
+              <div class="row total"><span>TOTAL</span><span>$ 48,00</span></div>
+            </div>
+            <button class="a-btn" type="button">Listo</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="mock-label">Oficina: viajes del mes (1440 px, recorte)</p>
+        <div class="desk-scroll">
+          <div class="desk">
+            <nav class="a-side" aria-label="Navegación de ejemplo A">
+              <div class="brand">Flota IP</div>
+              <a href="#dir-a">Dashboard</a><a href="#dir-a">Camiones y plantas</a><a href="#dir-a" aria-current="page">Viajes</a><a href="#dir-a">Combustible</a><a href="#dir-a">Mantenimiento</a><a href="#dir-a">Revisión (3)</a>
+            </nav>
+            <div class="a-main">
+              <h4>Viajes de octubre</h4>
+              <div class="kpis">
+                <div><span>Km recorridos</span><b>1.700 km</b><em>4 viajes válidos</em></div>
+                <div><span>Litros consumidos</span><b>320,00 L</b><em>&nbsp;</em></div>
+                <div><span>Rendimiento</span><b>5,31 km/L</b><em>18,82 L/100 km</em></div>
+                <div><span>Costo combustible</span><b>$ 180,00</b><em>$ 0,1059/km</em></div>
+              </div>
+              <table class="t">
+                <thead><tr><th>Folio</th><th>Llegada</th><th>Camión</th><th>Destino</th><th class="r">km</th><th class="r">L</th><th class="r">km/L</th><th class="r">Costo</th><th>Calidad</th></tr></thead>
+                <tbody>
+                  <tr><td>V-0142</td><td>03/10/2026</td><td>DEMO-003</td><td>Valera</td><td class="r">400</td><td class="r">80,00</td><td class="r">5,00</td><td class="r">$ 48,00</td><td><span class="mini-stamp ok">Exacto</span></td></tr>
+                  <tr><td>V-0143</td><td>04/10/2026</td><td>DEMO-001</td><td>Maracaibo</td><td class="r">600</td><td class="r">110,00</td><td class="r">5,45</td><td class="r">$ 62,00</td><td><span class="mini-stamp ok">Exacto</span></td></tr>
+                  <tr><td>V-0144</td><td>05/10/2026</td><td>DEMO-002</td><td>Mérida</td><td class="r">300</td><td class="r">50,00</td><td class="r">6,00</td><td class="r">$ 30,00</td><td><span class="mini-stamp est">Estimado</span></td></tr>
+                  <tr><td>V-0145</td><td>06/10/2026</td><td>DEMO-003</td><td>Valera</td><td class="r">400</td><td class="r">80,00</td><td class="r">5,00</td><td class="r">$ 40,00</td><td><span class="mini-stamp est">Estimado</span></td></tr>
+                  <tr class="voided"><td>V-0140</td><td>02/10/2026</td><td>DEMO-002</td><td>Cabimas</td><td class="r">212</td><td class="r">40,00</td><td class="r">5,30</td><td class="r">$ 24,00</td><td><span class="mini-stamp void">Anulado</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="firma">
+      <p><b>Firma:</b> el ticket sellado, con folio, líneas de km y litros, TOTAL y el sello de calidad girado. Solo aparece en el cierre de la ruta, en el detalle del viaje y en la ficha del camión.</p>
+      <p><b>Riesgo:</b> si el ticket se usa en más lugares, la app se vuelve disfraz. La disciplina está en limitarlo al viaje.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== B ===================== -->
+<section class="dir dir-b" id="dir-b" data-mode="light" aria-labelledby="hb">
+  <div class="wrap">
+    <div class="dir-head">
+      <h2 id="hb">B. Señal vial <span class="badge rec">Recomendada</span></h2>
+      <button class="mode-toggle" type="button" aria-pressed="false">Ver en modo oscuro</button>
+    </div>
+    <p class="lead">La señalización de la carretera venezolana: el verde de las señales de destino, el amarillo preventivo, el blanco reflectivo y el asfalto. El chofer la lee todos los días; la gerencia reconoce el mundo de la flota sin explicación.</p>
+    <div class="grid-2">
+      <div>
+        <h3>Paleta</h3>
+        <div class="swatches">
+          <div class="sw"><i style="background:#0F5B3F"></i><div><b>Verde vía</b><code>#0F5B3F</code><br>Estructura, paneles<br>blanco encima 8,1:1</div></div>
+          <div class="sw"><i style="background:#FFFFFF"></i><div><b>Blanco reflectivo</b><code>#FFFFFF</code><br>Fondo del contenido</div></div>
+          <div class="sw"><i style="background:#22272B"></i><div><b>Asfalto</b><code>#22272B</code><br>Texto y cifras<br>15,1:1</div></div>
+          <div class="sw"><i style="background:#E7EAE6"></i><div><b>Hombrillo</b><code>#E7EAE6</code><br>Superficies secundarias</div></div>
+          <div class="sw"><i style="background:#F5C400"></i><div><b>Amarillo preventivo</b><code>#F5C400</code><br>Solo alertas<br>asfalto encima 9,2:1</div></div>
+          <div class="sw"><i style="background:#C1121F"></i><div><b>Rojo pare</b><code>#C1121F</code><br>Error, anular<br>6,2:1</div></div>
+        </div>
+      </div>
+      <div>
+        <h3>Tipografía</h3>
+        <div class="spec">
+          <div class="big">5,00<small>km/L</small></div>
+          <p style="font-weight:800;font-size:1.5rem">Valera, Maracaibo, El Vigía</p>
+          <p style="font-weight:400">km 10.400, 80,00 L, $ 48,00</p>
+          <div class="meta">Overpass (versión libre de la Highway Gothic, la letra de las señales de carretera), una sola familia del 300 al 900</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mocks">
+      <div>
+        <p class="mock-label">Chofer: cabina con la ruta abierta (360 px)</p>
+        <div class="phone">
+          <div class="b-sign">
+            <div class="who"><span>Pedro</span><a href="#dir-b">Dashboard</a></div>
+            <div class="k">En ruta a</div>
+            <div class="dest">Valera</div>
+            <div class="meta">Salió 07:40, hace 2 h 15 min<br>km de salida 10.000</div>
+          </div>
+          <div class="b-body">
+            <div class="b-unit"><b>Camión 3 (DEMO-003)</b><br>Salió con el tanque lleno (200 L)</div>
+            <div class="b-queue">Sin señal: 1 registro esperando envío</div>
+            <div style="flex:1"></div>
+            <button class="b-btn" type="button">Finalizar ruta</button>
+            <button class="b-btn2" type="button">Registrar repostaje</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="mock-label">Oficina: dashboard (1440 px, recorte)</p>
+        <div class="desk-scroll">
+          <div class="desk">
+            <nav class="b-side" aria-label="Navegación de ejemplo B">
+              <div class="brand">Flota IP</div>
+              <a href="#dir-b" aria-current="page">Dashboard</a><a href="#dir-b">Camiones y plantas</a><a href="#dir-b">Viajes</a><a href="#dir-b">Combustible</a><a href="#dir-b">Mantenimiento</a><a href="#dir-b">Revisión (3)</a>
+            </nav>
+            <div class="b-main">
+              <h4>Dashboard de octubre</h4>
+              <div class="b-kpis">
+                <div><span>Gasto total</span><b>$ 4.812,00</b><em>▲ 8,2 % vs. septiembre</em></div>
+                <div><span>Km recorridos</span><b>18.240 km</b><em>▼ 2,0 %</em></div>
+                <div><span>Rendimiento</span><b>5,21 km/L</b><em>▼ 4,0 % (19,19 L/100 km)</em></div>
+                <div><span>Costo por km</span><b>$ 0,2638</b><em>▲ 10,4 %</em></div>
+              </div>
+              <div class="gantry">
+                <h5>Ahora mismo: 2 en ruta</h5>
+                <div class="beam" aria-hidden="true"></div>
+                <div class="panels">
+                  <div class="panel"><small>Pedro en DEMO-003</small><b>Valera</b><span>desde 07:40 (2 h 15 min)</span></div>
+                  <div class="panel"><small>Luis en DEMO-001</small><b>Maracaibo</b><span>desde 04:55 (5 h 02 min)</span></div>
+                </div>
+              </div>
+              <div class="b-alerts">
+                <h5>Alertas (3)</h5>
+                <div class="alert"><span class="diamond" aria-hidden="true"><i>!</i></span><span><b>DEMO-002</b>: rinde 18 % menos que su promedio de 90 días (4,10 vs. 5,00 km/L)</span></div>
+                <div class="alert"><span class="diamond" aria-hidden="true"><i>!</i></span><span><b>DEMO-005</b>: ruta abierta hace 52 h</span></div>
+                <div class="alert"><span class="diamond" aria-hidden="true"><i>!</i></span><span><b>DEMO-001</b>: 38 km sin ruta registrada</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="firma">
+      <p><b>Firma:</b> el pórtico. El estado "en ruta" se dibuja como una señal de destino verde: en la cabina domina la pantalla, y en el dashboard "Ahora mismo" es una fila de señales colgadas de una viga, una por camión, en tiempo real.</p>
+      <p><b>Riesgo:</b> la más temática. Mal ejecutada parece una app del ministerio de transporte, y el verde de estructura exige disciplina para no competir con el verde de los gráficos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== C ===================== -->
+<section class="dir dir-c" id="dir-c" data-mode="light" aria-labelledby="hc">
+  <div class="wrap">
+    <div class="dir-head">
+      <h2 id="hc">C. Informe IP <span class="badge">La más familiar</span></h2>
+      <button class="mode-toggle" type="button" aria-pressed="false">Ver en modo oscuro</button>
+    </div>
+    <p class="lead">Continuidad con los reportes que la dirección de IP ya conoce: azul marino <code>#1B2A4A</code>, variaciones ▲/▼ y tabla limpia. La audacia va en un solo elemento: la aguja de combustible convertida en gráfico de rendimiento.</p>
+    <div class="grid-2">
+      <div>
+        <h3>Paleta</h3>
+        <div class="swatches">
+          <div class="sw"><i style="background:#1B2A4A"></i><div><b>Azul IP</b><code>#1B2A4A</code><br>Estructura, botón principal<br>14,2:1</div></div>
+          <div class="sw"><i style="background:#F3F5F8"></i><div><b>Niebla andina</b><code>#F3F5F8</code><br>Fondo</div></div>
+          <div class="sw"><i style="background:#172033"></i><div><b>Tinta</b><code>#172033</code><br>Texto y cifras<br>14,9:1</div></div>
+          <div class="sw"><i style="background:#5B6577"></i><div><b>Gris acero</b><code>#5B6577</code><br>Secundario<br>5,4:1</div></div>
+          <div class="sw"><i style="background:#B07A12"></i><div><b>Ámbar aguja</b><code>#B07A12</code><br>Solo la aguja<br>3,4:1 gráfico</div></div>
+          <div class="sw"><i style="background:linear-gradient(90deg,#1D7A4E 50%,#B8322A 50%)"></i><div><b>Verde ▲ / Rojo ▼</b><code>#1D7A4E</code> <code>#B8322A</code><br>Variaciones</div></div>
+        </div>
+      </div>
+      <div>
+        <h3>Tipografía</h3>
+        <div class="spec">
+          <div class="big">5,00<small>km/L</small></div>
+          <p>Gasto total $ 4.812,00 <span style="color:var(--d-up)">▲ 8,2 %</span></p>
+          <p style="font-stretch:75%">Tabla angosta: DEMO-001, 1.240 km, 238,00 L, 5,21 km/L</p>
+          <div class="meta">Archivo, de Omnibus-Type (Buenos Aires): grotesca pensada para tablas, con ancho variable</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mocks">
+      <div>
+        <p class="mock-label">Chofer: con la ruta abierta (360 px)</p>
+        <div class="phone">
+          <div class="c-top"><span>Pedro</span><a href="#dir-c">Dashboard</a></div>
+          <div class="c-body">
+            <div class="c-card">
+              <h4>En ruta a Valera</h4>
+              <p>Salió 07:40, hace 2 h 15 min</p>
+              <p>km de salida 10.000, tanque lleno</p>
+            </div>
+            <div class="c-card">
+              <h4 style="font-size:1rem">Camión 3, este mes</h4>
+              <svg class="regla" data-min="3" data-max="8" data-avg="5.10" data-fleet="5.05" data-val="5.00" width="100%" viewBox="0 0 280 44" role="img" aria-label="Rendimiento 5,00 km/L; su promedio 5,10; flota 5,05; rango 3 a 8"></svg>
+            </div>
+            <div style="flex:1"></div>
+            <button class="c-btn" type="button">Finalizar ruta</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="mock-label">Oficina: tabla de camiones con la regla de rendimiento (1440 px, recorte)</p>
+        <div class="desk-scroll">
+          <div class="desk">
+            <nav class="c-side" aria-label="Navegación de ejemplo C">
+              <div class="brand">Flota IP</div>
+              <a href="#dir-c" aria-current="page">Dashboard</a><a href="#dir-c">Camiones y plantas</a><a href="#dir-c">Viajes</a><a href="#dir-c">Combustible</a><a href="#dir-c">Mantenimiento</a><a href="#dir-c">Revisión (3)</a>
+            </nav>
+            <div class="c-main">
+              <h4>Dashboard de octubre</h4>
+              <div class="c-kpis">
+                <div><span>Gasto total</span><b>$ 4.812,00</b><span class="up">▲ 8,2 %</span></div>
+                <div><span>Combustible</span><b>$ 3.390,00</b><span class="up">▲ 3,1 %</span></div>
+                <div><span>Mantenimiento</span><b>$ 1.422,00</b><span class="up">▲ 22,4 %</span></div>
+                <div><span>Rendimiento flota</span><b>5,05 km/L</b><span class="down">▼ 4,0 %</span></div>
+              </div>
+              <table class="tc">
+                <thead><tr><th>Camión</th><th>Estado</th><th class="r">km período</th><th class="r">km/L</th><th>Rendimiento en su rango</th><th class="r">$/km</th></tr></thead>
+                <tbody>
+                  <tr><td>DEMO-001</td><td>En ruta</td><td class="r">1.240</td><td class="r">5,21</td><td><svg class="regla" data-min="3" data-max="8" data-avg="5.30" data-fleet="5.05" data-val="5.21" width="220" height="40" viewBox="0 0 280 44" role="img" aria-label="5,21 km/L; su promedio 5,30; flota 5,05"></svg></td><td class="r">0,1152</td></tr>
+                  <tr><td>DEMO-002</td><td>Disponible</td><td class="r">880</td><td class="r">4,10</td><td><svg class="regla" data-min="3" data-max="8" data-avg="5.00" data-fleet="5.05" data-val="4.10" width="220" height="40" viewBox="0 0 280 44" role="img" aria-label="4,10 km/L; su promedio 5,00; flota 5,05; 18 % peor"></svg></td><td class="r">0,1463</td></tr>
+                  <tr><td>DEMO-003</td><td>En ruta</td><td class="r">1.600</td><td class="r">5,45</td><td><svg class="regla" data-min="3" data-max="8" data-avg="5.40" data-fleet="5.05" data-val="5.45" width="220" height="40" viewBox="0 0 280 44" role="img" aria-label="5,45 km/L; su promedio 5,40; flota 5,05"></svg></td><td class="r">0,1101</td></tr>
+                </tbody>
+              </table>
+              <p style="font-size:.8125rem;color:var(--d-muted);margin:8px 0 0">Franja: su promedio de 90 días ± 5 %. Raya oscura: promedio de la flota. Aguja ámbar: el período.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="firma">
+      <p><b>Firma:</b> la regla de rendimiento. Cada camión tiene su rango razonable de km/L, su franja habitual, la marca de la flota y la aguja del período. Se lee de un vistazo si rinde como siempre o se salió de su rango.</p>
+      <p><b>Riesgo:</b> la más parecida a Fleetio y compañía. Funciona, pero se distingue poco.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== Botón En ruta ===================== -->
+<section class="dir" id="en-ruta" aria-labelledby="hr">
+  <div class="wrap">
+    <h2 id="hr">Botón "En ruta": las dos variantes</h2>
+    <p class="lead">Pruébalas. En la app real, la hoja de inicio pide destino, km y combustible. Aquí se resume en una línea.</p>
+    <div class="demo">
+      <div class="dphone" id="varA">
+        <h3>Variante A: interruptor</h3>
+        <p class="note">El estado se lee de un vistazo, pero un interruptor promete efecto inmediato y aquí abre un formulario.</p>
+        <div class="dcard">
+          <b>Camión 3 (DEMO-003)</b><br><span class="num">km 10.400</span>
+          <div class="switch-row"><span id="swLbl">En ruta</span><button class="switch" role="switch" aria-checked="false" aria-labelledby="swLbl" type="button"></button></div>
+        </div>
+        <div class="sheet" hidden>
+          <p class="sheet-text">Iniciar ruta a Valera desde km 10.000 con tanque lleno</p>
+          <div class="acts"><button class="pri" type="button" data-act="ok">Confirmar</button><button type="button" data-act="cancel">Cancelar</button></div>
+        </div>
+      </div>
+      <div class="dphone" id="varB">
+        <h3>Variante B: botón de acción <span class="badge rec">Recomendada</span></h3>
+        <p class="note">El botón dice lo que hace y el estado tiene su propio lugar, con texto.</p>
+        <p class="status"><span class="dot" aria-hidden="true"></span><span class="status-text">Disponible en km 10.400</span></p>
+        <button class="big-btn" type="button">Iniciar ruta</button>
+        <div class="sheet" hidden>
+          <p class="sheet-text">Iniciar ruta a Valera desde km 10.000 con tanque lleno</p>
+          <div class="acts"><button class="pri" type="button" data-act="ok">Confirmar</button><button type="button" data-act="cancel">Cancelar</button></div>
+        </div>
+        <div class="toast" role="status" hidden><span class="toast-text">Ruta iniciada</span><button type="button">Deshacer</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">Flota IP, Fase 0 (03/10/2026). Página de trabajo para elegir dirección; no es la app.</div></footer>
+
+<script>
+// Tema de la página
+(function(){
+  const root=document.documentElement, btn=document.getElementById('themeBtn');
+  let saved=null; try{saved=localStorage.getItem('fip-theme')}catch(e){}
+  if(saved) root.setAttribute('data-theme',saved);
+  btn.addEventListener('click',()=>{
+    const dark = root.getAttribute('data-theme') ? root.getAttribute('data-theme')==='dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = dark?'light':'dark'; root.setAttribute('data-theme',next);
+    try{localStorage.setItem('fip-theme',next)}catch(e){}
+  });
+})();
+
+// Modo oscuro por dirección
+document.querySelectorAll('.mode-toggle').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const sec=b.closest('section'); const dark=sec.getAttribute('data-mode')!=='dark';
+    sec.setAttribute('data-mode',dark?'dark':'light'); b.setAttribute('aria-pressed',String(dark));
+    b.textContent=dark?'Ver en modo claro':'Ver en modo oscuro';
+  });
+});
+
+// Regla de rendimiento (dirección C)
+const fmt=n=>n.toLocaleString('es-VE',{minimumFractionDigits:2,maximumFractionDigits:2});
+document.querySelectorAll('svg.regla').forEach(s=>{
+  const d=k=>parseFloat(s.dataset[k]); const min=d('min'),max=d('max'),avg=d('avg'),fleet=d('fleet'),val=d('val');
+  const x0=14,x1=266,x=v=>x0+(Math.min(Math.max(v,min),max)-min)/(max-min)*(x1-x0);
+  const ns='http://www.w3.org/2000/svg', el=(t,a)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);s.appendChild(e);return e};
+  el('line',{x1:x0,x2:x1,y1:22,y2:22,stroke:'var(--d-line)','stroke-width':6,'stroke-linecap':'round'});
+  el('rect',{x:x(avg*0.95),y:15,width:x(avg*1.05)-x(avg*0.95),height:14,rx:3,fill:'var(--d-band)',stroke:'var(--d-muted)','stroke-width':1});
+  el('line',{x1:x(fleet),x2:x(fleet),y1:10,y2:34,stroke:'var(--d-text)','stroke-width':2});
+  el('path',{d:`M${x(val)} 30 L${x(val)-6} 40 L${x(val)+6} 40 Z`,fill:'var(--d-needle)'});
+  el('line',{x1:x(val),x2:x(val),y1:6,y2:32,stroke:'var(--d-needle)','stroke-width':3,'stroke-linecap':'round'});
+  const t1=el('text',{x:x0,y:8}); t1.textContent=fmt(min).replace(',00','');
+  const t2=el('text',{x:x1,y:8,'text-anchor':'end'}); t2.textContent=fmt(max).replace(',00','')+' km/L';
+});
+
+// Demo variante A
+(function(){
+  const box=document.getElementById('varA'), sw=box.querySelector('.switch'), sheet=box.querySelector('.sheet'), txt=box.querySelector('.sheet-text');
+  sw.addEventListener('click',()=>{
+    const on=sw.getAttribute('aria-checked')==='true';
+    txt.textContent = on ? 'Finalizar ruta en km 10.400; repostó 80 L a $0,60 y llenó el tanque' : 'Iniciar ruta a Valera desde km 10.000 con tanque lleno';
+    sheet.hidden=false; sheet.querySelector('.pri').focus();
+  });
+  sheet.addEventListener('click',e=>{
+    const a=e.target.dataset.act; if(!a) return;
+    if(a==='ok') sw.setAttribute('aria-checked', String(sw.getAttribute('aria-checked')!=='true'));
+    sheet.hidden=true; sw.focus();
+  });
+})();
+
+// Demo variante B
+(function(){
+  const box=document.getElementById('varB'), btn=box.querySelector('.big-btn'), sheet=box.querySelector('.sheet'), txt=box.querySelector('.sheet-text'),
+        st=box.querySelector('.status'), stt=box.querySelector('.status-text'), toast=box.querySelector('.toast'), ttxt=box.querySelector('.toast-text'), undo=toast.querySelector('button');
+  let enRuta=false, timer=null;
+  const render=()=>{
+    st.classList.toggle('on',enRuta);
+    stt.textContent = enRuta ? 'En ruta a Valera desde 07:40' : 'Disponible en km 10.400';
+    btn.textContent = enRuta ? 'Finalizar ruta' : 'Iniciar ruta';
+    btn.classList.toggle('inv',enRuta);
+  };
+  btn.addEventListener('click',()=>{
+    txt.textContent = enRuta ? 'Finalizar ruta en km 10.400; repostó 80 L a $0,60 y llenó el tanque' : 'Iniciar ruta a Valera desde km 10.000 con tanque lleno';
+    sheet.hidden=false; sheet.querySelector('.pri').focus();
+  });
+  sheet.addEventListener('click',e=>{
+    const a=e.target.dataset.act; if(!a) return; sheet.hidden=true;
+    if(a==='ok'){
+      const starting=!enRuta; enRuta=!enRuta; render();
+      clearTimeout(timer);
+      ttxt.textContent = starting ? 'Ruta iniciada' : 'Ruta finalizada';
+      undo.hidden = !starting; toast.hidden=false;
+      timer=setTimeout(()=>{toast.hidden=true},10000);
+    }
+    btn.focus();
+  });
+  undo.addEventListener('click',()=>{ enRuta=false; render(); ttxt.textContent='Ruta deshecha: queda anulada en la auditoría'; undo.hidden=true; clearTimeout(timer); timer=setTimeout(()=>{toast.hidden=true},4000); btn.focus(); });
+  render();
+})();
+</script>
+</body>
+</html>
