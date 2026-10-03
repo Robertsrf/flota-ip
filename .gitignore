@@ -10,6 +10,7 @@ test-results/
 .env
 .env.*
 !.env.example
+!.env.local.example
 
 # Supabase local
 supabase/.branches/
@@ -27,3 +28,7 @@ backups/
 .DS_Store
 Thumbs.db
 *.log
+
+# Servidor local sin Docker (PGlite y archivos subidos)
+.local-db/
+.local-storage/

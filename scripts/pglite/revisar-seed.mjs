@@ -1,0 +1,11 @@
+import { crearDb } from './db.mjs';
+const t0 = Date.now();
+const db = await crearDb({ seed: true }).catch((e) => { console.log('ERROR', e.message, e.where ?? ''); process.exit(1); });
+console.log('seed OK en', Date.now() - t0, 'ms');
+const q = async (s) => (await db.query(s)).rows;
+console.log(await q(`select estado, calidad, count(*)::int from public.viajes group by 1,2 order by 1,2`));
+console.log(await q(`select count(*)::int cargas, sum(monto_usd) usd from public.repostajes`));
+console.log(await q(`select estado_aprobacion, count(*)::int, sum(monto_usd) from public.mantenimientos group by 1`));
+console.log(await q(`select tipo, count(*)::int from public.v_alertas group by 1 order by 1`));
+console.log(await q(`select to_char(mes,'YYYY-MM') mes, viajes, km, rendimiento, costo_km_comb, gasto_comb, gasto_mant from public.v_kpi_flota_mes order by mes`));
+console.log(await q(`select u.nombre, count(*)::int, round(sum(distancia)/sum(litros),2) rend from public.v_ciclos_combustible c join public.v_unidades u on u.id=c.unidad_id where not invalido group by 1`).catch(e=>e.message));
