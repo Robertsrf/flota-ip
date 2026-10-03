@@ -1,6 +1,14 @@
-# Opciones para decidir — checkpoint de la Fase 0 🛑
+# Opciones para decidir — checkpoint de la Fase 0 ✅
 
 **Para:** Roberts Flores · **Fecha:** 03/10/2026
+
+> **Resuelto el 03/10/2026.** Elecciones: navegación mixta, dirección B (Señal vial), botón variante B, Flota IP con logo de IP. Hay cuatro cambios respecto de lo recomendado:
+> - D1: repo público con GitHub Pages.
+> - Supabase gratuito con respaldo semanal.
+> - D7: los choferes sí registran gastos, pendientes de aprobación.
+> - Paradas múltiples entran en el MVP.
+>
+> El detalle completo y sus consecuencias están en [`DECISIONES.md`](DECISIONES.md). Este documento se conserva tal como se presentó.
 Este documento reúne todo lo que necesito que decidas antes de escribir código. Para cada punto doy mi recomendación. Las cifras de los wireframes son ilustrativas (salen de los casos T1–T10), no datos de IP.
 
 **Lo que tienes que elegir:**
