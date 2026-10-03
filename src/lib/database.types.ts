@@ -1152,6 +1152,13 @@ export type Database = {
         }
         Returns: number
       }
+      marcar_revisado: {
+        Args: {
+          p_viaje_id: string
+          p_nota: string
+        }
+        Returns: Database["public"]["Tables"]["viajes"]["Row"]
+      }
       modo_sistema: {
         Args: {
           p_activo: boolean

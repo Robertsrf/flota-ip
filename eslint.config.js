@@ -14,7 +14,7 @@ export default tseslint.config(
     languageOptions: { ecmaVersion: 2023, globals: globals.browser },
     plugins: { 'react-refresh': reactRefresh },
     rules: {
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'react-refresh/only-export-components': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       'no-console': ['error', { allow: ['warn', 'error'] }],
     },

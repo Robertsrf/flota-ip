@@ -1,0 +1,170 @@
+@import "@fontsource-variable/overpass";
+@import "tailwindcss";
+
+/* =====================================================================
+   Flota IP · Señal vial
+   Tokens semánticos en :root (claro) y .dark (oscuro). Los componentes
+   usan solo estos nombres, nunca hex sueltos.
+   ===================================================================== */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --via: #0f5b3f;            /* verde de señal: estructura */
+  --via-fuerte: #0a4530;     /* activo / presionado sobre verde */
+  --via-tinta: #ffffff;      /* texto sobre verde (8,1:1) */
+  --via-acento: #0f5b3f;     /* verde como texto o borde sobre el fondo */
+  --fondo: #f4f5f3;
+  --superficie: #ffffff;     /* blanco reflectivo */
+  --superficie-2: #e7eae6;   /* hombrillo */
+  --tinta: #22272b;          /* asfalto (15:1) */
+  --tinta-2: #4d555b;        /* secundario (7,4:1) */
+  --linea: #cdd2cd;
+  --linea-fuerte: #8a9299;
+  --viga: #22272b;           /* viga del pórtico */
+  --alerta: #f5c400;         /* amarillo preventivo: SOLO alertas */
+  --alerta-tinta: #22272b;
+  --alerta-suave: #fff6cc;
+  --peligro: #c1121f;        /* rojo pare */
+  --peligro-tinta: #ffffff;
+  --peligro-suave: #fde8ea;
+  --foco: #1f4e8c;
+  --combustible: #1f4e8c;    /* azul de señal de servicio */
+  --mantenimiento: #d4600f;  /* naranja de obra */
+  --plantas: #7a4b2a;        /* marrón de señal turística */
+  --exacto: #0f5b3f;
+  --estimado: #1f4e8c;
+  --incompleto: #9a6b00;
+  --sombra: 0 1px 2px rgb(34 39 43 / 0.06), 0 4px 12px rgb(34 39 43 / 0.06);
+  color-scheme: light;
+}
+
+.dark {
+  --via: #0f5b3f;
+  --via-fuerte: #0b4a33;
+  --via-tinta: #ffffff;
+  --via-acento: #5cc296;
+  --fondo: #121518;
+  --superficie: #1b1f23;
+  --superficie-2: #252a2f;
+  --tinta: #eef0ee;
+  --tinta-2: #b4bbc0;
+  --linea: #363d43;
+  --linea-fuerte: #69727a;
+  --viga: #5b646b;
+  --alerta: #f5c400;
+  --alerta-tinta: #22272b;
+  --alerta-suave: #3a3210;
+  --peligro: #ff6b6b;
+  --peligro-tinta: #22272b;
+  --peligro-suave: #3d1d20;
+  --foco: #8fb4ff;
+  --combustible: #6f9fe0;
+  --mantenimiento: #f08a3c;
+  --plantas: #c48b62;
+  --exacto: #5cc296;
+  --estimado: #8fb4ff;
+  --incompleto: #f5c400;
+  --sombra: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.3);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: "Overpass Variable", "Overpass", ui-sans-serif, system-ui, sans-serif;
+  --color-via: var(--via);
+  --color-via-fuerte: var(--via-fuerte);
+  --color-via-tinta: var(--via-tinta);
+  --color-via-acento: var(--via-acento);
+  --color-fondo: var(--fondo);
+  --color-superficie: var(--superficie);
+  --color-superficie-2: var(--superficie-2);
+  --color-tinta: var(--tinta);
+  --color-tinta-2: var(--tinta-2);
+  --color-linea: var(--linea);
+  --color-linea-fuerte: var(--linea-fuerte);
+  --color-viga: var(--viga);
+  --color-alerta: var(--alerta);
+  --color-alerta-tinta: var(--alerta-tinta);
+  --color-alerta-suave: var(--alerta-suave);
+  --color-peligro: var(--peligro);
+  --color-peligro-tinta: var(--peligro-tinta);
+  --color-peligro-suave: var(--peligro-suave);
+  --color-foco: var(--foco);
+  --color-combustible: var(--combustible);
+  --color-mantenimiento: var(--mantenimiento);
+  --color-plantas: var(--plantas);
+  --color-exacto: var(--exacto);
+  --color-estimado: var(--estimado);
+  --color-incompleto: var(--incompleto);
+  --shadow-panel: var(--sombra);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    background: var(--fondo);
+    color: var(--tinta);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "tnum" 1;
+  }
+  ::selection {
+    background: var(--alerta);
+    color: var(--alerta-tinta);
+  }
+  :focus-visible {
+    outline: 3px solid var(--foco);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  input,
+  textarea,
+  select {
+    caret-color: var(--via-acento);
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  * {
+    scrollbar-color: var(--linea-fuerte) transparent;
+    scrollbar-width: thin;
+  }
+  [hidden] {
+    display: none !important;
+  }
+}
+
+@layer utilities {
+  .cifra {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+  /* Panel de señal de destino: filete blanco interior como en la vía */
+  .panel-senal {
+    background: var(--via);
+    color: var(--via-tinta);
+    box-shadow: inset 0 0 0 2px var(--via), inset 0 0 0 4px rgb(255 255 255 / 0.9);
+  }
+  .zona-segura-abajo {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

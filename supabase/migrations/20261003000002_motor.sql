@@ -1178,6 +1178,30 @@ begin
   return 'eliminada';
 end $$;
 
+-- ----- Bandeja de revisión -------------------------------------------------
+-- Flota da por revisada una ruta (destino "Otro", novedad del chofer,
+-- rendimiento fuera de rango). Queda en la auditoría con su nota.
+create function public.marcar_revisado(p_viaje_id uuid, p_nota text) returns public.viajes
+language plpgsql security definer set search_path = '' as $$
+declare
+  v public.viajes;
+begin
+  perform public.exigir_rol(array['superusuario', 'flota']::public.rol_usuario[],
+                            'Solo flota puede dar por revisada una ruta.');
+  if nullif(trim(p_nota), '') is null then
+    raise exception using errcode = 'P0001', message = 'Escribe qué se revisó o corrigió.';
+  end if;
+  select * into v from public.viajes where id = p_viaje_id for update;
+  if not found then
+    raise exception using errcode = 'P0001', message = 'La ruta no existe.';
+  end if;
+  insert into public.auditoria (tabla, registro_id, accion, antes, despues, motivo, usuario_id)
+  values ('viajes', v.id::text, 'revisar', jsonb_build_object('revisar_motivos', to_jsonb(v.revisar_motivos)),
+          jsonb_build_object('revisar_motivos', '[]'::jsonb), trim(p_nota), auth.uid());
+  update public.viajes set revisar = false, revisar_motivos = '{}' where id = v.id returning * into v;
+  return v;
+end $$;
+
 -- ----- Permisos de ejecución ---------------------------------------------
 do $$
 declare
@@ -1187,7 +1211,7 @@ declare
     'hoy_caracas', 'lectura_actual', 'sugerir_nivel_salida', 'nivel_estimado',
     'unidad_permitida_chofer', 'tasa_para_fecha', 'iniciar_viaje', 'registrar_repostaje', 'finalizar_viaje',
     'registrar_mantenimiento', 'revisar_gasto', 'anular_registro', 'restaurar_registro', 'corregir_registro',
-    'eliminar_ubicacion'];
+    'eliminar_ubicacion', 'marcar_revisado'];
 begin
   for f in
     select p.oid::regprocedure as firma, p.proname

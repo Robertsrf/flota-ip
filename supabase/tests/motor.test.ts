@@ -406,3 +406,17 @@ describe('decisiones del checkpoint F0', () => {
     expect(r).toEqual({ a: '10.400', b: '62,00', c: '1.234,50', d: '0,50' });
   });
 });
+
+describe('bandeja de revisión', () => {
+  it('flota da por revisada una ruta con nota; queda auditada', async () => {
+    const c = await crearCamion(e.db, { placa: 'REV-001' });
+    const v = await iniciar(e, e.u.chofer2, c, { km: 10000, paradas: [e.l.otro] });
+    const err = await error(rpc(e.db, e.u.chofer2, 'marcar_revisado', { p_viaje_id: v.id, p_nota: 'x' }));
+    expect(err.code).toBe('42501');
+    const r = await rpc(e.db, e.u.flota, 'marcar_revisado', { p_viaje_id: v.id, p_nota: 'Era Carora; se agregó a la lista' });
+    expect(r.revisar).toBe(false);
+    const aud = await consultar(e.db, e.u.flota, `select * from public.auditoria where registro_id = $1 and accion = 'revisar'`, [v.id]);
+    expect(aud).toHaveLength(1);
+    await rpc(e.db, e.u.flota, 'anular_registro', { p_tabla: 'viajes', p_id: v.id, p_motivo: 'Limpieza' });
+  });
+});

@@ -187,7 +187,7 @@ begin
         end if;
         v_precio := case when random()::numeric < 0.55 then v_p060 else v_p050 end;
 
-        if random()::numeric < 0.84 or v_antes < v_cap[i] / 2 then
+        if random()::numeric < 0.84 or v_antes < v_cap[i] / 2 or v_usados < v_cap[i] / 3 then
           perform public.finalizar_viaje(v_viaje, v_llegada, v_km[i] + v_dist, true, gen_random_uuid(),
                                          round(v_cap[i] - v_antes, 2), v_precio, true, null, null, null,
                                          case when random()::numeric < 0.04 then 'Ruido en la suspensión trasera' end);

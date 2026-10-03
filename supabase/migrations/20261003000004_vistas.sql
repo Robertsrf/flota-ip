@@ -298,7 +298,7 @@ anomalo as (
 ),
 abiertas as (
   select 'ruta_abierta'::text, 'alta'::text, v.unidad_id, v.id, v.id, v.salida_at,
-         format('La ruta %s de %s (%s) lleva %s h abierta.', public.folio_txt('V', v.folio),
+         format('La ruta %s de %s, con %s, lleva %s h abierta.', public.folio_txt('V', v.folio),
                 public.nombre_unidad(v.unidad_id), p.nombre,
                 public.fmt_num(extract(epoch from now() - v.salida_at)::numeric / 3600, 0))
   from public.viajes v
