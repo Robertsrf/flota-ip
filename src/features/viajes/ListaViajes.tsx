@@ -17,7 +17,7 @@ export function EstadoViaje({ v }: { v: Pick<Viaje, 'estado' | 'revisar'> }) {
   if (v.estado === 'en_curso') return <Etiqueta tono="via">En ruta</Etiqueta>;
   if (v.estado === 'anulado') return <Etiqueta tono="peligro">Anulada</Etiqueta>;
   if (v.revisar) return <Etiqueta tono="alerta">Revisar</Etiqueta>;
-  return <span>Cerrada</span>;
+  return <Etiqueta>Cerrada</Etiqueta>;
 }
 
 export function ListaViajes() {
@@ -58,7 +58,7 @@ export function ListaViajes() {
 
   const columnas: Columna<Viaje>[] = [
     { id: 'folio', titulo: 'Folio', celda: (v) => <span className="font-bold">{v.folio_txt}</span>, orden: (v) => v.folio, exportar: { valor: (v) => v.folio_txt } },
-    { id: 'ruta', titulo: 'Ruta', movil: 'principal', celda: (v) => v.ruta, orden: (v) => v.ruta, exportar: { valor: (v) => v.ruta } },
+    { id: 'ruta', titulo: 'Ruta', movil: 'principal', envolver: true, celda: (v) => v.ruta, orden: (v) => v.ruta, exportar: { valor: (v) => v.ruta } },
     { id: 'salida', titulo: 'Salida', celda: (v) => fechaHora(v.salida_at), orden: (v) => v.salida_at, exportar: { valor: (v) => v.salida_at, tipo: 'fechaHora' } },
     { id: 'camion', titulo: 'Camión', celda: (v) => v.placa, orden: (v) => v.placa, exportar: { valor: (v) => v.placa, titulo: 'Placa' } },
     { id: 'chofer', titulo: 'Chofer', celda: (v) => v.chofer_nombre, orden: (v) => v.chofer_nombre, movil: 'oculta', exportar: { valor: (v) => v.chofer_nombre } },

@@ -36,7 +36,7 @@ export function Rombo({ tamano = 22 }: { tamano?: number }) {
 
 /** ▲/▼ contra el período anterior, como en los reportes de IP */
 export function Variacion({ valor, mejorSiSube, sufijo = '' }: { valor: number | null; mejorSiSube: boolean; sufijo?: string }) {
-  if (valor === null || !Number.isFinite(valor)) return <span className="text-sm text-tinta-2">Sin período anterior</span>;
+  if (valor === null || !Number.isFinite(valor)) return <span className="text-sm text-tinta-2">Sin datos para comparar</span>;
   if (Math.abs(valor) < 0.05) return <span className="cifra text-sm text-tinta-2">Sin cambio {sufijo}</span>;
   const sube = valor > 0;
   const bueno = sube === mejorSiSube;
@@ -51,6 +51,14 @@ export function Variacion({ valor, mejorSiSube, sufijo = '' }: { valor: number |
   );
 }
 
+const COLUMNAS_KPI: Record<number, string> = {
+  2: 'md:grid-cols-2',
+  3: 'md:grid-cols-3',
+  4: 'md:grid-cols-4',
+  5: 'md:grid-cols-3 xl:grid-cols-5',
+  6: 'md:grid-cols-3 xl:grid-cols-6',
+};
+
 export interface DatoKpi {
   titulo: string;
   valor: string;
@@ -63,7 +71,7 @@ export interface DatoKpi {
 /** Fila de indicadores en un solo tablero con divisiones (no tarjetas sueltas) */
 export function TableroKpis({ datos, cargando }: { datos: DatoKpi[]; cargando?: boolean }) {
   return (
-    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border-2 border-linea bg-linea md:grid-cols-3 xl:grid-cols-6">
+    <dl className={`grid grid-cols-2 gap-px overflow-hidden rounded-xl border-2 border-linea bg-linea ${COLUMNAS_KPI[Math.min(datos.length, 6)] ?? 'md:grid-cols-3 xl:grid-cols-6'}`}>
       {datos.map((d) => (
         <div key={d.titulo} className="flex flex-col gap-1 bg-superficie p-4">
           <dt className="text-sm font-semibold text-tinta-2">{d.titulo}</dt>

@@ -39,7 +39,7 @@ export function ListaUnidades() {
     },
     { id: 'estado', titulo: 'Estado', celda: (u) => <EtiquetaEstado estado={u.estado} />, orden: (u) => u.estado, exportar: { valor: (u) => u.estado } },
     {
-      id: 'ruta', titulo: 'En ruta', movil: 'oculta',
+      id: 'ruta', titulo: 'En ruta', movil: 'oculta', envolver: true,
       celda: (u) => (u.viaje_abierto_id ? `${u.viaje_abierto_destino}, ${u.viaje_abierto_chofer}, desde ${fecha(u.viaje_abierto_salida_at)} ${hora(u.viaje_abierto_salida_at)}` : '—'),
       exportar: { valor: (u) => u.viaje_abierto_destino, titulo: 'Destino actual' },
     },

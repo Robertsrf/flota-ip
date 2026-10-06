@@ -151,7 +151,7 @@ export function GraficoGastoMensual({ meses }: { meses: MesGasto[] }) {
     legend: { top: 0, left: 0, textStyle: { color: t.tinta, fontSize: 13 }, itemWidth: 14, itemHeight: 14 },
     tooltip: { ...(base(t).tooltip as object), valueFormatter: (v) => `$ ${num(v as number, 2)}` },
     xAxis: { type: 'category', data: meses.map((m) => m.etiqueta), ...eje(t, { splitLine: { show: false } }) },
-    yAxis: { type: 'value', name: 'USD', nameTextStyle: { color: t.tinta2 }, ...eje(t), axisLabel: { color: t.tinta2, formatter: (v: number) => num(v) } },
+    yAxis: { type: 'value', ...eje(t), axisLabel: { color: t.tinta2, formatter: (v: number) => num(v) } },
     series: [
       { name: 'Combustible camiones', type: 'bar', stack: 'g', data: meses.map((m) => m.camiones), itemStyle: { color: t.combustible } },
       { name: 'Combustible plantas', type: 'bar', stack: 'g', data: meses.map((m) => m.plantas), itemStyle: { color: t.plantas } },
@@ -207,7 +207,7 @@ export function GraficoBarrasH({
             ? {
                 symbol: 'none',
                 lineStyle: { color: t.tinta, type: 'solid', width: 2 },
-                label: { formatter: `${etiquetaPromedio ?? 'Promedio'}: ${formato(promedio)}`, color: t.tinta, fontWeight: 700, position: 'end' },
+                label: { formatter: `${etiquetaPromedio ?? 'Promedio'}: ${formato(promedio)}`, color: t.tinta, fontWeight: 700, position: 'insideEndTop' },
                 data: [{ xAxis: promedio }],
               }
             : undefined,
@@ -322,7 +322,7 @@ export function GraficoViajesEnElTiempo({ puntos, promedio }: { puntos: { fecha:
         itemStyle: { color: t.combustible },
         markLine:
           promedio != null
-            ? { symbol: 'none', lineStyle: { color: t.tinta, width: 2 }, label: { formatter: `Promedio ${num(promedio, 2)} km/L`, color: t.tinta, fontWeight: 700 }, data: [{ yAxis: promedio }] }
+            ? { symbol: 'none', lineStyle: { color: t.tinta, width: 2 }, label: { formatter: `Promedio ${num(promedio, 2)} km/L`, color: t.tinta, fontWeight: 700, position: 'insideEndTop' }, data: [{ yAxis: promedio }] }
             : undefined,
       },
     ],

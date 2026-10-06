@@ -577,7 +577,8 @@ servidor.listen(PUERTO, '127.0.0.1', () => {
   console.log(`Servidor local de Flota IP en http://127.0.0.1:${PUERTO}`);
   if (conSeed) console.log('Usuarios demo: demo.super / demo1234 · demo.flota / demo1234 · demo.gerencia / demo1234 · demo.pedro / 123456');
   if (args.has('--with-vite')) {
-    const vite = spawn(process.platform === 'win32' ? 'npx.cmd' : 'npx', ['vite', '--host', '127.0.0.1'], {
+    const puertoVite = process.env.PUERTO_VITE ?? '5173';
+    const vite = spawn(process.platform === 'win32' ? 'npx.cmd' : 'npx', ['vite', '--host', '127.0.0.1', '--port', puertoVite, '--strictPort'], {
       cwd: RAIZ,
       stdio: 'inherit',
       shell: process.platform === 'win32',

@@ -33,15 +33,13 @@ const ITEMS: Item[] = [
   { a: '/usuarios', texto: 'Usuarios', Icono: Users, roles: OFICINA },
 ];
 
-const TIPOS_BANDEJA = ['gasto_pendiente', 'revisar', 'ruta_abierta', 'viaje_incompleto', 'km_sin_ruta'];
-
 function usePendientesRevision(activo: boolean) {
   return useQuery({
     queryKey: ['revision', 'conteo'],
     enabled: activo,
     refetchInterval: 60_000,
     queryFn: async () => {
-      const { count, error } = await supabase.from('v_alertas').select('*', { count: 'exact', head: true }).in('tipo', TIPOS_BANDEJA);
+      const { count, error } = await supabase.from('v_alertas').select('*', { count: 'exact', head: true });
       if (error) throw error;
       return count ?? 0;
     },

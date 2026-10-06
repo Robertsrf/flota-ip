@@ -145,20 +145,21 @@ function Resumen({ u, clave, setClave, desde, hasta, antesDesde, antesHasta }: {
 
   const k = kpis.data;
   const a = antes.data;
+  const cmp = esCamion ? (a?.viajes ?? 0) >= 3 : Number(a?.gasto_comb ?? 0) > 0;
   const datos: DatoKpi[] = esCamion
     ? [
-        { titulo: 'Rendimiento', valor: kml(k?.rendimiento), variacion: variacion(k?.rendimiento, a?.rendimiento), mejorSiSube: true, secundario: flota.data?.rendimiento ? `Flota: ${kml(flota.data.rendimiento)}` : undefined },
-        { titulo: 'Km recorridos', valor: fKm(k?.km_total), variacion: variacion(k?.km_total, a?.km_total), mejorSiSube: true, secundario: k ? `${num(k.viajes)} viajes` : undefined },
-        { titulo: 'Combustible', valor: usd(k?.gasto_comb), variacion: variacion(k?.gasto_comb, a?.gasto_comb), mejorSiSube: false, secundario: l100(k?.litros_100km) },
-        { titulo: 'Mantenimiento', valor: usd(k?.gasto_mant), variacion: variacion(k?.gasto_mant, a?.gasto_mant), mejorSiSube: false },
-        { titulo: 'Gasto total', valor: usd(k?.gasto_total), variacion: variacion(k?.gasto_total, a?.gasto_total), mejorSiSube: false },
-        { titulo: 'Costo por km', valor: usdKm(k?.costo_km_total), variacion: variacion(k?.costo_km_total, a?.costo_km_total), mejorSiSube: false, secundario: flota.data?.costo_km_total ? `Flota: ${usdKm(flota.data.costo_km_total)}` : undefined },
+        { titulo: 'Rendimiento', valor: kml(k?.rendimiento), variacion: variacion(k?.rendimiento, a?.rendimiento, cmp), mejorSiSube: true, secundario: flota.data?.rendimiento ? `Flota: ${kml(flota.data.rendimiento)}` : undefined },
+        { titulo: 'Km recorridos', valor: fKm(k?.km_total), variacion: variacion(k?.km_total, a?.km_total, cmp), mejorSiSube: true, secundario: k ? `${num(k.viajes)} viajes` : undefined },
+        { titulo: 'Combustible', valor: usd(k?.gasto_comb), variacion: variacion(k?.gasto_comb, a?.gasto_comb, cmp), mejorSiSube: false, secundario: l100(k?.litros_100km) },
+        { titulo: 'Mantenimiento', valor: usd(k?.gasto_mant), variacion: variacion(k?.gasto_mant, a?.gasto_mant, cmp), mejorSiSube: false },
+        { titulo: 'Gasto total', valor: usd(k?.gasto_total), variacion: variacion(k?.gasto_total, a?.gasto_total, cmp), mejorSiSube: false },
+        { titulo: 'Costo por km', valor: usdKm(k?.costo_km_total), variacion: variacion(k?.costo_km_total, a?.costo_km_total, cmp), mejorSiSube: false, secundario: flota.data?.costo_km_total ? `Flota: ${usdKm(flota.data.costo_km_total)}` : undefined },
       ]
     : [
-        { titulo: 'Litros cargados', valor: fLitros(k?.litros_plantas, 0), variacion: variacion(k?.litros_plantas, a?.litros_plantas), mejorSiSube: false },
-        { titulo: 'Combustible', valor: usd(k?.gasto_comb), variacion: variacion(k?.gasto_comb, a?.gasto_comb), mejorSiSube: false },
-        { titulo: 'Mantenimiento', valor: usd(k?.gasto_mant), variacion: variacion(k?.gasto_mant, a?.gasto_mant), mejorSiSube: false },
-        { titulo: 'Gasto total', valor: usd(k?.gasto_total), variacion: variacion(k?.gasto_total, a?.gasto_total), mejorSiSube: false },
+        { titulo: 'Litros cargados', valor: fLitros(k?.litros_plantas, 0), variacion: variacion(k?.litros_plantas, a?.litros_plantas, cmp), mejorSiSube: false },
+        { titulo: 'Combustible', valor: usd(k?.gasto_comb), variacion: variacion(k?.gasto_comb, a?.gasto_comb, cmp), mejorSiSube: false },
+        { titulo: 'Mantenimiento', valor: usd(k?.gasto_mant), variacion: variacion(k?.gasto_mant, a?.gasto_mant, cmp), mejorSiSube: false },
+        { titulo: 'Gasto total', valor: usd(k?.gasto_total), variacion: variacion(k?.gasto_total, a?.gasto_total, cmp), mejorSiSube: false },
       ];
 
   const gastoMensual = meses12.map((m) => {
@@ -214,7 +215,7 @@ function ViajesUnidad({ id }: { id: string }) {
     { id: 'folio', titulo: 'Folio', celda: (v) => <span className="font-bold">{v.folio_txt}</span>, orden: (v) => v.folio, exportar: { valor: (v) => v.folio_txt } },
     { id: 'salida', titulo: 'Salida', celda: (v) => fechaHora(v.salida_at), orden: (v) => v.salida_at, exportar: { valor: (v) => v.salida_at, tipo: 'fechaHora' } },
     { id: 'llegada', titulo: 'Llegada', movil: 'oculta', celda: (v) => fechaHora(v.llegada_at), orden: (v) => v.llegada_at, exportar: { valor: (v) => v.llegada_at, tipo: 'fechaHora' } },
-    { id: 'ruta', titulo: 'Ruta', movil: 'principal', celda: (v) => v.ruta, exportar: { valor: (v) => v.ruta } },
+    { id: 'ruta', titulo: 'Ruta', movil: 'principal', envolver: true, celda: (v) => v.ruta, exportar: { valor: (v) => v.ruta } },
     { id: 'chofer', titulo: 'Chofer', movil: 'oculta', celda: (v) => v.chofer_nombre, exportar: { valor: (v) => v.chofer_nombre } },
     { id: 'km', titulo: 'Km', alinear: 'der', celda: (v) => num(v.km_recorridos), orden: (v) => Number(v.km_recorridos ?? -1), exportar: { valor: (v) => v.km_recorridos, tipo: 'km' } },
     { id: 'litros', titulo: 'Litros', alinear: 'der', celda: (v) => num(v.litros_consumidos, 2), orden: (v) => Number(v.litros_consumidos ?? -1), exportar: { valor: (v) => v.litros_consumidos, tipo: 'litros' } },

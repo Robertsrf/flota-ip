@@ -45,10 +45,10 @@ export const usdKm = (v: Num) => (aNumero(v) === null ? '—' : `$ ${num(v, 4)}/
 export const tasa = (v: Num) => (aNumero(v) === null ? '—' : `${num(v, 2)} Bs/$`);
 export const precioLitro = (v: Num) => (aNumero(v) === null ? '—' : `$ ${num(v, 2)}/L`);
 
-export function variacion(actual: Num, anterior: Num): number | null {
+export function variacion(actual: Num, anterior: Num, comparable = true): number | null {
   const a = aNumero(actual);
   const b = aNumero(anterior);
-  if (a === null || b === null || b === 0) return null;
+  if (!comparable || a === null || b === null || b === 0) return null;
   return ((a - b) / Math.abs(b)) * 100;
 }
 

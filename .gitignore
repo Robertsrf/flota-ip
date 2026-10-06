@@ -32,3 +32,5 @@ Thumbs.db
 # Servidor local sin Docker (PGlite y archivos subidos)
 .local-db/
 .local-storage/
+
+.local-db-e2e/

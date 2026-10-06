@@ -116,7 +116,7 @@ export function DetalleViaje() {
             <Dato etiqueta="Origen">{v.origen_nombre ?? '—'}</Dato>
           </div>
           <p className="mt-2 text-sm text-tinta-2">Nivel medido por {FUENTE[v.fuente_nivel_salida ?? ''] ?? v.fuente_nivel_salida}.</p>
-          <div className="mt-3"><VerFoto ruta={v.foto_odometro_salida} etiqueta="Foto del tablero al salir" /></div>
+          {v.foto_odometro_salida && <div className="mt-3"><VerFoto ruta={v.foto_odometro_salida} etiqueta="Foto del tablero al salir" /></div>}
         </Panel>
         <Panel>
           <h2 className="text-lg font-extrabold">Llegada</h2>
@@ -130,7 +130,7 @@ export function DetalleViaje() {
                 <Dato etiqueta="Aguja al llegar">{v.litros_llegada_aguja == null ? '—' : fLitros(v.litros_llegada_aguja, 0)}</Dato>
                 <Dato etiqueta="Duración">{v.llegada_at ? duracion(v.salida_at!, new Date(v.llegada_at)) : '—'}</Dato>
               </div>
-              <div className="mt-3"><VerFoto ruta={v.foto_odometro_llegada} etiqueta="Foto del tablero al llegar" /></div>
+              {v.foto_odometro_llegada && <div className="mt-3"><VerFoto ruta={v.foto_odometro_llegada} etiqueta="Foto del tablero al llegar" /></div>}
             </>
           )}
         </Panel>
@@ -186,7 +186,7 @@ export function DetalleViaje() {
             {cargas.data.map((c) => (
               <li key={c.id} className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-linea bg-superficie p-3 ${c.anulado ? 'opacity-60' : ''}`}>
                 <div className="flex flex-wrap items-center gap-4">
-                  <VerFoto ruta={c.recibo_path} etiqueta="Recibo" />
+                  {c.recibo_path && <VerFoto ruta={c.recibo_path} etiqueta="Recibo" />}
                   <div>
                     <p className="font-bold">
                       {c.folio_txt} {c.es_cierre_viaje ? 'Carga de cierre' : 'Carga en ruta'}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router';
-import { Camera, ImageOff, Trash2 } from 'lucide-react';
+import { Camera, ChevronLeft, ImageOff, Trash2 } from 'lucide-react';
 import { urlFirmada } from '@/lib/fotos';
 
 // ----- Encabezado de página ----------------------------------------------------------
@@ -9,8 +9,8 @@ export function EncabezadoPagina({ titulo, descripcion, acciones, volver }: { ti
     <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
       <div className="min-w-0">
         {volver && (
-          <Link to={volver.a} className="mb-1 inline-flex min-h-10 items-center text-sm font-semibold text-tinta-2 underline-offset-4 hover:underline">
-            ← {volver.texto}
+          <Link to={volver.a} className="-ml-1 mb-1 inline-flex min-h-10 items-center gap-0.5 text-sm font-semibold text-tinta-2 underline-offset-4 hover:underline">
+            <ChevronLeft aria-hidden className="size-4" /> {volver.texto}
           </Link>
         )}
         <h1 className="text-2xl font-extrabold leading-tight md:text-3xl">{titulo}</h1>

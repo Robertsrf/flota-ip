@@ -16,6 +16,8 @@ export interface Columna<T> {
   /** en móvil: 'principal' va en negrita arriba; 'oculta' no se muestra */
   movil?: 'principal' | 'secundaria' | 'oculta';
   ancho?: string;
+  /** texto largo que puede ocupar varias líneas (ruta, descripción) */
+  envolver?: boolean;
 }
 
 interface PropsTabla<T> {
@@ -139,7 +141,7 @@ export function Tabla<T>({ filas, columnas, clave, titulo, cargando, vacio, alEl
                     className={`border-b border-linea last:border-b-0 ${alElegir ? 'cursor-pointer hover:bg-superficie-2 focus-visible:bg-superficie-2' : ''}`}
                   >
                     {columnas.map((c) => (
-                      <td key={c.id} className={`px-3 py-2.5 align-middle ${c.alinear === 'der' ? 'cifra text-right' : ''}`}>
+                      <td key={c.id} className={`px-3 py-2.5 align-middle ${c.envolver ? 'min-w-40' : 'whitespace-nowrap'} ${c.alinear === 'der' ? 'cifra text-right' : ''}`}>
                         {c.celda(f)}
                       </td>
                     ))}

@@ -107,7 +107,7 @@ export function TablaGastos({ filas, cargando, mostrarUnidad = true, nombreExpor
     { id: 'fecha', titulo: 'Fecha', celda: (g) => fecha(g.fecha), orden: (g) => g.fecha, exportar: { valor: (g) => g.fecha, tipo: 'fecha' } },
     ...(mostrarUnidad ? [{ id: 'unidad', titulo: 'Unidad', celda: (g: Gasto) => g.unidad_nombre, orden: (g: Gasto) => g.unidad_nombre, exportar: { valor: (g: Gasto) => g.unidad_nombre } }] : []),
     { id: 'cat', titulo: 'Categoría', movil: 'principal', celda: (g) => g.categoria_nombre, orden: (g) => g.categoria_nombre, exportar: { valor: (g) => g.categoria_nombre } },
-    { id: 'desc', titulo: 'Descripción', movil: 'oculta', celda: (g) => <span className="line-clamp-1">{g.descripcion ?? '—'}</span>, exportar: { valor: (g) => g.descripcion } },
+    { id: 'desc', titulo: 'Descripción', movil: 'oculta', envolver: true, celda: (g) => <span className="line-clamp-1">{g.descripcion ?? '—'}</span>, exportar: { valor: (g) => g.descripcion } },
     { id: 'original', titulo: 'Monto original', alinear: 'der', celda: (g) => (g.moneda === 'VES' ? bs(g.monto) : usd(g.monto)), orden: (g) => Number(g.monto_usd), exportar: { valor: (g) => g.moneda, titulo: 'Moneda' } },
     { id: 'tasa', titulo: 'Tasa', alinear: 'der', movil: 'oculta', celda: (g) => (g.moneda === 'VES' ? num(g.bs_por_usd, 2) : '—'), exportar: { valor: (g) => g.bs_por_usd, tipo: 'decimal', titulo: 'Tasa BCV (Bs por USD)' } },
     { id: 'usd', titulo: 'USD', alinear: 'der', celda: (g) => usd(g.monto_usd), orden: (g) => Number(g.monto_usd), exportar: { valor: (g) => g.monto_usd, tipo: 'usd', titulo: 'Monto' } },

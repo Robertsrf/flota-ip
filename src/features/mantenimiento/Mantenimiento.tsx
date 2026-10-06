@@ -34,7 +34,7 @@ export function ListaPorAprobar({ gastos, cargando }: { gastos: Gasto[]; cargand
       {gastos.map((g) => (
         <li key={g.id} className="flex flex-col gap-3 rounded-xl border-2 border-linea bg-superficie p-4 md:flex-row md:items-center md:justify-between">
           <div className="flex gap-4">
-            <VerFoto ruta={g.factura_path} etiqueta="Factura" />
+            {g.factura_path && <VerFoto ruta={g.factura_path} etiqueta="Factura" />}
             <div>
               <p className="text-lg font-extrabold">
                 {g.categoria_nombre}: {g.moneda === 'VES' ? `${bs(g.monto)} (${usd(g.monto_usd)})` : usd(g.monto)}

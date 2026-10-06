@@ -47,17 +47,19 @@ export function Dashboard() {
   const k = actual.data;
   const a = anterior.data;
   const conFiltroPersona = Boolean(filtros.chofer || filtros.destino);
+  // Sin historia suficiente en el período anterior, el ▲/▼ engaña (p. ej. el primer mes de uso)
+  const cmp = (a?.viajes ?? 0) >= 3;
 
   const kpis: DatoKpi[] = [
-    { titulo: 'Gasto total', valor: usd(k?.gasto_total), variacion: variacion(k?.gasto_total, a?.gasto_total), mejorSiSube: false, nota: conFiltroPersona ? 'Sin mantenimiento (filtro por chofer o destino)' : undefined },
+    { titulo: 'Gasto total', valor: usd(k?.gasto_total), variacion: variacion(k?.gasto_total, a?.gasto_total, cmp), mejorSiSube: false, nota: conFiltroPersona ? 'Sin mantenimiento (filtro por chofer o destino)' : undefined },
     {
-      titulo: 'Combustible', valor: usd(k?.gasto_comb), variacion: variacion(k?.gasto_comb, a?.gasto_comb), mejorSiSube: false,
+      titulo: 'Combustible', valor: usd(k?.gasto_comb), variacion: variacion(k?.gasto_comb, a?.gasto_comb, cmp), mejorSiSube: false,
       secundario: k && Number(k.gasto_comb_plantas) > 0 ? `Plantas: ${usd(k.gasto_comb_plantas)}` : undefined,
     },
-    { titulo: 'Mantenimiento', valor: k?.gasto_mant == null ? '—' : usd(k.gasto_mant), variacion: k?.gasto_mant == null ? undefined : variacion(k.gasto_mant, a?.gasto_mant), mejorSiSube: false },
-    { titulo: 'Km recorridos', valor: fKm(k?.km_total), variacion: variacion(k?.km_total, a?.km_total), mejorSiSube: true, secundario: k ? `${num(k.viajes)} viajes` : undefined },
-    { titulo: 'Rendimiento', valor: kml(k?.rendimiento), variacion: variacion(k?.rendimiento, a?.rendimiento), mejorSiSube: true, secundario: l100(k?.litros_100km) },
-    { titulo: 'Costo por km', valor: usdKm(k?.costo_km_total), variacion: variacion(k?.costo_km_total, a?.costo_km_total), mejorSiSube: false, secundario: `Solo combustible: ${usdKm(k?.costo_km_comb)}` },
+    { titulo: 'Mantenimiento', valor: k?.gasto_mant == null ? '—' : usd(k.gasto_mant), variacion: k?.gasto_mant == null ? undefined : variacion(k.gasto_mant, a?.gasto_mant, cmp), mejorSiSube: false },
+    { titulo: 'Km recorridos', valor: fKm(k?.km_total), variacion: variacion(k?.km_total, a?.km_total, cmp), mejorSiSube: true, secundario: k ? `${num(k.viajes)} viajes` : undefined },
+    { titulo: 'Rendimiento', valor: kml(k?.rendimiento), variacion: variacion(k?.rendimiento, a?.rendimiento, cmp), mejorSiSube: true, secundario: l100(k?.litros_100km) },
+    { titulo: 'Costo por km', valor: usdKm(k?.costo_km_total), variacion: variacion(k?.costo_km_total, a?.costo_km_total, cmp), mejorSiSube: false, secundario: `Solo combustible: ${usdKm(k?.costo_km_comb)}` },
   ];
 
   // Gasto mensual (12 meses)
@@ -343,7 +345,7 @@ function TablaDestinos({ filas, cargando }: { filas: CostoDestino[]; cargando: b
 
 function TablaRutas({ filas, cargando }: { filas: CostoRuta[]; cargando: boolean }) {
   const columnas: Columna<CostoRuta>[] = [
-    { id: 'ruta', titulo: 'Ruta', celda: (f) => f.ruta, orden: (f) => f.ruta, movil: 'principal', exportar: { valor: (f) => f.ruta } },
+    { id: 'ruta', titulo: 'Ruta', envolver: true, celda: (f) => f.ruta, orden: (f) => f.ruta, movil: 'principal', exportar: { valor: (f) => f.ruta } },
     { id: 'viajes', titulo: 'Viajes', celda: (f) => num(f.viajes), orden: (f) => Number(f.viajes), alinear: 'der', exportar: { valor: (f) => f.viajes, tipo: 'entero' } },
     { id: 'km', titulo: 'Km prom.', celda: (f) => num(f.km_prom), orden: (f) => Number(f.km_prom), alinear: 'der', exportar: { valor: (f) => f.km_prom, tipo: 'km', titulo: 'Km promedio' } },
     { id: 'costo', titulo: 'Costo prom.', celda: (f) => usd(f.costo_prom), orden: (f) => Number(f.costo_prom), alinear: 'der', exportar: { valor: (f) => f.costo_prom, tipo: 'usd', titulo: 'Costo promedio' } },
