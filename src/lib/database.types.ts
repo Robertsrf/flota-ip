@@ -985,10 +985,6 @@ export type Database = {
         }
         Returns: undefined
       }
-      columnas_no_auditables: {
-        Args: never
-        Returns: string[]
-      }
       contexto_cabina: {
         Args: never
         Returns: Json
@@ -1054,27 +1050,6 @@ export type Database = {
       es_superusuario: {
         Args: never
         Returns: boolean
-      }
-      eventos_nivel: {
-        Args: {
-          p_unidad: string
-        }
-        Returns: {
-            lectura: number | null
-            ts: string | null
-            prioridad: number | null
-            nivel: number | null
-            lleno: boolean | null
-            origen: string | null
-            folio: number | null
-          }[]
-      }
-      exigir_rol: {
-        Args: {
-          p_roles: Database["public"]["Enums"]["rol_usuario"][]
-          p_mensaje: string
-        }
-        Returns: Database["public"]["Enums"]["rol_usuario"]
       }
       fecha_txt: {
         Args: {
@@ -1159,12 +1134,6 @@ export type Database = {
         }
         Returns: Database["public"]["Tables"]["viajes"]["Row"]
       }
-      modo_sistema: {
-        Args: {
-          p_activo: boolean
-        }
-        Returns: undefined
-      }
       nivel_estimado: {
         Args: {
           p_unidad: string
@@ -1182,20 +1151,6 @@ export type Database = {
           p_unidad: string
         }
         Returns: string
-      }
-      preparar_auditoria: {
-        Args: {
-          p_accion: string
-          p_motivo: string
-        }
-        Returns: undefined
-      }
-      recalcular_viaje: {
-        Args: {
-          p_viaje_id: string
-          p_estricto?: boolean
-        }
-        Returns: Database["public"]["Tables"]["viajes"]["Row"]
       }
       registrar_mantenimiento: {
         Args: {
@@ -1311,13 +1266,6 @@ export type Database = {
           p_unidad: string
         }
         Returns: boolean
-      }
-      verificar_ventana_chofer: {
-        Args: {
-          p_creado_por: string
-          p_creado_at: string
-        }
-        Returns: undefined
       }
     }
     Enums: {

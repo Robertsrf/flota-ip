@@ -1203,25 +1203,4 @@ begin
 end $$;
 
 -- ----- Permisos de ejecución ---------------------------------------------
-do $$
-declare
-  f record;
-  v_publicas text[] := array[
-    'rol_actual', 'es_oficina', 'es_superusuario', 'fmt_num', 'folio_txt', 'fecha_txt', 'nombre_unidad',
-    'hoy_caracas', 'lectura_actual', 'sugerir_nivel_salida', 'nivel_estimado',
-    'unidad_permitida_chofer', 'tasa_para_fecha', 'iniciar_viaje', 'registrar_repostaje', 'finalizar_viaje',
-    'registrar_mantenimiento', 'revisar_gasto', 'anular_registro', 'restaurar_registro', 'corregir_registro',
-    'eliminar_ubicacion', 'marcar_revisado'];
-begin
-  for f in
-    select p.oid::regprocedure as firma, p.proname
-      from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-     where n.nspname = 'public'
-  loop
-    execute format('revoke all on function %s from public, anon', f.firma);
-    execute format('grant execute on function %s to service_role', f.firma);
-    if f.proname = any (v_publicas) then
-      execute format('grant execute on function %s to authenticated', f.firma);
-    end if;
-  end loop;
-end $$;
+-- Una sola lista blanca para todas las funciones: migración 20261003000007_permisos.sql

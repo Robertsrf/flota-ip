@@ -36,6 +36,35 @@ describe('visitante sin sesión (anon)', () => {
   });
 });
 
+describe('funciones expuestas por la API', () => {
+  // Supabase da EXECUTE por defecto a anon y authenticated: la migración de permisos lo cierra
+  it('authenticated ejecuta solo la lista blanca y anon ninguna', async () => {
+    const filas = await consultar(e.db, null, `
+      select p.proname,
+             bool_or(has_function_privilege('authenticated', p.oid, 'execute')) as auth,
+             bool_or(has_function_privilege('anon', p.oid, 'execute')) as anon
+        from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+       where n.nspname = 'public' group by p.proname order by p.proname`);
+    expect(filas.filter((f) => f.anon).map((f) => f.proname)).toEqual([]);
+    expect(filas.filter((f) => f.auth).map((f) => f.proname)).toEqual([
+      'anular_registro', 'contexto_cabina', 'corregir_registro', 'costo_por_destino', 'costo_por_ruta',
+      'eliminar_ubicacion', 'es_oficina', 'es_superusuario', 'fecha_txt', 'finalizar_viaje', 'fmt_num', 'folio_txt',
+      'hoy_caracas', 'iniciar_viaje', 'kpis_periodo', 'lectura_actual', 'marcar_revisado', 'nivel_estimado',
+      'nombre_unidad', 'registrar_mantenimiento', 'registrar_repostaje', 'restaurar_registro', 'resumen_unidades',
+      'revisar_gasto', 'rol_actual', 'sugerir_nivel_salida', 'tasa_para_fecha', 'unidad_permitida_chofer',
+    ]);
+  });
+  it('un chofer no puede llamar funciones internas del motor', async () => {
+    for (const [fn, args] of [
+      ['recalcular_viaje', { p_viaje_id: viajeChofer1, p_estricto: false }],
+      ['modo_sistema', { p_activo: true }],
+    ] as const) {
+      const err = await error(comoUsuario(e.db, e.u.chofer1, (tx) => llamarRpc(tx, fn, args)));
+      expect(err.message).toContain('permission denied');
+    }
+  });
+});
+
 describe('T13 · el chofer no edita lo ajeno', () => {
   it('no puede actualizar un mantenimiento directamente', async () => {
     const err = await error(consultar(e.db, e.u.chofer2, `update public.mantenimientos set monto = 1 where id = $1`, [gastoFlota]));

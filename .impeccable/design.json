@@ -1,0 +1,332 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-06T13:33:46.007Z",
+  "title": "Design System: Flota IP",
+  "extensions": {
+    "colorMeta": {
+      "verde-via": {
+        "role": "primary",
+        "displayName": "Verde vía",
+        "canonical": "oklch(42.0% 0.085 162)",
+        "tonalRamp": [
+          "#000f07",
+          "#002c1c",
+          "#004d33",
+          "#266c4f",
+          "#4c9071",
+          "#71b695",
+          "#97dcba",
+          "#c1ffe0"
+        ]
+      },
+      "asfalto": {
+        "role": "neutral",
+        "displayName": "Asfalto",
+        "canonical": "oklch(26.9% 0.010 242)",
+        "tonalRamp": [
+          "#080c0f",
+          "#202529",
+          "#3b4145",
+          "#595e63",
+          "#7b8186",
+          "#9fa5ab",
+          "#c5cbd1",
+          "#e9eff5"
+        ]
+      },
+      "hombrillo": {
+        "role": "neutral",
+        "displayName": "Hombrillo",
+        "canonical": "oklch(93.4% 0.006 137)",
+        "tonalRamp": [
+          "#0a0c09",
+          "#232522",
+          "#3e403d",
+          "#5c5e5b",
+          "#7e817d",
+          "#a3a5a2",
+          "#c8cbc8",
+          "#ecefeb"
+        ]
+      },
+      "amarillo-preventivo": {
+        "role": "tertiary",
+        "displayName": "Amarillo preventivo",
+        "canonical": "oklch(84.0% 0.172 90)",
+        "tonalRamp": [
+          "#100a00",
+          "#2e2200",
+          "#4f3d00",
+          "#735a00",
+          "#9c7c00",
+          "#c89f00",
+          "#f5c401",
+          "#ffeebe"
+        ]
+      },
+      "rojo-pare": {
+        "role": "tertiary",
+        "displayName": "Rojo pare",
+        "canonical": "oklch(51.6% 0.202 25)",
+        "tonalRamp": [
+          "#1f0001",
+          "#4b0004",
+          "#7d000c",
+          "#b20016",
+          "#df3a3a",
+          "#ff7269",
+          "#ffb5ad",
+          "#ffe9e6"
+        ]
+      },
+      "azul-servicio": {
+        "role": "secondary",
+        "displayName": "Azul servicio",
+        "canonical": "oklch(42.6% 0.115 256)",
+        "tonalRamp": [
+          "#000a21",
+          "#00224f",
+          "#0d3e7b",
+          "#2f5e9d",
+          "#5181c4",
+          "#74a7ec",
+          "#a9cdff",
+          "#e4f0ff"
+        ]
+      },
+      "naranja-obra": {
+        "role": "secondary",
+        "displayName": "Naranja obra",
+        "canonical": "oklch(62.3% 0.166 47)",
+        "tonalRamp": [
+          "#190500",
+          "#3f1600",
+          "#692a00",
+          "#974000",
+          "#cc5900",
+          "#f67f3b",
+          "#ffb894",
+          "#ffe9df"
+        ]
+      },
+      "marron-turistico": {
+        "role": "secondary",
+        "displayName": "Marrón turístico",
+        "canonical": "oklch(46.0% 0.079 54)",
+        "tonalRamp": [
+          "#170600",
+          "#3b1900",
+          "#5f3310",
+          "#805130",
+          "#a57352",
+          "#cc9775",
+          "#f4bd9a",
+          "#ffeadd"
+        ]
+      },
+      "ambar-incompleto": {
+        "role": "tertiary",
+        "displayName": "Ámbar incompleto",
+        "canonical": "oklch(56.2% 0.117 78)",
+        "tonalRamp": [
+          "#120900",
+          "#322000",
+          "#563a00",
+          "#7c5500",
+          "#a67619",
+          "#cc9b47",
+          "#f4c16e",
+          "#ffecce"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "cifra-cabina": {
+        "displayName": "Cifra de cabina",
+        "purpose": "La placa del camión en la cabina; una por pantalla."
+      },
+      "destino": {
+        "displayName": "Destino",
+        "purpose": "Destino de la ruta abierta en la cabecera de la cabina."
+      },
+      "titulo-pagina": {
+        "displayName": "Título de página",
+        "purpose": "h1 de cada pantalla."
+      },
+      "seccion": {
+        "displayName": "Sección",
+        "purpose": "h2 de secciones y paneles."
+      },
+      "kpi": {
+        "displayName": "KPI",
+        "purpose": "Valores de la fila de indicadores, con cifras tabulares."
+      },
+      "cuerpo": {
+        "displayName": "Cuerpo",
+        "purpose": "Textos, celdas y campos (nunca menos de 16 px en campos)."
+      },
+      "etiqueta": {
+        "displayName": "Etiqueta",
+        "purpose": "Rótulos, insignias y cabeceras de tabla."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sombra",
+        "value": "0 1px 2px rgb(34 39 43 / 0.06), 0 4px 12px rgb(34 39 43 / 0.06)",
+        "purpose": "Solo lo que flota sobre el contenido (avisos al pie)."
+      },
+      {
+        "name": "filete-senal",
+        "value": "inset 0 0 0 2px #0f5b3f, inset 0 0 0 4px rgb(255 255 255 / 0.9)",
+        "purpose": "Filete blanco interior del panel de señal."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transicion-color",
+        "value": "150ms ease",
+        "purpose": "Cambio de color en hover y presionado de botones; nada más se anima."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón principal",
+      "kind": "button",
+      "refersTo": "boton-principal",
+      "description": "Acción principal: verde vía con borde del mismo color.",
+      "html": "<button class=\"ds-boton-principal\">Guardar</button>",
+      "css": ".ds-boton-principal { font-family: 'Overpass Variable', 'Overpass', ui-sans-serif, system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 16px; border: 2px solid var(--via, #0f5b3f); border-radius: 8px; background: var(--via, #0f5b3f); color: var(--via-tinta, #fff); font-size: 16px; font-weight: 700; cursor: pointer; transition: background-color 150ms ease; } .ds-boton-principal:hover, .ds-boton-principal:active { background: var(--via-fuerte, #0a4530); border-color: var(--via-fuerte, #0a4530); } .ds-boton-principal:focus-visible { outline: 3px solid var(--foco, #1f4e8c); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botón de cabina",
+      "kind": "button",
+      "refersTo": "boton-cabina",
+      "description": "La acción principal del chofer: 72 px de alto, a todo el ancho.",
+      "html": "<button class=\"ds-boton-cabina\">Finalizar ruta</button>",
+      "css": ".ds-boton-cabina { font-family: 'Overpass Variable', 'Overpass', ui-sans-serif, system-ui, sans-serif; display: flex; align-items: center; justify-content: center; width: 100%; min-height: 72px; padding: 0 24px; border: 2px solid var(--via, #0f5b3f); border-radius: 8px; background: var(--via, #0f5b3f); color: var(--via-tinta, #fff); font-size: 20px; font-weight: 700; cursor: pointer; transition: background-color 150ms ease; } .ds-boton-cabina:hover, .ds-boton-cabina:active { background: var(--via-fuerte, #0a4530); } .ds-boton-cabina:focus-visible { outline: 3px solid var(--foco, #1f4e8c); outline-offset: 2px; }"
+    },
+    {
+      "name": "Botón secundario",
+      "kind": "button",
+      "refersTo": "boton-secundario",
+      "description": "Acciones secundarias: blanco con borde asfalto.",
+      "html": "<button class=\"ds-boton-secundario\">Exportar</button>",
+      "css": ".ds-boton-secundario { font-family: 'Overpass Variable', 'Overpass', ui-sans-serif, system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 16px; border: 2px solid var(--tinta, #22272b); border-radius: 8px; background: var(--superficie, #fff); color: var(--tinta, #22272b); font-size: 16px; font-weight: 700; cursor: pointer; transition: background-color 150ms ease; } .ds-boton-secundario:hover { background: var(--superficie-2, #e7eae6); } .ds-boton-secundario:focus-visible { outline: 3px solid var(--foco, #1f4e8c); outline-offset: 2px; }"
+    },
+    {
+      "name": "Campo numérico",
+      "kind": "input",
+      "refersTo": "entrada",
+      "description": "Campo con borde de 2 px y la unidad dentro; el foco cambia el borde a azul servicio.",
+      "html": "<label class=\"ds-campo\"><span class=\"ds-campo-rotulo\">Km de llegada</span><span class=\"ds-campo-caja\"><input inputmode=\"numeric\" value=\"103.786\"><span class=\"ds-campo-unidad\">km</span></span></label>",
+      "css": ".ds-campo { font-family: 'Overpass Variable', 'Overpass', ui-sans-serif, system-ui, sans-serif; display: flex; flex-direction: column; gap: 6px; max-width: 280px; } .ds-campo-rotulo { font-size: 14px; font-weight: 700; color: var(--tinta, #22272b); } .ds-campo-caja { display: flex; align-items: center; min-height: 48px; border: 2px solid var(--linea-fuerte, #8a9299); border-radius: 8px; background: var(--superficie, #fff); padding: 0 12px; } .ds-campo-caja:focus-within { border-color: var(--foco, #1f4e8c); } .ds-campo-caja input { font-family: 'Overpass Variable', 'Overpass', ui-sans-serif, system-ui, sans-serif; flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font-size: 16px; color: var(--tinta, #22272b); font-feature-settings: \"tnum\" 1; } .ds-campo-unidad { font-weight: 700; color: var(--tinta-2, #4d555b); }"
+    },
+    {
+      "name": "Navegación lateral",
+      "kind": "nav",
+      "refersTo": "navegacion",
+      "description": "Barra verde; el ítem activo es un panel de señal con filete blanco.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item ds-activo\" href=\"#\">Dashboard</a><a class=\"ds-nav-item\" href=\"#\">Camiones y plantas</a><a class=\"ds-nav-item\" href=\"#\">Viajes</a></nav>",
+      "css": ".ds-nav { font-family: 'Overpass Variable', 'Overpass', ui-sans-serif, system-ui, sans-serif; display: flex; flex-direction: column; gap: 4px; width: 240px; padding: 12px 8px; background: var(--via, #0f5b3f); } .ds-nav-item { display: flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 8px; color: var(--via-tinta, #fff); font-size: 14px; font-weight: 700; text-decoration: none; } .ds-nav-item:hover { background: var(--via-fuerte, #0a4530); } .ds-activo { background: var(--via-fuerte, #0a4530); box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.85); } .ds-nav-item:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }"
+    },
+    {
+      "name": "Etiqueta",
+      "kind": "chip",
+      "refersTo": "etiqueta-alerta",
+      "description": "Insignias de estado; amarillo solo para lo que espera acción.",
+      "html": "<span class=\"ds-etiqueta\">V-0143</span> <span class=\"ds-etiqueta ds-etiqueta-alerta\">Por aprobar</span> <span class=\"ds-etiqueta ds-etiqueta-peligro\">Rechazado</span>",
+      "css": ".ds-etiqueta { font-family: 'Overpass Variable', 'Overpass', ui-sans-serif, system-ui, sans-serif; display: inline-flex; align-items: center; padding: 2px 8px; border: 2px solid var(--linea-fuerte, #8a9299); border-radius: 6px; font-size: 14px; font-weight: 700; color: var(--tinta-2, #4d555b); white-space: nowrap; } .ds-etiqueta-alerta { border-color: var(--alerta, #f5c400); background: var(--alerta, #f5c400); color: var(--alerta-tinta, #22272b); } .ds-etiqueta-peligro { border-color: var(--peligro, #c1121f); color: var(--peligro, #c1121f); }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Contenedor plano: blanco, borde de 2 px, esquinas de 12 px, sin sombra.",
+      "html": "<div class=\"ds-panel\"><h3>Tu última ruta</h3><p>235 km, 5,79 km/L, $ 24,36</p></div>",
+      "css": ".ds-panel { font-family: 'Overpass Variable', 'Overpass', ui-sans-serif, system-ui, sans-serif; max-width: 320px; padding: 16px; border: 2px solid var(--linea, #cdd2cd); border-radius: 12px; background: var(--superficie, #fff); color: var(--tinta, #22272b); } .ds-panel h3 { margin: 0 0 4px; font-size: 18px; font-weight: 800; } .ds-panel p { margin: 0; font-size: 16px; font-feature-settings: \"tnum\" 1; }"
+    },
+    {
+      "name": "El pórtico",
+      "kind": "custom",
+      "refersTo": "panel-senal",
+      "description": "Firma: paneles verdes de destino colgados de una viga oscura, uno por camión en ruta.",
+      "html": "<div class=\"ds-portico\"><div class=\"ds-viga\"></div><div class=\"ds-senal\"><span class=\"ds-poste ds-izq\"></span><span class=\"ds-poste ds-der\"></span><small>Luis Mora en DEMO-001</small><strong>Mérida</strong><small>desde 07:30 (2 h 00 min)</small></div></div>",
+      "css": ".ds-portico { font-family: 'Overpass Variable', 'Overpass', ui-sans-serif, system-ui, sans-serif; max-width: 340px; } .ds-viga { height: 8px; border-radius: 2px; background: var(--viga, #22272b); } .ds-senal { position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 4px; width: 288px; min-height: 112px; margin: 12px 0 0 12px; padding: 12px 16px; border-radius: 8px; background: var(--via, #0f5b3f); color: var(--via-tinta, #fff); box-shadow: inset 0 0 0 2px var(--via, #0f5b3f), inset 0 0 0 4px rgb(255 255 255 / 0.9); } .ds-senal small { font-size: 14px; font-weight: 600; } .ds-senal strong { font-size: 24px; font-weight: 900; line-height: 1.25; } .ds-poste { position: absolute; top: -12px; width: 4px; height: 12px; background: var(--viga, #22272b); } .ds-izq { left: 32px; } .ds-der { right: 32px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Señal vial",
+    "overview": "Flota IP habla el idioma que el chofer ya lee a 80 km/h: el de las señales de la carretera. El estado \"en ruta\" es un panel verde de destino con su filete blanco interior; las alertas son el rombo amarillo preventivo; lo destructivo es el rojo de pare. Roberts eligió esta dirección en el checkpoint F0 (03/10/2026, semilla 5ae8474e) entre tres propuestas, y descartó a propósito el tablero SaaS gris de tarjetas idénticas.\n\nDos densidades conviven. La cabina del chofer (teléfono, pleno sol, prisa) muestra una sola tarea por pantalla, con una cifra grande, botones de 72 px en la zona del pulgar y contraste por encima de AA. La oficina (escritorio) es densa y ordenada: KPI con ▲/▼, el pórtico \"Ahora mismo\", alertas, gráficos con su tabla equivalente y tablas ordenables. Todo es plano y legible: la profundidad viene de bordes de 2 px y de la tonalidad, no de sombras.",
+    "keyCharacteristics": [
+      "Verde vía como estructura (barra lateral, cabecera de la cabina, paneles del pórtico), nunca como decoración.",
+      "Amarillo solo para alertas; si no hay nada que revisar, no hay amarillo en pantalla.",
+      "Overpass en todo, con cifras tabulares; peso 900 para la única cifra grande de cada pantalla.",
+      "Bordes de 2 px visibles al sol; cero degradados.",
+      "Cada cifra lleva su unidad y su calidad (exacto / estimado / incompleto) con ícono y texto."
+    ],
+    "rules": [
+      {
+        "name": "The Amarillo Solo Alerta Rule",
+        "body": "El amarillo preventivo significa \"mira esto\". Usarlo como acento, en un gráfico o en un botón lo gasta.",
+        "section": "colors"
+      },
+      {
+        "name": "The Un Color Un Módulo Rule",
+        "body": "Azul es combustible, naranja es mantenimiento, marrón es plantas, en cada gráfico, tabla y leyenda. Nunca se reasignan.",
+        "section": "colors"
+      },
+      {
+        "name": "The Foco Blanco Sobre Verde Rule",
+        "body": "Dentro de zonas verdes (.panel-senal, .sobre-via) el anillo de foco es blanco: el azul sobre el verde da 1:1.",
+        "section": "colors"
+      },
+      {
+        "name": "The Una Cifra Grande Rule",
+        "body": "Cada pantalla tiene una sola cifra en peso 900. Si dos compiten, una baja a 800.",
+        "section": "typography"
+      },
+      {
+        "name": "The Cifra Con Unidad Rule",
+        "body": "Cifra y unidad van unidas por un espacio de no separación (formato.ts): \"$ 0,1057/km\" nunca se parte en dos líneas.",
+        "section": "typography"
+      },
+      {
+        "name": "The Borde Antes Que Sombra Rule",
+        "body": "Al sol las sombras desaparecen; un borde de 2 px no. Lo que está en el flujo de la página lleva solo borde; la sombra se suma únicamente a lo que flota encima.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do usar verde vía para la estructura y la acción principal, y nada más.",
+      "Do escribir las cifras con formato.ts (es-VE, unidad unida, \"—\" si no hay dato).",
+      "Do mostrar la calidad del dato junto a cada cifra calculada, con ícono y texto.",
+      "Do dar a cada gráfico su tabla equivalente (\"Ver como tabla\") y patrones además de color.",
+      "Do mantener 48 px de área táctil mínima y 72 px en la acción principal del chofer.",
+      "Do probar cada pantalla nueva a 360 px y a 1440 px, en claro y en oscuro."
+    ],
+    "donts": [
+      "Don't usar el amarillo preventivo fuera de alertas.",
+      "Don't usar sombras, degradados ni desenfoques como separación o adorno.",
+      "Don't poner un rótulo pequeño encima de un título como antetítulo; si el rótulo y el título forman una frase (\"En ruta a Mérida\"), van juntos en el mismo h1.",
+      "Don't usar el carácter \"·\" de Overpass como separador (queda pegado a la palabra siguiente); usar \"•\".",
+      "Don't usar emoji o caracteres sueltos como íconos; los íconos son de lucide-react o SVG propios (el rombo).",
+      "Don't mezclar Bs y USD en un total; Bs aparece solo como referencia rotulada."
+    ]
+  }
+}

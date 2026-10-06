@@ -622,17 +622,4 @@ grant select on public.v_unidades, public.v_viajes, public.v_repostajes, public.
                 public.v_mant_categoria_mes, public.v_alertas to authenticated;
 grant select on public.v_auditoria to authenticated;  -- filtrada por la RLS de auditoria
 
-do $$
-declare
-  f record;
-begin
-  for f in
-    select p.oid::regprocedure as firma
-      from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-     where n.nspname = 'public'
-       and p.proname in ('resumen_unidades', 'kpis_periodo', 'costo_por_destino', 'costo_por_ruta', 'contexto_cabina')
-  loop
-    execute format('revoke all on function %s from public, anon', f.firma);
-    execute format('grant execute on function %s to authenticated, service_role', f.firma);
-  end loop;
-end $$;
+-- Permisos de ejecución de estas funciones: migración 20261003000007_permisos.sql

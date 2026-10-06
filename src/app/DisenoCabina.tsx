@@ -12,7 +12,7 @@ import { AvisosCola } from '@/features/cabina/AvisosCola';
 export function DisenoCabina() {
   const enLinea = useEnLinea();
   return (
-    <div className="mx-auto flex min-h-dvh max-w-xl flex-col bg-superficie md:my-4 md:min-h-[calc(100dvh-2rem)] md:rounded-2xl md:border-2 md:border-linea md:shadow-panel">
+    <div className="mx-auto flex min-h-dvh max-w-xl flex-col bg-superficie md:my-4 md:min-h-[calc(100dvh-2rem)] md:rounded-2xl md:border-2 md:border-linea">
       <AvisoActualizacion />
       {!enLinea && (
         <div role="status" className="flex items-center gap-2 bg-tinta px-4 py-2 text-sm font-semibold text-superficie">
