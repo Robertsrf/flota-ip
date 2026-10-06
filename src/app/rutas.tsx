@@ -7,8 +7,8 @@ import { DisenoOficina } from './DisenoOficina';
 import { PaginaLogin } from '@/features/auth/PaginaLogin';
 import { NoEncontrado } from './NoEncontrado';
 
-function diferida(cargar: () => Promise<Record<string, ComponentType>>, nombre: string) {
-  const C = lazy(async () => ({ default: (await cargar())[nombre] }));
+function diferida(cargar: () => Promise<Record<string, unknown>>, nombre: string) {
+  const C = lazy(async () => ({ default: (await cargar())[nombre] as ComponentType }));
   return (
     <Suspense fallback={<div className="p-4"><Cargando /></div>}>
       <C />
