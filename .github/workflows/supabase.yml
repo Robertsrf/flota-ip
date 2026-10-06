@@ -1,0 +1,35 @@
+name: Aplicar migraciones y funciones en Supabase
+
+# Se corre A MANO (Actions → este flujo → Run workflow) después de revisar
+# los cambios: nunca se aplica nada a producción automáticamente.
+# Secrets: SUPABASE_ACCESS_TOKEN, SUPABASE_DB_PASSWORD, SUPABASE_PROJECT_REF
+on:
+  workflow_dispatch:
+    inputs:
+      que:
+        description: Qué aplicar
+        type: choice
+        options: [migraciones-y-funciones, solo-migraciones, solo-funciones]
+        default: migraciones-y-funciones
+
+jobs:
+  aplicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - run: supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+      - name: Migraciones
+        if: inputs.que != 'solo-funciones'
+        run: supabase db push
+      - name: Funciones
+        if: inputs.que != 'solo-migraciones'
+        run: |
+          supabase functions deploy admin-usuarios --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          supabase functions deploy tasa-bcv --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} --no-verify-jwt

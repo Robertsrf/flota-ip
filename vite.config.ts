@@ -35,6 +35,15 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+          // Gráficos y Excel solo los usa la oficina: no se precargan en el teléfono del chofer
+          globIgnores: ['**/graficos-*.js', '**/xlsx-*.js'],
+          runtimeCaching: [
+            {
+              urlPattern: ({ url }) => /\/assets\/(graficos|xlsx)-.*\.js$/.test(url.pathname),
+              handler: 'CacheFirst',
+              options: { cacheName: 'flota-modulos-oficina', expiration: { maxEntries: 10 } },
+            },
+          ],
           navigateFallback: `${base}index.html`,
           navigateFallbackDenylist: [/^\/(rest|auth|storage|functions|realtime)\//],
           maximumFileSizeToCacheInBytes: 3_000_000,

@@ -1,0 +1,54 @@
+name: Desplegar en GitHub Pages
+
+# Despliega solo desde main (D1). Secrets necesarios en el repo:
+#   VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY (llave pública; la llave secreta NUNCA va aquí)
+# Variable opcional: VITE_DOMINIO_USUARIOS
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Compilar
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_DOMINIO_USUARIOS: ${{ vars.VITE_DOMINIO_USUARIOS || 'usuarios.flota-ip.invalid' }}
+          VITE_BASE: /${{ github.event.repository.name }}/
+      - name: Respaldo de rutas para la SPA (GitHub Pages sirve 404.html)
+        run: cp dist/index.html dist/404.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  desplegar:
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - id: despliegue
+        uses: actions/deploy-pages@v4

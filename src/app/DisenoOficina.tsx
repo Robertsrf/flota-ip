@@ -93,7 +93,7 @@ export function DisenoOficina() {
       </a>
       {/* Barra lateral (escritorio) */}
       <div className="hidden bg-via md:block">
-      <aside className="sticky top-0 flex h-dvh flex-col bg-via text-via-tinta">
+      <aside className="sobre-via sticky top-0 flex h-dvh flex-col bg-via text-via-tinta">
         <div className="px-5 pb-4 pt-5">
           <p className="text-xl font-black leading-none">Flota IP</p>
           <p className="mt-1 text-sm opacity-90">Distribuidora y Suministros IP</p>
@@ -127,7 +127,7 @@ export function DisenoOficina() {
       <div className="flex min-h-dvh min-w-0 flex-col">
         <AvisoActualizacion />
         {/* Barra superior (teléfono) */}
-        <header className="sticky top-0 z-30 flex items-center justify-between bg-via px-4 py-2 text-via-tinta md:hidden">
+        <header className="sobre-via sticky top-0 z-30 flex items-center justify-between bg-via px-4 py-2 text-via-tinta md:hidden">
           <p className="text-lg font-black">Flota IP</p>
           {!enLinea && (
             <span className="flex items-center gap-1 text-sm font-semibold">

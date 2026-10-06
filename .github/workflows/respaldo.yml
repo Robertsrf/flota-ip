@@ -1,0 +1,62 @@
+name: Respaldo semanal y mantener activo
+
+# Plan gratuito de Supabase: sin respaldos automáticos y el proyecto se pausa
+# tras 7 días sin peticiones. Este flujo:
+#   - cada 3 días hace una consulta liviana (mantener activo)
+#   - cada domingo vuelca la base CIFRADA con age y la guarda 90 días
+# El repo es público: el respaldo nunca se guarda sin cifrar.
+# Secrets: SUPABASE_DB_URL (cadena del "Session pooler", IPv4),
+#          RESPALDO_CLAVE_PUBLICA (clave pública de age: age1...),
+#          VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
+# Ojo: GitHub desactiva los flujos programados de repos públicos tras 60 días sin commits.
+on:
+  schedule:
+    - cron: '0 10 */3 * *'   # mantener activo
+    - cron: '0 9 * * 0'      # respaldo, domingo 05:00 de Caracas
+  workflow_dispatch:
+    inputs:
+      respaldo:
+        description: Hacer el respaldo ahora
+        type: boolean
+        default: true
+
+jobs:
+  mantener-activo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Consulta liviana a la API
+        run: |
+          curl -sS -o /dev/null -w "%{http_code}\n" \
+            "${{ secrets.VITE_SUPABASE_URL }}/rest/v1/precios_combustible?select=id&limit=1" \
+            -H "apikey: ${{ secrets.VITE_SUPABASE_ANON_KEY }}"
+
+  respaldo:
+    if: github.event.schedule == '0 9 * * 0' || (github.event_name == 'workflow_dispatch' && inputs.respaldo)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Cliente de Postgres 17 y age
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSo /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17 age
+      - name: Volcado cifrado
+        env:
+          DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          CLAVE: ${{ secrets.RESPALDO_CLAVE_PUBLICA }}
+        run: |
+          set -euo pipefail
+          fecha=$(date -u +%Y-%m-%d)
+          /usr/lib/postgresql/17/bin/pg_dump "$DB_URL" --format=custom --no-owner --no-privileges \
+            --schema=public --schema=auth --file=respaldo.dump
+          age --recipient "$CLAVE" --output "flota-ip-$fecha.dump.age" respaldo.dump
+          shred -u respaldo.dump
+          ls -lh *.age
+      - uses: actions/upload-artifact@v4
+        with:
+          name: respaldo-flota-ip-${{ github.run_number }}
+          path: '*.dump.age'
+          retention-days: 90
