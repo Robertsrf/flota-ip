@@ -24,7 +24,7 @@ Pasos para pasar de lo construido en local a producción: repo público en GitHu
    git push -u origin main
    ```
 3. Settings → Pages → Build and deployment → Source: **GitHub Actions**.
-4. El primer push dispara `CI` (tipos, lint, pruebas, e2e). `Desplegar en GitHub Pages` fallará hasta cargar los secrets del paso 5: es normal.
+4. El primer push dispara `CI` (tipos, lint, pruebas, e2e) y `Desplegar en GitHub Pages`. Hasta cargar los secrets del paso 5, el despliegue falla o publica una app que dice "Falta configurar la conexión con Supabase": es normal; se vuelve a correr en el paso 6.
 
 ## 2. Proyecto Supabase
 
