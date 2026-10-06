@@ -7,7 +7,7 @@ F0–F8 construidas y probadas en local (sin Docker, con PGlite). Falta la puest
 
 ## Stack
 - Vite 8 + React 19 + TypeScript 6.0 (typescript-eslint exige <6.1) + Tailwind v4 (`@tailwindcss/vite`, tokens en `src/styles/index.css`).
-- React Router 8, TanStack Query 5, Zod 4, ECharts 6 modular (renderer SVG), Dexie 4 (cola offline), vite-plugin-pwa 2, SheetJS (desde cdn.sheetjs.com), lucide-react, Overpass.
+- React Router 8, TanStack Query 5, ECharts 6 modular (renderer SVG), Dexie 4 (cola offline), vite-plugin-pwa 2, SheetJS (desde cdn.sheetjs.com), lucide-react, Overpass.
 - Supabase plan **gratuito**: Postgres + RLS, Auth, Storage (`unidades`, `comprobantes`), Realtime (`viajes`, `unidades`), Edge Functions (`admin-usuarios`, `tasa-bcv`), pg_cron + Vault. Límites: 500 MB de base, 1 GB de Storage, 5 GB de transferencia; **se pausa tras 7 días sin peticiones** y **no tiene respaldos** → `respaldo.yml` hace consulta cada 3 días y `pg_dump` semanal cifrado con age.
 - Hosting: GitHub Pages desde `main` (repo **público**: Roberts no tiene GitHub Pro).
 
@@ -43,7 +43,7 @@ npm run icons         # regenera public/iconos con Playwright
 - **Escrituras del cliente por RPC** (`security definer`, `set search_path = ''`, `exigir_rol`). Las funciones nacen cerradas (migración 07 cierra los privilegios por defecto de Supabase): cada función nueva lleva su `grant execute ... to authenticated` solo si el cliente, la RLS o una vista la usan, y se agrega a la prueba de lista blanca de `rls.test.ts`. `anon` no ejecuta nada.
 - **Migraciones:** una vez aplicada en Supabase, una migración no se edita; se agrega otra. Después de cambiar el esquema: `npm run gen:types` y pruebas SQL.
 - **IDs de cliente** (`crypto.randomUUID`) en viajes, repostajes y gastos: los reintentos de la cola offline son idempotentes.
-- **Errores** con los números involucrados y cómo corregir, sin disculpas (`traducirError`).
+- **Validación** escrita en cada formulario (sin librería de formularios) y repetida en el servidor. **Errores** con los números involucrados y cómo corregir, sin disculpas (`traducirError`).
 - Diseño: tokens de `index.css`, nunca hex sueltos en componentes; reglas en `DESIGN.md`. Capturas a 360 y 1440 px con `node scripts/capturas.mjs`.
 - Commits por fase con mensaje en español y bitácora actualizada.
 

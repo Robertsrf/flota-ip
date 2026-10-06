@@ -10,7 +10,7 @@ web (SPA instalable como PWA; el chofer la usa en el teléfono, la oficina en es
 
 ## Stack
 
-Fijado por el handoff y el checkpoint F0: Vite + React + TypeScript, Tailwind CSS v4 con primitivas de shadcn/ui personalizadas, Supabase (plan gratuito: Postgres, Auth, Storage, Edge Functions, Realtime), TanStack Query, React Hook Form + Zod, ECharts, vite-plugin-pwa + Dexie. Hosting en GitHub Pages desde un repo público.
+Fijado por el handoff y el checkpoint F0: Vite + React + TypeScript, Tailwind CSS v4 con componentes propios, Supabase (plan gratuito: Postgres, Auth, Storage, Edge Functions, Realtime), TanStack Query, ECharts, vite-plugin-pwa + Dexie. Hosting en GitHub Pages desde un repo público.
 
 ## Users
 

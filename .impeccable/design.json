@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-06T13:33:46.007Z",
+  "generatedAt": "2026-10-06T13:58:25.104Z",
   "title": "Design System: Flota IP",
   "extensions": {
     "colorMeta": {
@@ -141,6 +141,10 @@
       }
     },
     "typographyMeta": {
+      "cifra-resultado": {
+        "displayName": "Cifra de resultado",
+        "purpose": "El rendimiento en el resumen de la ruta finalizada."
+      },
       "cifra-cabina": {
         "displayName": "Cifra de cabina",
         "purpose": "La placa del camión en la cabina; una por pantalla."

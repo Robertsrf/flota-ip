@@ -43,7 +43,7 @@ export function ResumenRuta() {
       <CabeceraCabina volver={{ a: '/cabina', texto: 'Cabina' }}>
         <h1 className="mt-3">
           <span className="block text-base font-semibold">Ruta finalizada</span>
-          <span className="mt-1 block text-[2.5rem] font-black leading-[1.05] break-words">{viaje?.ruta ?? estado.ruta ?? 'Ruta'}</span>
+          <span className="mt-1 block text-3xl font-extrabold leading-tight break-words">{viaje?.ruta ?? estado.ruta ?? 'Ruta'}</span>
         </h1>
         {viaje?.llegada_at && (
           <p className="cifra mt-2 text-base font-semibold">

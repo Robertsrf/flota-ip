@@ -51,4 +51,28 @@ Registro de lo que se asumió o decidió sin bloquear el trabajo (handoff, secci
 | 009 | 03/10/2026 | Repo git local en `main`; el remoto se crea en la F1 (público, según D1) | La F0 solo produce documentos | aprobada |
 | 010 | 03/10/2026 | `docs/HANDOFF.md` es copia exacta de `HANDOFF_Flota_IP.md` | Sección 0.3 del handoff | aprobada |
 | 011 | 03/10/2026 | "Eliminar" una ubicación borra solo si nunca se usó; si tiene viajes, la archiva | Roberts quiere agregar y eliminar destinos; el handoff prohíbe borrar datos operativos | aprobada |
-| 012 | 03/10/2026 | Destino principal de una ruta con paradas = última parada, editable por el chofer | Supuesto no bloqueante; se revisa en el `shape` de la F4 | propuesta |
+| 012 | 03/10/2026 | Destino principal de una ruta con paradas = última parada, editable por el chofer | Supuesto no bloqueante | aplicada (confirmar con Roberts en la prueba conjunta) |
+
+## Decisiones y supuestos de la construcción (F1–F8)
+
+| # | Fecha | Decisión o supuesto | Motivo | Estado |
+|---|---|---|---|---|
+| 013 | 03/10/2026 | Los checkpoints de F1, F4 y F6 no se detuvieron: se revisan juntos en la prueba final | Roberts pidió "construye todo, al final creamos repo, subimos y probamos" | aplicada |
+| 014 | 03/10/2026 | Desarrollo y pruebas sin Docker: PGlite (Postgres 18 en WebAssembly) con un shim que imita Supabase (esquema `auth`, `auth.uid()`, roles y privilegios por defecto) y un emulador HTTP (REST, Auth, Storage, Functions). Corren las mismas migraciones que irán a producción | No hay Docker ni proyecto Supabase todavía; permite probar RLS, motor y la app completa | aplicada |
+| 015 | 03/10/2026 | Realtime no se emula en local: allí la app consulta cada 30 s. En producción se usa Realtime en `viajes` y `unidades` | Limitación del emulador | aplicada |
+| 016 | 03/10/2026 | **Gasto de combustible = compras** (cada carga una vez; las de un viaje cuentan en el mes de llegada, las sueltas por su fecha). **Costo del viaje = consumo × precio ponderado**. Son cifras distintas y se rotulan distinto | Un reporte de gasto debe sumar lo pagado; el costo de una ruta debe reflejar lo que consumió | aplicada |
+| 017 | 03/10/2026 | **Costo por km total = (combustible comprado + mantenimiento aprobado) ÷ km**; el KPI muestra también el de solo combustible | Sección 9 del handoff; el mantenimiento pendiente o rechazado no cuenta | aplicada |
+| 018 | 03/10/2026 | Variaciones ▲/▼ contra los mismos días del período anterior, y solo si ese período tiene 3 viajes o más; si no, "Sin datos para comparar" | Evita variaciones de cientos por ciento con datos escasos | aplicada |
+| 019 | 03/10/2026 | Folio por tabla con identidad de Postgres (V-0142, R-0311, M-0058); en la cola offline se muestra "pendiente" | M3 | aplicada |
+| 020 | 03/10/2026 | Login con correo sintético `<usuario>@usuarios.flota-ip.invalid`: PIN de 6 dígitos para choferes, contraseña de 8 o más para oficina; registro público desactivado | D3. Supabase solo valida el dominio al enviar correos y la app no envía ninguno | aplicada (verificar en la puesta en marcha) |
+| 021 | 03/10/2026 | Bloqueo de 30 s **en el cliente** tras 5 intentos fallidos. El límite real lo pone GoTrue por IP; un bloqueo por usuario en el servidor necesitaría hooks de Auth | Limitación conocida | aplicada |
+| 022 | 03/10/2026 | Plantas eléctricas con `medidor = 'ninguno'`: lectura nula, sin ciclos ni km/L; solo litros y costo del período. Sus cargas las registran flota o el superusuario | D9 | aplicada |
+| 023 | 06/10/2026 | Ventana de corrección del chofer: 30 min, editable en Configuración; la interfaz y el servidor usan el mismo valor. El chofer corrige la ruta y sus cargas desde el resumen ("Corregir datos"); sus gastos los corrige flota | D10 | aplicada |
+| 024 | 03/10/2026 | Ubicación de sistema "Otro (indicar en la nota)": si se usa, la ruta queda marcada para revisión con el texto del chofer | D8 | aplicada |
+| 025 | 03/10/2026 | Tasa BCV programada los días hábiles a las 09:30 y 17:30 de Caracas; nunca sobrescribe una tasa cargada a mano | Supuesto 006 y sección 7 del handoff | aplicada |
+| 026 | 06/10/2026 | Una sola lista blanca de funciones ejecutables (migración 07) y privilegios por defecto cerrados. Antes, por los privilegios por defecto de Supabase, cualquier usuario autenticado podía llamar funciones internas (`recalcular_viaje`, `modo_sistema`) | Hallado en la revisión final; cubierto con una prueba de lista exacta | aplicada |
+| 027 | 06/10/2026 | PWA: los módulos de gráficos y Excel (1,1 MB) quedan fuera del precache y se guardan la primera vez que se usan | La cabina del chofer no los necesita; instalación más liviana con datos móviles | aplicada |
+| 028 | 06/10/2026 | Respaldo semanal con `pg_dump` cifrado con age (artefacto de 90 días) y consulta cada 3 días para que el proyecto no se pause | Plan gratuito sin respaldos; repo público | aplicada |
+| 029 | 06/10/2026 | Íconos de la app provisionales (panel verde con "IP"), generados con `npm run icons` | Falta el archivo del logo de IP | provisional |
+| 030 | 03/10/2026 | Seed demo generado con las RPC reales (3 meses, 3 camiones, 2 plantas, ruta olvidada, gastos pendientes y rechazados); `limpiar_demo.sql` lo borra y `db push` nunca lo sube | Anexo A del handoff | aplicada |
+

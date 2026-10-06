@@ -24,6 +24,12 @@ colors:
   oscuro-tinta: "#eef0ee"
   oscuro-verde-acento: "#5cc296"
 typography:
+  cifra-resultado:
+    fontFamily: "Overpass Variable, Overpass, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "3.75rem"
+    fontWeight: 900
+    lineHeight: 1
+    fontFeature: "\"tnum\" 1"
   cifra-cabina:
     fontFamily: "Overpass Variable, Overpass, ui-sans-serif, system-ui, sans-serif"
     fontSize: "3rem"
@@ -189,6 +195,7 @@ Paleta tomada de la señalización vial: verde de destino, blanco reflectivo, as
 **Character:** Overpass desciende de Highway Gothic, la letra de las señales viales. Una sola familia en varios pesos: 900 para la cifra que manda, 800 para títulos, 700 para etiquetas y botones, 400 para el cuerpo. Las cifras son tabulares (`tnum`) en toda la app para que las columnas cuadren.
 
 ### Hierarchy
+- **Cifra de resultado** (900, 60 px, tabular): el rendimiento en el resumen de la ruta finalizada.
 - **Cifra de cabina** (900, 48 px, interlineado 1): la placa del camión en la cabina. Una por pantalla.
 - **Destino** (900, 44 px, 1,05): el destino de la ruta abierta ("En ruta a / Mérida"). En el pórtico, 24 px.
 - **Título de página** (800, 24 px en móvil / 30 px en escritorio): el `h1` de cada pantalla de oficina y de las tareas del chofer.
