@@ -1,3 +1,4 @@
+/* global document */
 // Capturas de pantalla para revisar el diseño (360 y 1440 px).
 // Uso: node scripts/capturas.mjs <url-base> <usuario> <clave> <salida> <ruta1> [ruta2...]
 //   rutas con sufijo @movil o @escritorio para una sola anchura
@@ -26,12 +27,11 @@ for (const [ancho, alto, nombre] of [[360, 780, 'movil'], [1440, 900, 'escritori
     await p.waitForTimeout(900);
     const archivo = `${salida}/${nombre}-${ruta.replace(/[^a-z0-9]+/gi, '_').replace(/^_|_$/g, '') || 'inicio'}.png`;
     await p.screenshot({ path: archivo, fullPage: true });
-    const ancho = await p.evaluate(() => document.documentElement.scrollWidth);
-    if (ancho > window_ancho(nombre)) errores.push(`[${nombre}] ${ruta}: desborde horizontal (${ancho}px)`);
+    const anchoPagina = await p.evaluate(() => document.documentElement.scrollWidth);
+    if (anchoPagina > (nombre === 'movil' ? 360 : 1440)) errores.push(`[${nombre}] ${ruta}: desborde horizontal (${anchoPagina}px)`);
     console.log('captura', archivo);
   }
   await ctx.close();
 }
-function window_ancho(n) { return n === 'movil' ? 360 : 1440; }
 await navegador.close();
 console.log(errores.length ? 'ERRORES:\n' + errores.join('\n') : 'Sin errores de página.');
