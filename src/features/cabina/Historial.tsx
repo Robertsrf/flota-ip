@@ -102,7 +102,7 @@ export function Historial() {
                     </Etiqueta>
                   </div>
                   <p className="cifra mt-1 text-sm">
-                    {fecha(g.fecha)} · {g.moneda === 'VES' ? `${bs(g.monto)} (${usd(g.monto_usd)})` : usd(g.monto)}
+                    {fecha(g.fecha)} • {g.moneda === 'VES' ? `${bs(g.monto)} (${usd(g.monto_usd)})` : usd(g.monto)}
                   </p>
                   {g.rechazo_motivo && <p className="mt-1 text-sm text-peligro">Motivo: {g.rechazo_motivo}</p>}
                 </li>

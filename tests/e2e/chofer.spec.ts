@@ -23,7 +23,7 @@ test('el chofer inicia una ruta y la finaliza llenando el tanque', async ({ page
   await elegir(page, 'Combustible al salir', /^Lleno/);
   await page.getByRole('button', { name: 'Iniciar ruta' }).click();
 
-  await expect(page.getByText('En ruta a')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /^En ruta a/ })).toBeVisible();
   await expect(page.getByText('Trujillo', { exact: true })).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: 'Ruta iniciada' })).toBeVisible();
   expect(Date.now() - t0).toBeLessThan(30_000); // criterio de aceptación: menos de 30 s
@@ -57,7 +57,7 @@ test('el km de llegada menor que el de salida se rechaza con los números', asyn
   const kmSalida = Number((await page.getByLabel('Km de salida').inputValue()).replace(/\D/g, ''));
   await elegir(page, 'Combustible al salir', /^Lleno/);
   await page.getByRole('button', { name: 'Iniciar ruta' }).click();
-  await expect(page.getByText('En ruta a')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /^En ruta a/ })).toBeVisible();
 
   await page.getByRole('link', { name: 'Finalizar ruta' }).click();
   await page.getByLabel('Km de llegada').fill(String(kmSalida - 10));

@@ -31,7 +31,7 @@ function huellaMigraciones() {
 }
 
 const huella = huellaMigraciones();
-const archivoHuella = join(DIR_DB, '..', '.local-db.huella');
+const archivoHuella = `${DIR_DB}.huella`; // una por base: la de desarrollo y la de e2e no se pisan
 const huellaAnterior = existsSync(archivoHuella) ? readFileSync(archivoHuella, 'utf8') : null;
 if (args.has('--reset') || args.has('--sin-seed') || huellaAnterior !== huella) {
   rmSync(DIR_DB, { recursive: true, force: true });

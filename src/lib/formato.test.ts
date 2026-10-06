@@ -3,12 +3,13 @@ import { bs, duracion, fecha, fechaHora, hoyIso, km, kml, leerNumero, litros, nu
 
 describe('formato es-VE', () => {
   it('números, km, litros y montos', () => {
-    expect(km(10400)).toBe('10.400 km');
-    expect(usd(48)).toBe('$ 48,00');
-    expect(bs(1234.56)).toBe('Bs 1.234,56');
-    expect(litros(80)).toBe('80,00 L');
-    expect(kml(5.4545)).toBe('5,45 km/L');
-    expect(usdKm(0.12)).toBe('$ 0,1200/km');
+    // Entre cifra y unidad va un espacio de no separación (\u00a0)
+    expect(km(10400)).toBe('10.400\u00a0km');
+    expect(usd(48)).toBe('$\u00a048,00');
+    expect(bs(1234.56)).toBe('Bs\u00a01.234,56');
+    expect(litros(80)).toBe('80,00\u00a0L');
+    expect(kml(5.4545)).toBe('5,45\u00a0km/L');
+    expect(usdKm(0.12)).toBe('$\u00a00,1200/km');
     expect(num(null)).toBe('—');
     expect(usd(undefined)).toBe('—');
     expect(num('37900', 2)).toBe('37.900,00');

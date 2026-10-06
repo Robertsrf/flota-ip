@@ -128,7 +128,7 @@ export function FormRepostajeOficina({ abierta, alCerrar, unidadFija }: { abiert
             etiqueta="Precio por litro"
             valor={precio?.id ?? null}
             alCambiar={setPrecioId}
-            opciones={precios.map((p) => ({ valor: p.id, etiqueta: `$ ${num(p.precio_usd_litro, 2)}` }))}
+            opciones={precios.map((p) => ({ valor: p.id, etiqueta: usd(p.precio_usd_litro) }))}
           />
         </div>
         <div className="flex flex-col gap-2">

@@ -13,7 +13,7 @@ test('iniciar ruta sin señal la guarda en el teléfono y la envía al volver la
   await context.setOffline(true);
   await page.getByRole('button', { name: 'Iniciar ruta' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'guardada en el teléfono' })).toBeVisible();
-  await expect(page.getByText('En ruta a')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /^En ruta a/ })).toBeVisible();
   await expect(page.getByText('Pendiente de envío')).toBeVisible();
   await expect(page.getByText('1 registro esperando señal')).toBeVisible();
 

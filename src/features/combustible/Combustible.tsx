@@ -85,7 +85,7 @@ export function Combustible() {
           { titulo: 'Cargas', valor: num(validas.length) },
           { titulo: 'Litros', valor: fLitros(litros, 0) },
           { titulo: 'Pagado', valor: usd(monto) },
-          { titulo: 'Precio promedio', valor: litros > 0 ? `$ ${num(monto / litros, 3)}/L` : '—' },
+          { titulo: 'Precio promedio', valor: litros > 0 ? `${usd(monto / litros, 3)}/L` : '—' },
         ]}
       />
       <Pestanas

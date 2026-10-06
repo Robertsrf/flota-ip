@@ -140,7 +140,7 @@ export function Dashboard() {
           titulo="Rendimiento por camión"
           descripcion="km/L del período, ponderado. La raya es el promedio de la flota."
           filas={camiones.filter((c) => c.rendimiento != null).map((c) => ({ nombre: etiquetaUnidad(c), valor: Number(c.rendimiento) }))}
-          formato={(v) => `${num(v, 2)} km/L`}
+          formato={kml}
           promedio={k?.rendimiento ?? null}
           etiquetaPromedio="Flota"
           columnaValor="km/L"
@@ -150,7 +150,7 @@ export function Dashboard() {
           titulo="Mantenimiento por categoría"
           descripcion="Gastos aprobados del período, en USD."
           filas={porCategoria}
-          formato={(v) => `$ ${num(v, 2)}`}
+          formato={(v) => usd(v)}
           color="mantenimiento"
           columnaValor="USD"
         />
@@ -209,7 +209,7 @@ function FiltrosDashboard({ filtros, cambiar, opciones }: {
   opciones?: OpcionesFiltro;
 }) {
   return (
-    <form aria-label="Filtros del dashboard" className="grid grid-cols-2 gap-3 rounded-xl border-2 border-linea bg-superficie p-3 md:grid-cols-3 xl:grid-cols-6" onSubmit={(e) => e.preventDefault()}>
+    <form aria-label="Filtros del dashboard" className="grid grid-cols-2 gap-3 rounded-xl border-2 border-linea bg-superficie p-3 md:grid-cols-3 xl:grid-cols-5" onSubmit={(e) => e.preventDefault()}>
       <Campo etiqueta="Período">
         {(p) => (
           <Seleccion {...p} value={filtros.periodo} onChange={(e) => cambiar({ periodo: e.target.value as ClavePeriodo })}>
@@ -282,8 +282,10 @@ function FiltrosDashboard({ filtros, cambiar, opciones }: {
 
 // ----- Alertas ----------------------------------------------------------------------------------
 function ListaAlertas({ alertas }: { alertas: Alerta[] }) {
-  const visibles = alertas.filter((x) => x.tipo !== 'gasto_pendiente').slice(0, 6);
-  const pendientes = alertas.filter((x) => x.tipo === 'gasto_pendiente').length;
+  const desvios = alertas.filter((x) => x.tipo !== 'gasto_pendiente');
+  const visibles = desvios.slice(0, 6);
+  const ocultas = desvios.length - visibles.length;
+  const pendientes = alertas.length - desvios.length;
   return (
     <Seccion
       titulo={`Alertas (${alertas.length})`}
@@ -312,6 +314,13 @@ function ListaAlertas({ alertas }: { alertas: Alerta[] }) {
               </Link>
             </li>
           ))}
+          {ocultas > 0 && (
+            <li>
+              <Link to="/revision" className="flex min-h-12 items-center rounded-xl px-3 font-bold text-via-acento underline underline-offset-4">
+                {ocultas === 1 ? 'Ver 1 alerta más en la revisión' : `Ver ${ocultas} alertas más en la revisión`}
+              </Link>
+            </li>
+          )}
           {pendientes > 0 && (
             <li>
               <Link to="/revision" className="flex items-center gap-3 rounded-xl border-2 border-linea bg-superficie p-3 hover:border-tinta">

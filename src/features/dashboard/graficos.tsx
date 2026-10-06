@@ -201,13 +201,16 @@ export function GraficoBarrasH({
         data: orden.map((f) => f.valor),
         barMaxWidth: 22,
         itemStyle: { color: t[color] },
-        label: { show: true, position: 'right', color: t.tinta, fontWeight: 700, formatter: (p) => formato(p.value as number) },
+        // Fondo de superficie: la raya del promedio pasa por detrás de la cifra sin tacharla
+        label: { show: true, position: 'right', color: t.tinta, fontWeight: 700, backgroundColor: t.superficie, padding: [2, 4], formatter: (p) => formato(p.value as number) },
         markLine:
           promedio != null
             ? {
                 symbol: 'none',
+                z: 1, // detrás de barras y cifras (por defecto va encima y las tacha)
                 lineStyle: { color: t.tinta, type: 'solid', width: 2 },
-                label: { formatter: `${etiquetaPromedio ?? 'Promedio'}: ${formato(promedio)}`, color: t.tinta, fontWeight: 700, position: 'insideEndTop' },
+                // Arriba de la raya y en horizontal: girada sobre la raya se montaba en las barras
+                label: { formatter: `${etiquetaPromedio ?? 'Promedio'}: ${formato(promedio)}`, color: t.tinta, fontWeight: 700, position: 'end', distance: 4 },
                 data: [{ xAxis: promedio }],
               }
             : undefined,

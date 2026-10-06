@@ -5,7 +5,7 @@ import { CabeceraCabina } from '@/app/DisenoCabina';
 import { Boton, BotonEnlace } from '@/components/controles';
 import { Calidad, Cargando, EstadoVacio, Etiqueta, MensajeError } from '@/components/datos';
 import { Hoja } from '@/components/hoja';
-import { duracion, hora, km as fKm, kml, litros as fLitros, usd } from '@/lib/formato';
+import { duracion, hora, km as fKm, kml, litros as fLitros, num, usd } from '@/lib/formato';
 import { traducirError } from '@/lib/errores';
 import { useAhora, usePreferenciaLocal } from '@/lib/ganchos';
 import { useSesion } from '@/lib/sesion';
@@ -38,13 +38,16 @@ export function CabinaInicio() {
       <>
         <CabeceraCabina>
           <div className="mt-4">
-            <p className="text-base font-semibold">En ruta a</p>
-            <p className="mt-1 text-[2.75rem] font-black leading-[1.05] break-words">{abierto.ruta || 'Destino'}</p>
+            {/* Una sola frase, como en la señal: "En ruta a Mérida" */}
+            <h1>
+              <span className="block text-base font-semibold">En ruta a</span>
+              <span className="mt-1 block text-[2.75rem] font-black leading-[1.05] break-words">{abierto.ruta || 'Destino'}</span>
+            </h1>
             <div className="cifra mt-4 border-t-2 border-white/60 pt-3 text-lg font-bold">
               <p>
                 Salió {hora(abierto.salida_at)}, hace {duracion(abierto.salida_at, ahora)}
               </p>
-              <p>km de salida {fKm(abierto.km_salida).replace(' km', '')}</p>
+              <p>km de salida {num(abierto.km_salida)}</p>
             </div>
           </div>
         </CabeceraCabina>
@@ -111,17 +114,15 @@ export function CabinaInicio() {
     <>
       <CabeceraCabina>
         <div className="mt-4">
-          <p className="text-base font-semibold">Hoy manejas</p>
-          <div className="mt-2">
-            <FichaCamion
-              unidad={unidad}
-              accion={
-                <Boton variante="sobreVia" tamano="md" icono={<Repeat2 aria-hidden className="size-5" />} onClick={() => setCambiar(true)}>
-                  Cambiar
-                </Boton>
-              }
-            />
-          </div>
+          <FichaCamion
+            titulo="Hoy manejas"
+            unidad={unidad}
+            accion={
+              <Boton variante="sobreVia" tamano="md" icono={<Repeat2 aria-hidden className="size-5" />} onClick={() => setCambiar(true)}>
+                Cambiar
+              </Boton>
+            }
+          />
         </div>
       </CabeceraCabina>
       <div className="flex flex-1 flex-col gap-4 px-4 pb-4 pt-5">

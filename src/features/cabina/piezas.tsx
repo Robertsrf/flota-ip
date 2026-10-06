@@ -3,7 +3,7 @@ import { MapPin, Plus, Search, X } from 'lucide-react';
 import { Hoja } from '@/components/hoja';
 import { Boton, Campo, EntradaNumero, Entrada, Segmentado } from '@/components/controles';
 import type { Precio, Ubicacion, Unidad } from '@/lib/api';
-import { km as fKm, leerNumero, litros as fLitros, num } from '@/lib/formato';
+import { km as fKm, leerNumero, litros as fLitros, usd } from '@/lib/formato';
 import { cuartos } from '@/lib/consumo';
 
 /** Pantalla de un solo trabajo: cabecera, contenido y botón en la zona del pulgar */
@@ -171,7 +171,7 @@ export function SelectorPrecio({ precios, valor, alCambiar, error }: { precios: 
         valor={valor}
         alCambiar={alCambiar}
         error={Boolean(error)}
-        opciones={precios.map((p) => ({ valor: p.id, etiqueta: `$ ${num(p.precio_usd_litro, 2)}`, detalle: 'por litro' }))}
+        opciones={precios.map((p) => ({ valor: p.id, etiqueta: usd(p.precio_usd_litro), detalle: 'por litro' }))}
       />
       {error && (
         <p role="alert" className="text-sm font-semibold text-peligro">
@@ -182,12 +182,15 @@ export function SelectorPrecio({ precios, valor, alCambiar, error }: { precios: 
   );
 }
 
-/** Tarjeta del camión en la cabina */
-export function FichaCamion({ unidad, accion }: { unidad: Unidad; accion?: ReactNode }) {
+/** Tarjeta del camión en la cabina. El título y la placa forman el h1 ("Hoy manejas DEMO-002"). */
+export function FichaCamion({ titulo, unidad, accion }: { titulo: string; unidad: Unidad; accion?: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex items-end justify-between gap-3">
-        <p className="text-5xl font-black leading-none tracking-tight">{unidad.placa}</p>
+      <div className="flex flex-wrap items-end justify-between gap-x-3 gap-y-3">
+        <h1>
+          <span className="block text-base font-semibold">{titulo}</span>
+          <span className="mt-2 block whitespace-nowrap text-5xl font-black leading-none tracking-tight">{unidad.placa}</span>
+        </h1>
         {accion}
       </div>
       <p className="text-lg font-bold">
@@ -195,8 +198,8 @@ export function FichaCamion({ unidad, accion }: { unidad: Unidad; accion?: React
         {unidad.modelo ? `, ${unidad.marca ?? ''} ${unidad.modelo}`.trimEnd() : ''}
       </p>
       <p className="cifra text-base font-semibold">
-        {fKm(unidad.lectura_actual)} · tanque {fLitros(unidad.capacidad_tanque_l, 0)}
-        {unidad.nivel_estimado_l !== null && <> · nivel {unidad.nivel_estimado_fuente === 'exacto' ? '' : 'aprox. '}{fLitros(unidad.nivel_estimado_l, 0)}</>}
+        {fKm(unidad.lectura_actual)} • tanque {fLitros(unidad.capacidad_tanque_l, 0)}
+        {unidad.nivel_estimado_l !== null && <> • nivel {unidad.nivel_estimado_fuente === 'exacto' ? '' : 'aprox. '}{fLitros(unidad.nivel_estimado_l, 0)}</>}
       </p>
     </div>
   );

@@ -131,7 +131,7 @@ export function Mantenimiento() {
             id: 'categorias',
             titulo: 'Por categoría',
             contenido: () => (
-              <GraficoBarrasH titulo="Gasto por categoría" descripcion="Aprobados del período, en USD." filas={porCategoria} formato={(v) => `$ ${num(v, 2)}`} color="mantenimiento" columnaValor="USD" />
+              <GraficoBarrasH titulo="Gasto por categoría" descripcion="Aprobados del período, en USD." filas={porCategoria} formato={(v) => usd(v)} color="mantenimiento" columnaValor="USD" />
             ),
           },
         ]}

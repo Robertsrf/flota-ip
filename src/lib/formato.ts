@@ -35,15 +35,17 @@ export function num(v: Num, decimales = 0, vacio = '—'): string {
   return formato(decimales, decimales).format(n);
 }
 
-export const km = (v: Num) => (aNumero(v) === null ? '—' : `${num(v, 0)} km`);
-export const litros = (v: Num, decimales = 2) => (aNumero(v) === null ? '—' : `${num(v, decimales)} L`);
-export const usd = (v: Num, decimales = 2) => (aNumero(v) === null ? '—' : `$ ${num(v, decimales)}`);
-export const bs = (v: Num) => (aNumero(v) === null ? '—' : `Bs ${num(v, 2)}`);
-export const kml = (v: Num) => (aNumero(v) === null ? '—' : `${num(v, 2)} km/L`);
-export const l100 = (v: Num) => (aNumero(v) === null ? '—' : `${num(v, 2)} L/100 km`);
-export const usdKm = (v: Num) => (aNumero(v) === null ? '—' : `$ ${num(v, 4)}/km`);
-export const tasa = (v: Num) => (aNumero(v) === null ? '—' : `${num(v, 2)} Bs/$`);
-export const precioLitro = (v: Num) => (aNumero(v) === null ? '—' : `$ ${num(v, 2)}/L`);
+// Cifra y unidad van unidas con espacio de no separación: "$ 0,1057/km" nunca se parte en dos líneas
+export const NB = '\u00a0';
+export const km = (v: Num) => (aNumero(v) === null ? '—' : `${num(v, 0)}${NB}km`);
+export const litros = (v: Num, decimales = 2) => (aNumero(v) === null ? '—' : `${num(v, decimales)}${NB}L`);
+export const usd = (v: Num, decimales = 2) => (aNumero(v) === null ? '—' : `$${NB}${num(v, decimales)}`);
+export const bs = (v: Num) => (aNumero(v) === null ? '—' : `Bs${NB}${num(v, 2)}`);
+export const kml = (v: Num) => (aNumero(v) === null ? '—' : `${num(v, 2)}${NB}km/L`);
+export const l100 = (v: Num) => (aNumero(v) === null ? '—' : `${num(v, 2)}${NB}L/100${NB}km`);
+export const usdKm = (v: Num) => (aNumero(v) === null ? '—' : `$${NB}${num(v, 4)}/km`);
+export const tasa = (v: Num) => (aNumero(v) === null ? '—' : `${num(v, 2)}${NB}Bs/$`);
+export const precioLitro = (v: Num) => (aNumero(v) === null ? '—' : `$${NB}${num(v, 2)}/L`);
 
 export function variacion(actual: Num, anterior: Num, comparable = true): number | null {
   const a = aNumero(actual);
@@ -52,7 +54,7 @@ export function variacion(actual: Num, anterior: Num, comparable = true): number
   return ((a - b) / Math.abs(b)) * 100;
 }
 
-export const pct = (v: Num, decimales = 1) => (aNumero(v) === null ? '—' : `${num(v, decimales)} %`);
+export const pct = (v: Num, decimales = 1) => (aNumero(v) === null ? '—' : `${num(v, decimales)}${NB}%`);
 
 // ----- Fechas -------------------------------------------------------------
 const fFecha = new Intl.DateTimeFormat('es-VE', { timeZone: ZONA, day: '2-digit', month: '2-digit', year: 'numeric' });

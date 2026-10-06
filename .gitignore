@@ -25,12 +25,13 @@ backups/
 # Herramientas
 .impeccable/config.local.json
 .impeccable/live/
+.impeccable/review/
 .DS_Store
 Thumbs.db
 *.log
 
 # Servidor local sin Docker (PGlite y archivos subidos)
 .local-db/
-.local-storage/
-
 .local-db-e2e/
+.local-storage/
+*.huella
