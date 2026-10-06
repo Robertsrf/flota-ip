@@ -1,4 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from './supabase';
 
 function suscribirRed(cb: () => void) {
   window.addEventListener('online', cb);
@@ -22,6 +24,26 @@ export function useAhora(ms = 30_000): Date {
     return () => window.clearInterval(id);
   }, [ms]);
   return ahora;
+}
+
+/** Umbrales de la tabla configuracion (cambian poco) */
+export function useConfiguracion() {
+  return useQuery({
+    queryKey: ['configuracion'],
+    staleTime: 10 * 60_000,
+    queryFn: async () => (await supabase.from('configuracion').select('*').maybeSingle()).data,
+  });
+}
+
+/**
+ * ¿Sigue abierta la ventana en que el chofer corrige lo suyo? Solo decide si se muestra
+ * el botón: la regla oficial la aplica el servidor (verificar_ventana_chofer).
+ */
+export function useDentroDeVentana(): (creadoEn: string | null | undefined) => boolean {
+  const { data: cfg } = useConfiguracion();
+  const ahora = useAhora();
+  const minutos = cfg?.ventana_correccion_min ?? 30;
+  return (creadoEn) => !!creadoEn && ahora.getTime() - new Date(creadoEn).getTime() < minutos * 60_000;
 }
 
 export type Tema = 'sistema' | 'claro' | 'oscuro';

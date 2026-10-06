@@ -42,9 +42,8 @@ export function PaginaLogin() {
     <main className="flex min-h-dvh flex-col bg-fondo md:items-center md:justify-center md:p-6">
       <div className="flex w-full flex-1 flex-col md:max-w-md md:flex-none md:overflow-hidden md:rounded-2xl md:border-2 md:border-linea md:bg-superficie">
         <div className="panel-senal px-6 pb-8 pt-10 md:rounded-none">
-          <p className="text-sm font-semibold">Distribuidora y Suministros IP</p>
-          <h1 className="mt-1 text-5xl font-black leading-none">Flota IP</h1>
-          <p className="mt-4 text-base font-semibold">Rutas, combustible y mantenimiento de la flota</p>
+          <h1 className="text-5xl font-black leading-none">Flota IP</h1>
+          <p className="mt-4 text-base font-semibold">Rutas, combustible y mantenimiento de la flota de Distribuidora y Suministros IP</p>
         </div>
         <form onSubmit={enviar} noValidate className="flex flex-1 flex-col gap-5 bg-superficie px-6 py-7">
           {!configurado && (

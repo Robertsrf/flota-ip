@@ -29,7 +29,7 @@ npm run icons         # regenera public/iconos con Playwright
 - Playwright usa Edge (`channel: msedge`) en local y Chromium en CI.
 
 ## Estructura
-- `supabase/migrations/` 01 esquema · 02 motor y RPC · 03 RLS · 04 vistas y RPC del dashboard · 05 Storage y Realtime · 06 datos iniciales de producción.
+- `supabase/migrations/` 01 esquema · 02 motor y RPC · 03 RLS · 04 vistas y RPC del dashboard · 05 Storage y Realtime · 06 datos iniciales de producción · 07 permisos de ejecución (lista blanca).
 - `supabase/seed.sql` (solo demo), `supabase/sql/` (limpieza demo, cron de la tasa), `supabase/tests/` (Vitest + PGlite), `supabase/functions/`.
 - `scripts/pglite/` shim que imita Supabase (auth.uid, roles anon/authenticated/service_role); `scripts/backend-local/` emulador HTTP.
 - `src/app` (rutas, layouts Cabina y Oficina), `src/components` (controles, tabla, hoja, datos, estructura), `src/lib` (supabase, api, formato, consumo, offline/cola, exportar, fotos, sesión), `src/features/<módulo>`.
@@ -40,7 +40,7 @@ npm run icons         # regenera public/iconos con Playwright
 - **Formato es-VE solo con `src/lib/formato.ts`:** `10.400 km`, `$ 48,00`, `Bs 1.234,56`, `dd/mm/aaaa`, zona `America/Caracas`. Cifra y unidad van unidas con espacio de no separación. "—" cuando no hay dato.
 - **USD manda:** todo total en USD; Bs solo como referencia rotulada. Nunca sumar Bs sin convertir.
 - **Nunca borrar datos operativos:** se anulan con motivo (`anular_registro`) y se pueden restaurar; toda edición pasa por `corregir_registro` con motivo y queda en `auditoria` (trigger `tg_auditar`, solo columnas cambiadas). Excepción: una ubicación nunca usada se borra; con uso, se archiva.
-- **Escrituras del cliente por RPC** (`security definer`, `set search_path = ''`, `exigir_rol`). Las RPC nuevas se agregan a la lista de `grant execute` de la migración 02; `anon` no ejecuta nada.
+- **Escrituras del cliente por RPC** (`security definer`, `set search_path = ''`, `exigir_rol`). Las funciones nacen cerradas (migración 07 cierra los privilegios por defecto de Supabase): cada función nueva lleva su `grant execute ... to authenticated` solo si el cliente, la RLS o una vista la usan, y se agrega a la prueba de lista blanca de `rls.test.ts`. `anon` no ejecuta nada.
 - **Migraciones:** una vez aplicada en Supabase, una migración no se edita; se agrega otra. Después de cambiar el esquema: `npm run gen:types` y pruebas SQL.
 - **IDs de cliente** (`crypto.randomUUID`) en viajes, repostajes y gastos: los reintentos de la cola offline son idempotentes.
 - **Errores** con los números involucrados y cómo corregir, sin disculpas (`traducirError`).

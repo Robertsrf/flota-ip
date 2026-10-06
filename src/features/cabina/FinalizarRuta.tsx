@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import { Navigate, useNavigate } from 'react-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { CabeceraCabina } from '@/app/DisenoCabina';
 import { useAvisos } from '@/components/avisos';
 import { AreaTexto, Boton, Campo, EntradaNumero, Segmentado } from '@/components/controles';
@@ -13,22 +13,13 @@ import { comprimirFoto } from '@/lib/fotos';
 import { km as fKm, kml, leerNumero, litros as fLitros, num, usd, usdKm } from '@/lib/formato';
 import { baseLocal, descartar, encolar } from '@/lib/offline/cola';
 import { useSesion } from '@/lib/sesion';
-import { useAhora } from '@/lib/ganchos';
-import { supabase } from '@/lib/supabase';
+import { useAhora, useConfiguracion } from '@/lib/ganchos';
 import { useCargasViaje, useEstadoCabina, usePrecios, useUltimoPrecio } from './datos';
 import { nivelElegido, PantallaTarea, SelectorNivel, SelectorPrecio, type OpcionNivel } from './piezas';
 
 /** Horas transcurridas desde una fecha (fuera del render) */
 function horasDesde(iso: string): number {
   return (Date.now() - new Date(iso).getTime()) / 3_600_000;
-}
-
-function useConfiguracion() {
-  return useQuery({
-    queryKey: ['configuracion'],
-    staleTime: 10 * 60_000,
-    queryFn: async () => (await supabase.from('configuracion').select('*').maybeSingle()).data,
-  });
 }
 
 export function FinalizarRuta() {

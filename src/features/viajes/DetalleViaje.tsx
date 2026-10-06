@@ -10,7 +10,7 @@ import { ConfirmarConMotivo } from '@/components/hoja';
 import { rpc, type Repostaje, type Viaje } from '@/lib/api';
 import { exigir, traducirError } from '@/lib/errores';
 import { duracion, fechaHora, km as fKm, l100, litros as fLitros, num, usd, usdKm } from '@/lib/formato';
-import { useAhora } from '@/lib/ganchos';
+import { useAhora, useDentroDeVentana } from '@/lib/ganchos';
 import { useSesion } from '@/lib/sesion';
 import { supabase } from '@/lib/supabase';
 import { usePrecios } from '@/features/cabina/datos';
@@ -41,6 +41,7 @@ export function DetalleViaje() {
   const { data: choferes = [] } = useChoferes();
   const { data: precios = [] } = usePrecios();
   const ahora = useAhora();
+  const dentroDeVentana = useDentroDeVentana();
   const qc = useQueryClient();
   const avisos = useAvisos();
   const [finalizar, setFinalizar] = useState(false);
@@ -59,7 +60,7 @@ export function DetalleViaje() {
   if (viaje.error || !viaje.data) return <MensajeError error={traducirError(viaje.error)} />;
   const v = viaje.data;
   const propio = v.created_by === perfil?.id;
-  const enVentana = propio && ahora.getTime() - new Date(v.created_at!).getTime() < 30 * 60_000;
+  const enVentana = propio && dentroDeVentana(v.created_at);
   const puedeCambiar = esOficina || enVentana;
 
   return (
@@ -193,7 +194,7 @@ export function DetalleViaje() {
                       {c.anulado && <span className="ml-2 text-peligro">Anulada</span>}
                     </p>
                     <p className="cifra text-sm text-tinta-2">
-                      {fechaHora(c.fecha)}, km {num(c.lectura_medidor)}, {fLitros(c.litros)} a $ {num(c.precio_usd_litro, 2)} = {usd(c.monto_usd)}, {c.tanque_lleno ? 'llenó' : 'parcial'}
+                      {fechaHora(c.fecha)}, km {num(c.lectura_medidor)}, {fLitros(c.litros)} a {usd(c.precio_usd_litro)} = {usd(c.monto_usd)}, {c.tanque_lleno ? 'llenó' : 'parcial'}
                     </p>
                   </div>
                 </div>
@@ -201,7 +202,7 @@ export function DetalleViaje() {
                   tabla="repostajes"
                   registro={c as unknown as Record<string, unknown>}
                   campos={camposRepostaje(esOficina, precios)}
-                  puedeCorregir={esOficina || (c.created_by === perfil?.id && ahora.getTime() - new Date(c.created_at!).getTime() < 30 * 60_000)}
+                  puedeCorregir={esOficina || (c.created_by === perfil?.id && dentroDeVentana(c.created_at))}
                   puedeAnular={esOficina}
                   puedeRestaurar={esSuper}
                   nombre="la carga"

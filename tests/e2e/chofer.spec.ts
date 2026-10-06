@@ -44,6 +44,8 @@ test('el chofer inicia una ruta y la finaliza llenando el tanque', async ({ page
   await expect(page.getByText('Ruta finalizada', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('4,00', { exact: true })).toBeVisible();
   await expect(page.getByText('$ 15,00')).toBeVisible();
+  // Recién creada: el chofer todavía puede corregirla (ventana de 30 min)
+  await expect(page.getByRole('link', { name: 'Corregir datos' })).toBeVisible();
   await page.getByRole('link', { name: 'Listo' }).click();
   await expect(page.getByRole('button', { name: 'Iniciar ruta' })).toBeEnabled();
 });
