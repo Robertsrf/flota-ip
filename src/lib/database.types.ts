@@ -114,6 +114,82 @@ export type Database = {
         }
         Relationships: []
       }
+      documentos: {
+        Row: {
+          id: string
+          unidad_id: string | null
+          persona_id: string | null
+          tipo: string
+          numero: string | null
+          emisor: string | null
+          vence: string
+          aviso_dias: number
+          archivo_path: string | null
+          notas: string | null
+          activo: boolean
+          renovado_por: string | null
+          created_at: string
+          updated_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          unidad_id?: string | null
+          persona_id?: string | null
+          tipo: string
+          numero?: string | null
+          emisor?: string | null
+          vence: string
+          aviso_dias?: number
+          archivo_path?: string | null
+          notas?: string | null
+          activo?: boolean
+          renovado_por?: string | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          unidad_id?: string | null
+          persona_id?: string | null
+          tipo?: string
+          numero?: string | null
+          emisor?: string | null
+          vence?: string
+          aviso_dias?: number
+          archivo_path?: string | null
+          notas?: string | null
+          activo?: boolean
+          renovado_por?: string | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documentos_persona_id_fkey"
+            columns: ["persona_id"]
+            isOneToOne: false
+            referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documentos_renovado_por_fkey"
+            columns: ["renovado_por"]
+            isOneToOne: false
+            referencedRelation: "documentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documentos_unidad_id_fkey"
+            columns: ["unidad_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mantenimientos: {
         Row: {
           id: string
@@ -279,6 +355,75 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      recordatorios_servicio: {
+        Row: {
+          id: string
+          unidad_id: string
+          nombre: string
+          categoria_id: string | null
+          cada_km: number | null
+          cada_dias: number | null
+          aviso_km: number
+          aviso_dias: number
+          ultimo_km: number | null
+          ultima_fecha: string
+          notas: string | null
+          activo: boolean
+          created_at: string
+          updated_at: string
+          created_by: string | null
+        }
+        Insert: {
+          id?: string
+          unidad_id: string
+          nombre: string
+          categoria_id?: string | null
+          cada_km?: number | null
+          cada_dias?: number | null
+          aviso_km?: number
+          aviso_dias?: number
+          ultimo_km?: number | null
+          ultima_fecha?: string
+          notas?: string | null
+          activo?: boolean
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Update: {
+          id?: string
+          unidad_id?: string
+          nombre?: string
+          categoria_id?: string | null
+          cada_km?: number | null
+          cada_dias?: number | null
+          aviso_km?: number
+          aviso_dias?: number
+          ultimo_km?: number | null
+          ultima_fecha?: string
+          notas?: string | null
+          activo?: boolean
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recordatorios_servicio_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias_mantenimiento"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recordatorios_servicio_unidad_id_fkey"
+            columns: ["unidad_id"]
+            isOneToOne: false
+            referencedRelation: "unidades"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       repostajes: {
         Row: {
@@ -748,6 +893,32 @@ export type Database = {
         }
         Relationships: []
       }
+      v_documentos: {
+        Row: {
+          id: string | null
+          unidad_id: string | null
+          persona_id: string | null
+          tipo: string | null
+          numero: string | null
+          emisor: string | null
+          vence: string | null
+          aviso_dias: number | null
+          archivo_path: string | null
+          notas: string | null
+          activo: boolean | null
+          renovado_por: string | null
+          created_at: string | null
+          updated_at: string | null
+          created_by: string | null
+          unidad_nombre: string | null
+          placa: string | null
+          persona_nombre: string | null
+          titular: string | null
+          dias_restantes: number | null
+          situacion: string | null
+        }
+        Relationships: []
+      }
       v_kpi_flota_mes: {
         Row: {
           mes: string | null
@@ -839,6 +1010,37 @@ export type Database = {
           registrado_por_nombre: string | null
           registrado_por_rol: Database["public"]["Enums"]["rol_usuario"] | null
           revisado_por_nombre: string | null
+        }
+        Relationships: []
+      }
+      v_recordatorios: {
+        Row: {
+          id: string | null
+          unidad_id: string | null
+          nombre: string | null
+          categoria_id: string | null
+          cada_km: number | null
+          cada_dias: number | null
+          aviso_km: number | null
+          aviso_dias: number | null
+          ultimo_km: number | null
+          ultima_fecha: string | null
+          notas: string | null
+          activo: boolean | null
+          created_at: string | null
+          updated_at: string | null
+          created_by: string | null
+          unidad_nombre: string | null
+          unidad_tipo: Database["public"]["Enums"]["tipo_unidad"] | null
+          placa: string | null
+          medidor: Database["public"]["Enums"]["tipo_medidor"] | null
+          categoria_nombre: string | null
+          lectura_actual: number | null
+          proximo_km: number | null
+          km_restantes: number | null
+          proxima_fecha: string | null
+          dias_restantes: number | null
+          situacion: string | null
         }
         Relationships: []
       }
@@ -1089,6 +1291,39 @@ export type Database = {
         }
         Returns: string
       }
+      guardar_documento: {
+        Args: {
+          p_id: string
+          p_unidad_id: string
+          p_persona_id: string
+          p_tipo: string
+          p_vence: string
+          p_numero?: string
+          p_emisor?: string
+          p_aviso_dias?: number
+          p_archivo?: string
+          p_notas?: string
+          p_activo?: boolean
+        }
+        Returns: Database["public"]["Tables"]["documentos"]["Row"]
+      }
+      guardar_recordatorio: {
+        Args: {
+          p_id: string
+          p_unidad_id: string
+          p_nombre: string
+          p_categoria_id?: string
+          p_cada_km?: number
+          p_cada_dias?: number
+          p_aviso_km?: number
+          p_aviso_dias?: number
+          p_ultimo_km?: number
+          p_ultima_fecha?: string
+          p_notas?: string
+          p_activo?: boolean
+        }
+        Returns: Database["public"]["Tables"]["recordatorios_servicio"]["Row"]
+      }
       hoy_caracas: {
         Args: never
         Returns: string
@@ -1133,6 +1368,15 @@ export type Database = {
           p_nota: string
         }
         Returns: Database["public"]["Tables"]["viajes"]["Row"]
+      }
+      marcar_servicio_hecho: {
+        Args: {
+          p_id: string
+          p_km?: number
+          p_fecha?: string
+          p_nota?: string
+        }
+        Returns: Database["public"]["Tables"]["recordatorios_servicio"]["Row"]
       }
       nivel_estimado: {
         Args: {
@@ -1184,6 +1428,17 @@ export type Database = {
           p_motivo?: string
         }
         Returns: Database["public"]["Tables"]["repostajes"]["Row"]
+      }
+      renovar_documento: {
+        Args: {
+          p_id: string
+          p_nuevo_id: string
+          p_vence: string
+          p_numero?: string
+          p_emisor?: string
+          p_archivo?: string
+        }
+        Returns: Database["public"]["Tables"]["documentos"]["Row"]
       }
       restaurar_registro: {
         Args: {

@@ -49,8 +49,8 @@ describe('funciones expuestas por la API', () => {
     expect(filas.filter((f) => f.auth).map((f) => f.proname)).toEqual([
       'anular_registro', 'contexto_cabina', 'corregir_registro', 'costo_por_destino', 'costo_por_ruta',
       'eliminar_ubicacion', 'es_oficina', 'es_superusuario', 'fecha_txt', 'finalizar_viaje', 'fmt_num', 'folio_txt',
-      'hoy_caracas', 'iniciar_viaje', 'kpis_periodo', 'lectura_actual', 'marcar_revisado', 'nivel_estimado',
-      'nombre_unidad', 'registrar_mantenimiento', 'registrar_repostaje', 'restaurar_registro', 'resumen_unidades',
+      'guardar_documento', 'guardar_recordatorio', 'hoy_caracas', 'iniciar_viaje', 'kpis_periodo', 'lectura_actual', 'marcar_revisado', 'marcar_servicio_hecho', 'nivel_estimado',
+      'nombre_unidad', 'registrar_mantenimiento', 'registrar_repostaje', 'renovar_documento', 'restaurar_registro', 'resumen_unidades',
       'revisar_gasto', 'rol_actual', 'sugerir_nivel_salida', 'tasa_para_fecha', 'unidad_permitida_chofer',
     ]);
   });

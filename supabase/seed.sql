@@ -279,5 +279,28 @@ begin
     end if;
   end if;
 
+  -- Recordatorios de servicio: uno por vencer, uno al día, uno pasado y el de una planta
+  perform pg_temp.como(v_flota);
+  perform public.guardar_recordatorio(gen_random_uuid(), v_camiones[1], 'Cambio de aceite', (v_cat ->> 'Aceite')::uuid,
+                                      5000, 120, 500, 15, public.lectura_actual(v_camiones[1]) - 4650, v_fin - 70, null, true);
+  perform public.guardar_recordatorio(gen_random_uuid(), v_camiones[2], 'Rotación de cauchos', (v_cat ->> 'Cauchos')::uuid,
+                                      10000, null, 800, 15, public.lectura_actual(v_camiones[2]) - 3000, v_fin - 40, null, true);
+  perform public.guardar_recordatorio(gen_random_uuid(), v_camiones[3], 'Cambio de aceite', (v_cat ->> 'Aceite')::uuid,
+                                      5000, 120, 500, 15, public.lectura_actual(v_camiones[3]) - 5200, v_fin - 60, null, true);
+  perform public.guardar_recordatorio(gen_random_uuid(), v_plantas[1], 'Servicio de la planta', (v_cat ->> 'Filtros')::uuid,
+                                      null, 90, 0, 15, null, v_fin - 84, null, true);
+
+  -- Documentos: póliza por vencer, póliza al día, permiso vencido, licencia y certificado médico
+  perform public.guardar_documento(gen_random_uuid(), v_camiones[1], null, 'Póliza RCV', public.hoy_caracas() + 9,
+                                   'RCV-DEMO-001', 'Seguros DEMO', 15, null, null, true);
+  perform public.guardar_documento(gen_random_uuid(), v_camiones[2], null, 'Póliza RCV', public.hoy_caracas() + 160,
+                                   'RCV-DEMO-002', 'Seguros DEMO', 15, null, null, true);
+  perform public.guardar_documento(gen_random_uuid(), v_camiones[3], null, 'Permiso de circulación', public.hoy_caracas() - 4,
+                                   null, null, 15, null, null, true);
+  perform public.guardar_documento(gen_random_uuid(), null, v_choferes[1], 'Licencia de conducir', public.hoy_caracas() + 400,
+                                   null, null, 30, null, null, true);
+  perform public.guardar_documento(gen_random_uuid(), null, v_choferes[2], 'Certificado médico', public.hoy_caracas() + 20,
+                                   null, null, 30, null, null, true);
+
   perform set_config('request.jwt.claims', '', true);
 end $$;

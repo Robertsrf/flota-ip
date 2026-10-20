@@ -19,8 +19,14 @@ delete from public.auditoria a
     or a.registro_id in (select id::text from public.repostajes where unidad_id in (select id from demo_unidades))
     or a.registro_id in (select id::text from public.mantenimientos where unidad_id in (select id from demo_unidades))
     or a.registro_id in (select id::text from demo_unidades)
+    or a.registro_id in (select id::text from public.recordatorios_servicio where unidad_id in (select id from demo_unidades))
+    or a.registro_id in (select id::text from public.documentos
+                          where unidad_id in (select id from demo_unidades) or persona_id in (select id from demo_usuarios))
     or a.usuario_id in (select id from demo_usuarios);
 
+delete from public.recordatorios_servicio where unidad_id in (select id from demo_unidades);
+delete from public.documentos
+ where unidad_id in (select id from demo_unidades) or persona_id in (select id from demo_usuarios);
 delete from public.repostajes where unidad_id in (select id from demo_unidades);
 delete from public.mantenimientos where unidad_id in (select id from demo_unidades);
 delete from public.viaje_paradas where viaje_id in (select id from public.viajes where unidad_id in (select id from demo_unidades));
