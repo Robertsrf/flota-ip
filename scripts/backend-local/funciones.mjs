@@ -12,6 +12,15 @@ async function perfilQueLlama(db, ctx) {
   return r.rows[0] ?? null;
 }
 
+const MAX_NOMBRE = 80;
+const MAX_TELEFONO = 30;
+
+function validarLargos(cuerpo) {
+  if ((cuerpo.nombre ?? '').trim().length > MAX_NOMBRE) return `El nombre admite hasta ${MAX_NOMBRE} caracteres.`;
+  if (String(cuerpo.telefono ?? '').length > MAX_TELEFONO) return `El teléfono admite hasta ${MAX_TELEFONO} caracteres.`;
+  return null;
+}
+
 function validarClave(rol, clave) {
   if (rol === 'chofer') {
     if (!/^\d{6}$/.test(clave ?? '')) return 'El PIN del chofer debe tener 6 dígitos.';
@@ -34,6 +43,8 @@ export async function adminUsuarios(db, ctx, cuerpo) {
     if (!esSuper && rol !== 'chofer') return rechazo(403, 'Flota solo puede crear choferes.');
     const nombre = (cuerpo.nombre ?? '').trim();
     if (!nombre) return rechazo(400, 'Escribe el nombre.');
+    const largo = validarLargos(cuerpo);
+    if (largo) return rechazo(400, largo);
     const usuario = (cuerpo.usuario ?? '').trim().toLowerCase() || null;
     if (usuario && !RE_USUARIO.test(usuario)) return rechazo(400, 'El usuario solo admite minúsculas, números, punto, guion y guion bajo (3 a 32).');
     const correo = (cuerpo.correo ?? '').trim().toLowerCase() || (usuario ? `${usuario}@${DOMINIO}` : null);
@@ -63,6 +74,8 @@ export async function adminUsuarios(db, ctx, cuerpo) {
   if (!esSuper && objetivo.rol !== 'chofer') return rechazo(403, 'Flota solo puede gestionar choferes.');
 
   if (cuerpo.accion === 'actualizar') {
+    const largo = validarLargos(cuerpo);
+    if (largo) return rechazo(400, largo);
     if (cuerpo.rol && cuerpo.rol !== objetivo.rol) {
       if (!esSuper) return rechazo(403, 'Solo el superusuario cambia roles.');
       if (objetivo.id === quien.id) return rechazo(400, 'No puedes cambiar tu propio rol.');

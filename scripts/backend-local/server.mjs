@@ -578,10 +578,10 @@ servidor.listen(PUERTO, '127.0.0.1', () => {
   if (conSeed) console.log('Usuarios demo: demo.super / demo1234 · demo.flota / demo1234 · demo.gerencia / demo1234 · demo.pedro / 123456');
   if (args.has('--with-vite')) {
     const puertoVite = process.env.PUERTO_VITE ?? '5173';
-    const vite = spawn(process.platform === 'win32' ? 'npx.cmd' : 'npx', ['vite', '--host', '127.0.0.1', '--port', puertoVite, '--strictPort'], {
+    // Vite se lanza con el mismo Node, sin shell: igual en Windows y sin concatenar argumentos
+    const vite = spawn(process.execPath, [join(RAIZ, 'node_modules', 'vite', 'bin', 'vite.js'), '--host', '127.0.0.1', '--port', puertoVite, '--strictPort'], {
       cwd: RAIZ,
       stdio: 'inherit',
-      shell: process.platform === 'win32',
       env: {
         ...process.env,
         VITE_SUPABASE_URL: `http://127.0.0.1:${PUERTO}`,

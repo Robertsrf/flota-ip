@@ -9,7 +9,8 @@ export async function comprimirFoto(archivo: File | Blob): Promise<Blob> {
       maxWidthOrHeight: 1280,
       maxSizeMB: 0.2,
       fileType: 'image/jpeg',
-      useWebWorker: true,
+      // Su web worker descarga la librería desde un CDN: falla sin señal y lo bloquea la CSP
+      useWebWorker: false,
       initialQuality: 0.8,
     });
   } catch {
