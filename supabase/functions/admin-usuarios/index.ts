@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
       });
       if (error || !data.user) {
         const ya = /already|registered|exists/i.test(error?.message ?? '');
-        return respuesta(ya ? 409 : 400, { error: ya ? 'Ya hay un usuario con ese correo.' : `No se pudo crear: ${error?.message}` });
+        return respuesta(req, ya ? 409 : 400, { error: ya ? 'Ya hay un usuario con ese correo.' : `No se pudo crear: ${error?.message}` });
       }
       if (cuerpo.telefono) await servicio.from('perfiles').update({ telefono: String(cuerpo.telefono) }).eq('id', data.user.id);
       return respuesta(req, 200, { id: data.user.id });

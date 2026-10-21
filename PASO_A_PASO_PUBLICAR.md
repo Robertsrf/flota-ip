@@ -78,7 +78,7 @@ git config --global user.email "<tu correo de GitHub>"
 **3. Saca el proyecto del paquete** (cambia la ruta por donde dejaste el archivo):
 
 ```
-git clone C:\ruta\donde\esta\flota-ip.bundle flota-ip
+git clone -b main C:\ruta\donde\esta\flota-ip.bundle flota-ip
 cd flota-ip
 git remote remove origin
 git tag
