@@ -65,7 +65,12 @@ Deno.serve(async (req) => {
         const ya = /already|registered|exists/i.test(error?.message ?? '');
         return respuesta(req, ya ? 409 : 400, { error: ya ? 'Ya hay un usuario con ese correo.' : `No se pudo crear: ${error?.message}` });
       }
-      if (cuerpo.telefono) await servicio.from('perfiles').update({ telefono: String(cuerpo.telefono) }).eq('id', data.user.id);
+      // Auth guarda app_metadata después del insert: el trigger crea el perfil como chofer y aquí se fija el rol
+      const { error: errPerfil } = await servicio
+        .from('perfiles')
+        .update({ rol, ...(cuerpo.telefono ? { telefono: String(cuerpo.telefono) } : {}) })
+        .eq('id', data.user.id);
+      if (errPerfil) return errorInterno(req, errPerfil);
       return respuesta(req, 200, { id: data.user.id });
     }
 

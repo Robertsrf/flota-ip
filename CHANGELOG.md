@@ -15,6 +15,7 @@ Todas las versiones del sistema, de la más nueva a la más vieja. Se lee tambi�
 ### Corregido
 
 - Al crear un usuario que ya existe, la pantalla Usuarios avisa "Ya hay un usuario con ese correo." en vez de mostrar un error inesperado.
+- Los usuarios de flota, consulta o superusuario creados desde la pantalla Usuarios quedaban como choferes en Supabase. Ahora reciben el rol elegido.
 
 ## [0.6.1] - 2026-10-20 - Fotos de documentos protegidas
 
