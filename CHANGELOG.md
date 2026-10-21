@@ -52,6 +52,7 @@ Todas las versiones del sistema, de la más nueva a la más vieja. Se lee tambi�
 ### Cambiado
 
 - Revisión de acabado del diseño a 360 y 1440 px: placa que no se parte, cifra y unidad juntas, foco visible sobre el verde, contraste AA en claro y oscuro.
+- La app instalada pesa 1,1 MB menos: los gráficos y el Excel se descargan solo cuando la oficina los usa.
 
 ### Seguridad
 
@@ -65,7 +66,6 @@ Todas las versiones del sistema, de la más nueva a la más vieja. Se lee tambi�
 - Viajes con filtros y detalle con auditoría; combustible; mantenimiento con aprobación de gastos; bandeja de revisión; catálogos; usuarios; mi cuenta.
 - Corrección de cualquier dato con motivo e historial de cambios. Exportación a CSV y Excel en todas las tablas.
 - Tasa BCV automática (ve.dolarapi.com) o manual, y alta de usuarios desde la app (funciones en el servidor).
-- App instalable (PWA). Gráficos y Excel se descargan solo cuando la oficina los usa.
 - Pruebas de punta a punta: flujos del chofer, sin señal, oficina y permisos.
 
 ## [0.3.0] - 2026-10-03 - Cabina del chofer y dashboard (F2 a F4)
@@ -75,6 +75,7 @@ Todas las versiones del sistema, de la más nueva a la más vieja. Se lee tambi�
 - Entrada con usuario y PIN de 6 dígitos (choferes) o contraseña (oficina), con bloqueo temporal tras 5 intentos.
 - Cabina del chofer: iniciar ruta con paradas y nivel heredado, finalizar con vista previa del cálculo, repostar, registrar gastos e historial. Botón "Deshacer" de 10 segundos.
 - Sin señal: lo que registra el chofer se guarda en el teléfono y se envía solo al volver la conexión.
+- App instalable en el teléfono (PWA), con aviso cuando hay una versión nueva.
 - Dashboard con filtros, indicadores con ▲/▼, "Ahora mismo" (camiones en ruta), alertas y gráficos con su tabla equivalente.
 - Dirección visual "Señal vial", con modo claro y oscuro.
 
