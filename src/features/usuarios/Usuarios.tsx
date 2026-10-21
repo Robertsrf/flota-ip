@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { KeyRound, Pencil, Plus } from 'lucide-react';
+import { KeyRound, Plus } from 'lucide-react';
 import { useAvisos } from '@/components/avisos';
 import { Boton, Campo, Casilla, Entrada, EntradaNumero, Seleccion } from '@/components/controles';
 import { AvisoAlerta, EstadoVacio, Etiqueta, MensajeError } from '@/components/datos';
@@ -42,35 +42,35 @@ export function Usuarios() {
 
   const columnas: Columna<PerfilFila>[] = [
     { id: 'nombre', titulo: 'Nombre', movil: 'principal', celda: (p) => <span className="font-bold">{p.nombre}</span>, orden: (p) => p.nombre, exportar: { valor: (p) => p.nombre } },
-    { id: 'usuario', titulo: 'Usuario', celda: (p) => p.usuario ?? '—', orden: (p) => p.usuario, exportar: { valor: (p) => p.usuario } },
+    { id: 'usuario', titulo: 'Usuario', celda: (p) => p.usuario ?? '—', movilCelda: (p) => (p.usuario ? `Usuario: ${p.usuario}` : 'Entra con correo'), orden: (p) => p.usuario, exportar: { valor: (p) => p.usuario } },
     { id: 'correo', titulo: 'Correo', movil: 'oculta', celda: (p) => (esCorreoSintetico(p.correo) ? '—' : (p.correo ?? '—')), exportar: { valor: (p) => (esCorreoSintetico(p.correo) ? '' : p.correo) } },
-    { id: 'rol', titulo: 'Rol', celda: (p) => NOMBRE_ROL[p.rol], orden: (p) => p.rol, exportar: { valor: (p) => p.rol } },
+    { id: 'rol', titulo: 'Rol', movil: 'derecha', celda: (p) => NOMBRE_ROL[p.rol], orden: (p) => p.rol, exportar: { valor: (p) => p.rol } },
     { id: 'telefono', titulo: 'Teléfono', movil: 'oculta', celda: (p) => p.telefono ?? '—', exportar: { valor: (p) => p.telefono } },
-    { id: 'activo', titulo: 'Situación', celda: (p) => (p.activo ? 'Activo' : <Etiqueta tono="peligro">Desactivado</Etiqueta>), orden: (p) => (p.activo ? 1 : 0), exportar: { valor: (p) => (p.activo ? 'activo' : 'desactivado') } },
-    {
-      id: 'acc', titulo: 'Acciones', movil: 'oculta',
-      celda: (p) =>
-        puedeGestionar(p) ? (
-          <div className="flex gap-1">
-            <Boton tamano="sm" variante="fantasma" icono={<Pencil aria-hidden className="size-4" />} onClick={() => setEditando(p)}>Editar</Boton>
-            <Boton tamano="sm" variante="fantasma" icono={<KeyRound aria-hidden className="size-4" />} onClick={() => setClave(p)}>{p.rol === 'chofer' ? 'Nuevo PIN' : 'Nueva clave'}</Boton>
-          </div>
-        ) : null,
-    },
+    { id: 'activo', titulo: 'Situación', celda: (p) => (p.activo ? 'Activo' : <Etiqueta tono="peligro">Desactivado</Etiqueta>), movilCelda: (p) => (p.activo ? null : <Etiqueta tono="peligro">Desactivado</Etiqueta>), orden: (p) => (p.activo ? 1 : 0), exportar: { valor: (p) => (p.activo ? 'activo' : 'desactivado') } },
   ];
 
   return (
     <div className="flex flex-col gap-5">
       <EncabezadoPagina
         titulo="Usuarios"
-        descripcion={esSuper ? 'Choferes, flota, gerencia y superusuarios. Sin registro público: los usuarios se crean aquí.' : 'Flota puede dar de alta choferes y restablecer su PIN.'}
+        descripcion={esSuper ? 'Choferes, flota, gerencia y superusuarios. Sin registro público: los usuarios se crean aquí. Toca un usuario para editarlo o darle un PIN nuevo.' : 'Flota da de alta choferes y les restablece el PIN. Toca un chofer para editarlo.'}
         acciones={<Boton variante="principal" icono={<Plus aria-hidden className="size-5" />} onClick={() => setNuevo(true)}>{esSuper ? 'Nuevo usuario' : 'Nuevo chofer'}</Boton>}
       />
       {consulta.error && <MensajeError error={traducirError(consulta.error)} />}
       <Tabla filas={consulta.data ?? []} columnas={columnas} clave={(p) => p.id} cargando={consulta.isLoading} nombreExport="usuarios"
         alElegir={(p) => puedeGestionar(p) && setEditando(p)} vacio={<EstadoVacio titulo="Sin usuarios" />} />
       {nuevo && <FormNuevo alCerrar={() => setNuevo(false)} />}
-      {editando && <FormEditar p={editando} esYo={editando.id === perfil?.id} alCerrar={() => setEditando(null)} />}
+      {editando && (
+        <FormEditar
+          p={editando}
+          esYo={editando.id === perfil?.id}
+          alCerrar={() => setEditando(null)}
+          alPedirClave={() => {
+            setClave(editando);
+            setEditando(null);
+          }}
+        />
+      )}
       {clave && <FormClave p={clave} alCerrar={() => setClave(null)} />}
     </div>
   );
@@ -147,7 +147,7 @@ function FormNuevo({ alCerrar }: { alCerrar: () => void }) {
             )}
           </Campo>
         )}
-        <Campo etiqueta="Nombre y apellido">{(p) => <Entrada {...p} value={nombre} onChange={(x) => setNombre(x.target.value)} autoFocus />}</Campo>
+        <Campo etiqueta="Nombre y apellido">{(p) => <Entrada {...p} maxLength={80} value={nombre} onChange={(x) => setNombre(x.target.value)} autoFocus />}</Campo>
         <Campo etiqueta="Usuario" ayuda="Para entrar: minúsculas, números y punto. Ej.: pedro.rivas" opcional={rol !== 'chofer'}>
           {(p) => <Entrada {...p} value={usuario} onChange={(x) => setUsuario(x.target.value.toLowerCase().replace(/\s/g, '.'))} autoCapitalize="none" spellCheck={false} />}
         </Campo>
@@ -164,14 +164,14 @@ function FormNuevo({ alCerrar }: { alCerrar: () => void }) {
             </div>
           )}
         </Campo>
-        <Campo etiqueta="Teléfono" opcional>{(p) => <Entrada {...p} type="tel" value={telefono} onChange={(x) => setTelefono(x.target.value)} />}</Campo>
+        <Campo etiqueta="Teléfono" opcional>{(p) => <Entrada {...p} type="tel" maxLength={30} value={telefono} onChange={(x) => setTelefono(x.target.value)} />}</Campo>
         {e.error && <MensajeError error={e.error} />}
       </div>
     </Hoja>
   );
 }
 
-function FormEditar({ p, esYo, alCerrar }: { p: PerfilFila; esYo: boolean; alCerrar: () => void }) {
+function FormEditar({ p, esYo, alCerrar, alPedirClave }: { p: PerfilFila; esYo: boolean; alCerrar: () => void; alPedirClave: () => void }) {
   const { esSuper } = useSesion();
   const [nombre, setNombre] = useState(p.nombre);
   const [telefono, setTelefono] = useState(p.telefono ?? '');
@@ -187,10 +187,20 @@ function FormEditar({ p, esYo, alCerrar }: { p: PerfilFila; esYo: boolean; alCer
   };
   return (
     <Hoja abierta alCerrar={alCerrar} titulo={`Editar a ${p.nombre}`}
-      pie={<><Boton onClick={alCerrar}>Cancelar</Boton><Boton variante="principal" cargando={e.enviando} onClick={() => void guardar()}>Guardar</Boton></>}>
+      pie={
+        <>
+          {!esYo && (
+            <Boton variante="fantasma" className="mr-auto" icono={<KeyRound aria-hidden className="size-4" />} onClick={alPedirClave}>
+              {p.rol === 'chofer' ? 'Nuevo PIN' : 'Nueva contraseña'}
+            </Boton>
+          )}
+          <Boton onClick={alCerrar}>Cancelar</Boton>
+          <Boton variante="principal" cargando={e.enviando} onClick={() => void guardar()}>Guardar</Boton>
+        </>
+      }>
       <div className="flex flex-col gap-4">
-        <Campo etiqueta="Nombre">{(x) => <Entrada {...x} value={nombre} onChange={(v) => setNombre(v.target.value)} />}</Campo>
-        <Campo etiqueta="Teléfono" opcional>{(x) => <Entrada {...x} type="tel" value={telefono} onChange={(v) => setTelefono(v.target.value)} />}</Campo>
+        <Campo etiqueta="Nombre">{(x) => <Entrada {...x} maxLength={80} value={nombre} onChange={(v) => setNombre(v.target.value)} />}</Campo>
+        <Campo etiqueta="Teléfono" opcional>{(x) => <Entrada {...x} type="tel" maxLength={30} value={telefono} onChange={(v) => setTelefono(v.target.value)} />}</Campo>
         {esSuper && !esYo && (
           <Campo etiqueta="Rol">
             {(x) => (

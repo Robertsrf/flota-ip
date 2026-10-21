@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router';
-import { ChevronLeft, CloudOff, History, LayoutDashboard, LogOut, Menu, Moon, Sun, UserRound } from 'lucide-react';
+import { ChevronLeft, CircleHelp, CloudOff, History, LayoutDashboard, LogOut, Menu, Moon, Sun, UserRound } from 'lucide-react';
 import { Hoja } from '@/components/hoja';
 import { Boton } from '@/components/controles';
 import { useEnLinea, useTema } from '@/lib/ganchos';
@@ -66,6 +66,9 @@ export function CabeceraCabina({ children, volver }: { children?: ReactNode; vol
           <Boton bloque tamano="lg" icono={<UserRound aria-hidden className="size-5" />} onClick={() => navegar('/cuenta')}>
             Cambiar mi PIN
           </Boton>
+          <Boton bloque tamano="lg" icono={<CircleHelp aria-hidden className="size-5" />} onClick={() => navegar('/ayuda')}>
+            Ayuda
+          </Boton>
           <Boton
             bloque
             tamano="lg"
@@ -77,6 +80,9 @@ export function CabeceraCabina({ children, volver }: { children?: ReactNode; vol
           <Boton bloque tamano="lg" variante="fantasma" icono={<LogOut aria-hidden className="size-5" />} onClick={() => void salir()}>
             Salir
           </Boton>
+          <Link to="/novedades" className="cifra flex min-h-12 items-center justify-center text-sm font-semibold text-tinta-2 underline-offset-4 hover:underline">
+            Versión {__VERSION__} • Novedades
+          </Link>
         </nav>
       </Hoja>
     </header>

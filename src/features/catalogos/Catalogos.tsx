@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArchiveRestore, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { ArchiveRestore, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useAvisos } from '@/components/avisos';
 import { Boton, Campo, Casilla, Entrada, EntradaNumero, Seleccion } from '@/components/controles';
 import { EstadoVacio, Etiqueta, MensajeError } from '@/components/datos';
@@ -10,7 +10,7 @@ import { Tabla, type Columna } from '@/components/tabla';
 import { rpc, type Categoria, type Configuracion, type Precio, type TasaBcv, type Ubicacion } from '@/lib/api';
 import type { TablesUpdate } from '@/lib/database.types';
 import { exigir, traducirError, type ErrorApp } from '@/lib/errores';
-import { fecha, fechaHora, hoyIso, leerNumero, num } from '@/lib/formato';
+import { fecha, fechaHora, hoyIso, leerNumero, num, tasa } from '@/lib/formato';
 import { useSesion } from '@/lib/sesion';
 import { supabase } from '@/lib/supabase';
 
@@ -50,63 +50,26 @@ function Ubicaciones() {
     queryFn: async () => exigir(await supabase.from('ubicaciones').select('*').order('activo', { ascending: false }).order('nombre')) as Ubicacion[],
   });
   const [editando, setEditando] = useState<Ubicacion | 'nueva' | null>(null);
-  const g = useGuardar();
-  const qc = useQueryClient();
   const avisos = useAvisos();
-  const eliminar = async (u: Ubicacion) => {
-    g.setError(null);
-    try {
-      const r = await rpc('eliminar_ubicacion', { p_id: u.id });
-      await qc.invalidateQueries();
-      avisos.ok(r === 'archivada' ? `${u.nombre} tenía viajes: quedó archivada, no borrada` : `${u.nombre} eliminada`);
-    } catch (e) {
-      g.setError(traducirError(e));
-    }
-  };
   const columnas: Columna<Ubicacion>[] = [
     { id: 'nombre', titulo: 'Nombre', movil: 'principal', celda: (u) => <span className="font-bold">{u.nombre}</span>, orden: (u) => u.nombre, exportar: { valor: (u) => u.nombre } },
-    { id: 'tipo', titulo: 'Tipo', celda: (u) => TIPOS_UBICACION[u.tipo] ?? u.tipo, orden: (u) => u.tipo, exportar: { valor: (u) => u.tipo } },
-    { id: 'estado', titulo: 'Estado', celda: (u) => u.estado_ve ?? '—', orden: (u) => u.estado_ve, exportar: { valor: (u) => u.estado_ve } },
-    { id: 'municipio', titulo: 'Municipio', celda: (u) => u.municipio ?? '—', orden: (u) => u.municipio, exportar: { valor: (u) => u.municipio } },
-    { id: 'activo', titulo: 'Situación', celda: (u) => (u.es_sistema ? <Etiqueta>Del sistema</Etiqueta> : u.activo ? 'Activa' : <Etiqueta tono="alerta">Archivada</Etiqueta>), exportar: { valor: (u) => (u.activo ? 'activa' : 'archivada') } },
-    {
-      id: 'acciones', titulo: 'Acciones', movil: 'oculta',
-      celda: (u) =>
-        u.es_sistema ? null : (
-          <div className="flex gap-1">
-            <Boton tamano="sm" variante="fantasma" icono={<Pencil aria-hidden className="size-4" />} onClick={() => setEditando(u)}>Editar</Boton>
-            {u.activo ? (
-              <Boton
-                tamano="sm"
-                variante="fantasma"
-                className="text-peligro"
-                icono={<Trash2 aria-hidden className="size-4" />}
-                onClick={() => void eliminar(u)}
-              >
-                Eliminar
-              </Boton>
-            ) : (
-              <Boton tamano="sm" variante="fantasma" icono={<ArchiveRestore aria-hidden className="size-4" />}
-                onClick={() => void g.ejecutar(async () => lanzar(await supabase.from('ubicaciones').update({ activo: true }).eq('id', u.id)), `${u.nombre} reactivada`)}>
-                Reactivar
-              </Boton>
-            )}
-          </div>
-        ),
-    },
+    { id: 'tipo', titulo: 'Tipo', celda: (u) => TIPOS_UBICACION[u.tipo] ?? u.tipo, movilCelda: (u) => TIPOS_UBICACION[u.tipo] ?? u.tipo, orden: (u) => u.tipo, exportar: { valor: (u) => u.tipo } },
+    { id: 'estado', titulo: 'Estado', movilCelda: (u) => [u.municipio, u.estado_ve].filter(Boolean).join(', ') || '—', celda: (u) => u.estado_ve ?? '—', orden: (u) => u.estado_ve, exportar: { valor: (u) => u.estado_ve } },
+    { id: 'municipio', titulo: 'Municipio', movil: 'oculta', celda: (u) => u.municipio ?? '—', orden: (u) => u.municipio, exportar: { valor: (u) => u.municipio } },
+    { id: 'activo', titulo: 'Situación', movilCelda: (u) => (u.es_sistema ? <Etiqueta>Del sistema</Etiqueta> : u.activo ? null : <Etiqueta tono="alerta">Archivada</Etiqueta>), celda: (u) => (u.es_sistema ? <Etiqueta>Del sistema</Etiqueta> : u.activo ? 'Activa' : <Etiqueta tono="alerta">Archivada</Etiqueta>), exportar: { valor: (u) => (u.activo ? 'activa' : 'archivada') } },
   ];
   return (
     <div className="flex flex-col gap-3">
       <p className="text-base text-tinta-2">
-        Los destinos que eligen los choferes. Eliminar borra una ubicación sin uso; si ya tiene viajes, la archiva (deja de aparecer en las listas y el historial la conserva).
+        Los destinos que eligen los choferes. Toca una ubicación para editarla. Eliminar borra una ubicación sin uso; si ya tiene viajes, la archiva (deja de aparecer en las listas y el historial la conserva).
       </p>
-      {g.error && <MensajeError error={g.error} />}
       <Tabla
         filas={consulta.data ?? []}
         columnas={columnas}
         clave={(u) => u.id}
         cargando={consulta.isLoading}
         nombreExport="ubicaciones"
+        alElegir={(u) => (u.es_sistema ? avisos.mostrar('"Otro" es del sistema: no se edita ni se elimina.') : setEditando(u))}
         acciones={<Boton variante="principal" tamano="sm" icono={<Plus aria-hidden className="size-4" />} onClick={() => setEditando('nueva')}>Nueva ubicación</Boton>}
         vacio={<EstadoVacio titulo="Aún no hay destinos">Agrega la sede y los destinos a los que van los camiones.</EstadoVacio>}
       />
@@ -116,6 +79,8 @@ function Ubicaciones() {
 }
 
 function FormUbicacion({ ubicacion, alCerrar }: { ubicacion: Ubicacion | null; alCerrar: () => void }) {
+  const qc = useQueryClient();
+  const avisos = useAvisos();
   const [nombre, setNombre] = useState(ubicacion?.nombre ?? '');
   const [tipo, setTipo] = useState(ubicacion?.tipo ?? 'cliente');
   const [estadoVe, setEstadoVe] = useState(ubicacion?.estado_ve ?? '');
@@ -130,9 +95,32 @@ function FormUbicacion({ ubicacion, alCerrar }: { ubicacion: Ubicacion | null; a
       alCerrar,
     );
   };
+  const eliminar = async (u: Ubicacion) => {
+    g.setError(null);
+    try {
+      const r = await rpc('eliminar_ubicacion', { p_id: u.id });
+      await qc.invalidateQueries();
+      avisos.ok(r === 'archivada' ? `${u.nombre} tenía viajes: quedó archivada, no borrada` : `${u.nombre} eliminada`);
+      alCerrar();
+    } catch (e) {
+      g.setError(traducirError(e));
+    }
+  };
+  const reactivar = (u: Ubicacion) =>
+    void g.ejecutar(async () => lanzar(await supabase.from('ubicaciones').update({ activo: true }).eq('id', u.id)), `${u.nombre} reactivada`, alCerrar);
   return (
     <Hoja abierta alCerrar={alCerrar} titulo={ubicacion ? 'Editar ubicación' : 'Nueva ubicación'}
-      pie={<><Boton onClick={alCerrar}>Cancelar</Boton><Boton variante="principal" cargando={g.enviando} onClick={guardar}>Guardar</Boton></>}>
+      pie={
+        <>
+          {ubicacion && (ubicacion.activo ? (
+            <Boton variante="fantasma" className="mr-auto text-peligro" icono={<Trash2 aria-hidden className="size-4" />} onClick={() => void eliminar(ubicacion)}>Eliminar</Boton>
+          ) : (
+            <Boton variante="fantasma" className="mr-auto" icono={<ArchiveRestore aria-hidden className="size-4" />} onClick={() => reactivar(ubicacion)}>Reactivar</Boton>
+          ))}
+          <Boton onClick={alCerrar}>Cancelar</Boton>
+          <Boton variante="principal" cargando={g.enviando} onClick={guardar}>Guardar</Boton>
+        </>
+      }>
       <div className="flex flex-col gap-4">
         <Campo etiqueta="Nombre" ayuda='Como lo dicen los choferes: "Valera", "Supermercado El Lago".'>{(p) => <Entrada {...p} value={nombre} onChange={(e) => setNombre(e.target.value)} autoFocus />}</Campo>
         <Campo etiqueta="Tipo">
@@ -163,15 +151,14 @@ function Precios() {
   const [editando, setEditando] = useState<Precio | 'nuevo' | null>(null);
   const columnas: Columna<Precio>[] = [
     { id: 'etiqueta', titulo: 'Etiqueta', movil: 'principal', celda: (p) => <span className="font-bold">{p.etiqueta}</span>, exportar: { valor: (p) => p.etiqueta } },
-    { id: 'precio', titulo: 'USD por litro', alinear: 'der', celda: (p) => num(p.precio_usd_litro, 3), exportar: { valor: (p) => p.precio_usd_litro, tipo: 'decimal' } },
+    { id: 'precio', titulo: 'USD por litro', alinear: 'der', movil: 'derecha', movilCelda: (p) => `$ ${num(p.precio_usd_litro, 3)}/L`, celda: (p) => num(p.precio_usd_litro, 3), exportar: { valor: (p) => p.precio_usd_litro, tipo: 'decimal' } },
     { id: 'orden', titulo: 'Orden', alinear: 'der', celda: (p) => num(p.orden) },
     { id: 'activo', titulo: 'Situación', celda: (p) => (p.activo ? 'Activo' : <Etiqueta>Inactivo</Etiqueta>) },
-    { id: 'acc', titulo: 'Acciones', movil: 'oculta', celda: (p) => <Boton tamano="sm" variante="fantasma" icono={<Pencil aria-hidden className="size-4" />} onClick={() => setEditando(p)}>Editar</Boton> },
   ];
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-base text-tinta-2">Los botones de precio que ve el chofer al repostar. Cada carga guarda una copia del precio: cambiarlo aquí no altera cargas pasadas.</p>
-      <Tabla filas={consulta.data ?? []} columnas={columnas} clave={(p) => p.id} cargando={consulta.isLoading} nombreExport="precios"
+      <p className="text-base text-tinta-2">Los botones de precio que ve el chofer al repostar. Cada carga guarda una copia del precio: cambiarlo aquí no altera cargas pasadas. Toca un precio para editarlo.</p>
+      <Tabla filas={consulta.data ?? []} columnas={columnas} clave={(p) => p.id} cargando={consulta.isLoading} nombreExport="precios" alElegir={setEditando}
         acciones={<Boton variante="principal" tamano="sm" icono={<Plus aria-hidden className="size-4" />} onClick={() => setEditando('nuevo')}>Nuevo precio</Boton>}
         vacio={<EstadoVacio titulo="Sin precios" />} />
       {editando && <FormPrecio precio={editando === 'nuevo' ? null : editando} alCerrar={() => setEditando(null)} />}
@@ -213,12 +200,11 @@ function Categorias() {
     { id: 'nombre', titulo: 'Categoría', movil: 'principal', celda: (c) => <span className="font-bold">{c.nombre}</span>, exportar: { valor: (c) => c.nombre } },
     { id: 'orden', titulo: 'Orden', alinear: 'der', celda: (c) => num(c.orden) },
     { id: 'activo', titulo: 'Situación', celda: (c) => (c.activo ? 'Activa' : <Etiqueta>Inactiva</Etiqueta>) },
-    { id: 'acc', titulo: 'Acciones', movil: 'oculta', celda: (c) => <Boton tamano="sm" variante="fantasma" icono={<Pencil aria-hidden className="size-4" />} onClick={() => setEditando(c)}>Editar</Boton> },
   ];
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-base text-tinta-2">Categorías de gasto de mantenimiento. Se desactivan, nunca se borran, para no perder el historial.</p>
-      <Tabla filas={consulta.data ?? []} columnas={columnas} clave={(c) => c.id} cargando={consulta.isLoading} nombreExport="categorias"
+      <p className="text-base text-tinta-2">Categorías de gasto de mantenimiento. Se desactivan, nunca se borran, para no perder el historial. Toca una categoría para editarla.</p>
+      <Tabla filas={consulta.data ?? []} columnas={columnas} clave={(c) => c.id} cargando={consulta.isLoading} nombreExport="categorias" alElegir={setEditando}
         acciones={<Boton variante="principal" tamano="sm" icono={<Plus aria-hidden className="size-4" />} onClick={() => setEditando('nueva')}>Nueva categoría</Boton>}
         vacio={<EstadoVacio titulo="Sin categorías" />} />
       {editando && <FormCategoria categoria={editando === 'nueva' ? null : editando} alCerrar={() => setEditando(null)} />}
@@ -265,7 +251,7 @@ function Tasas() {
     }, 'Tasa BCV actualizada');
   const columnas: Columna<TasaBcv>[] = [
     { id: 'fecha', titulo: 'Fecha', movil: 'principal', celda: (t) => <span className="font-bold">{fecha(t.fecha)}</span>, orden: (t) => t.fecha, exportar: { valor: (t) => t.fecha, tipo: 'fecha' } },
-    { id: 'tasa', titulo: 'Bs por USD', alinear: 'der', celda: (t) => num(t.bs_por_usd, 4), orden: (t) => Number(t.bs_por_usd), exportar: { valor: (t) => t.bs_por_usd, tipo: 'decimal', titulo: 'Bs por USD' } },
+    { id: 'tasa', titulo: 'Bs por USD', alinear: 'der', movil: 'derecha', movilCelda: (t) => tasa(t.bs_por_usd), celda: (t) => num(t.bs_por_usd, 4), orden: (t) => Number(t.bs_por_usd), exportar: { valor: (t) => t.bs_por_usd, tipo: 'decimal', titulo: 'Bs por USD' } },
     { id: 'fuente', titulo: 'Fuente', celda: (t) => (t.manual ? <Etiqueta>Manual</Etiqueta> : t.fuente), exportar: { valor: (t) => t.fuente } },
     { id: 'capturada', titulo: 'Registrada', movil: 'oculta', celda: (t) => fechaHora(t.capturada_at) },
   ];

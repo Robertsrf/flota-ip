@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
 import { Campo, Entrada, Seleccion } from '@/components/controles';
+import { PanelFiltros } from '@/components/filtros';
 import { Calidad, EstadoVacio, Etiqueta, MensajeError } from '@/components/datos';
 import { EncabezadoPagina } from '@/components/estructura';
 import { Tabla, type Columna } from '@/components/tabla';
 import type { Viaje } from '@/lib/api';
 import { exigir, traducirError } from '@/lib/errores';
-import { fechaHora, num, usd } from '@/lib/formato';
+import { fechaHora, km as fKm, kml, num, usd } from '@/lib/formato';
 import { supabase } from '@/lib/supabase';
 import { calcularPeriodo, NOMBRES_PERIODO, type ClavePeriodo } from '@/features/dashboard/periodo';
 import { etiquetaUnidad, useChoferes, useUnidadesLista } from '@/features/registros/datosComunes';
@@ -19,6 +20,19 @@ export function EstadoViaje({ v }: { v: Pick<Viaje, 'estado' | 'revisar'> }) {
   if (v.revisar) return <Etiqueta tono="alerta">Revisar</Etiqueta>;
   return <Etiqueta>Cerrada</Etiqueta>;
 }
+
+/** Una cerrada muestra la calidad del cálculo; las demás, su estado. "Revisar" acompaña a la calidad. */
+export function EstadoYCalidad({ v }: { v: Pick<Viaje, 'estado' | 'revisar' | 'calidad'> }) {
+  if (v.estado !== 'cerrado') return <EstadoViaje v={v} />;
+  return (
+    <span className="inline-flex flex-wrap items-center gap-2">
+      <Calidad valor={v.calidad} compacta />
+      {v.revisar && <Etiqueta tono="alerta">Revisar</Etiqueta>}
+    </span>
+  );
+}
+
+const ESTADOS: Record<string, string> = { en_curso: 'En ruta', cerrado: 'Cerradas', revisar: 'Para revisar', anulado: 'Anuladas' };
 
 export function ListaViajes() {
   const [clave, setClave] = useState<ClavePeriodo>('mes');
@@ -57,24 +71,43 @@ export function ListaViajes() {
   }, [consulta.data, busqueda]);
 
   const columnas: Columna<Viaje>[] = [
-    { id: 'folio', titulo: 'Folio', celda: (v) => <span className="font-bold">{v.folio_txt}</span>, orden: (v) => v.folio, exportar: { valor: (v) => v.folio_txt } },
+    { id: 'folio', titulo: 'Folio', celda: (v) => <span className="font-bold">{v.folio_txt}</span>, movilCelda: (v) => v.folio_txt, orden: (v) => v.folio, exportar: { valor: (v) => v.folio_txt } },
     { id: 'ruta', titulo: 'Ruta', movil: 'principal', envolver: true, celda: (v) => v.ruta, orden: (v) => v.ruta, exportar: { valor: (v) => v.ruta } },
-    { id: 'salida', titulo: 'Salida', celda: (v) => fechaHora(v.salida_at), orden: (v) => v.salida_at, exportar: { valor: (v) => v.salida_at, tipo: 'fechaHora' } },
-    { id: 'camion', titulo: 'Camión', celda: (v) => v.placa, orden: (v) => v.placa, exportar: { valor: (v) => v.placa, titulo: 'Placa' } },
+    { id: 'salida', titulo: 'Salida', celda: (v) => fechaHora(v.salida_at), movilCelda: (v) => fechaHora(v.salida_at), orden: (v) => v.salida_at, exportar: { valor: (v) => v.salida_at, tipo: 'fechaHora' } },
+    { id: 'camion', titulo: 'Camión', celda: (v) => v.placa, movilCelda: (v) => v.placa, orden: (v) => v.placa, exportar: { valor: (v) => v.placa, titulo: 'Placa' } },
     { id: 'chofer', titulo: 'Chofer', celda: (v) => v.chofer_nombre, orden: (v) => v.chofer_nombre, movil: 'oculta', exportar: { valor: (v) => v.chofer_nombre } },
-    { id: 'km', titulo: 'Km', alinear: 'der', celda: (v) => num(v.km_recorridos), orden: (v) => Number(v.km_recorridos ?? -1), exportar: { valor: (v) => v.km_recorridos, tipo: 'km', titulo: 'Km recorridos' } },
+    { id: 'km', titulo: 'Km', alinear: 'der', celda: (v) => num(v.km_recorridos), movilCelda: (v) => fKm(v.km_recorridos), orden: (v) => Number(v.km_recorridos ?? -1), exportar: { valor: (v) => v.km_recorridos, tipo: 'km', titulo: 'Km recorridos' } },
     { id: 'litros', titulo: 'Litros', alinear: 'der', movil: 'oculta', celda: (v) => num(v.litros_consumidos, 2), orden: (v) => Number(v.litros_consumidos ?? -1), exportar: { valor: (v) => v.litros_consumidos, tipo: 'litros', titulo: 'Litros consumidos' } },
-    { id: 'rend', titulo: 'km/L', alinear: 'der', celda: (v) => num(v.rendimiento_kml, 2), orden: (v) => Number(v.rendimiento_kml ?? -1), exportar: { valor: (v) => v.rendimiento_kml, tipo: 'kml' } },
-    { id: 'costo', titulo: 'Costo', alinear: 'der', celda: (v) => usd(v.costo_combustible_usd), orden: (v) => Number(v.costo_combustible_usd ?? -1), exportar: { valor: (v) => v.costo_combustible_usd, tipo: 'usd', titulo: 'Costo combustible' } },
+    { id: 'rend', titulo: 'km/L', alinear: 'der', celda: (v) => num(v.rendimiento_kml, 2), movilCelda: (v) => kml(v.rendimiento_kml), orden: (v) => Number(v.rendimiento_kml ?? -1), exportar: { valor: (v) => v.rendimiento_kml, tipo: 'kml' } },
+    { id: 'costo', titulo: 'Costo', alinear: 'der', movil: 'derecha', celda: (v) => usd(v.costo_combustible_usd), orden: (v) => Number(v.costo_combustible_usd ?? -1), exportar: { valor: (v) => v.costo_combustible_usd, tipo: 'usd', titulo: 'Costo combustible' } },
     { id: 'ckm', titulo: '$/km', alinear: 'der', movil: 'oculta', celda: (v) => num(v.costo_km_usd, 4), orden: (v) => Number(v.costo_km_usd ?? -1), exportar: { valor: (v) => v.costo_km_usd, tipo: 'usdKm', titulo: 'Costo por km' } },
-    { id: 'calidad', titulo: 'Calidad', celda: (v) => (v.estado === 'cerrado' ? <Calidad valor={v.calidad} compacta /> : '—'), orden: (v) => v.calidad, exportar: { valor: (v) => v.calidad } },
-    { id: 'estado', titulo: 'Estado', celda: (v) => <EstadoViaje v={v} />, orden: (v) => v.estado, exportar: { valor: (v) => (v.revisar && v.estado !== 'anulado' ? 'revisar' : v.estado) } },
+    {
+      id: 'estado', titulo: 'Estado', celda: (v) => <EstadoYCalidad v={v} />, movilCelda: (v) => <EstadoYCalidad v={v} />,
+      orden: (v) => (v.estado === 'cerrado' ? `${v.revisar ? 'a' : 'b'}${v.calidad}` : v.estado),
+      exportar: { valor: (v) => (v.revisar && v.estado !== 'anulado' ? 'revisar' : v.estado), titulo: 'Estado' },
+    },
+    { id: 'calidad', titulo: 'Calidad', soloExportar: true, celda: () => null, exportar: { valor: (v) => v.calidad } },
   ];
 
   return (
     <div className="flex flex-col gap-5">
       <EncabezadoPagina titulo="Viajes" descripcion={`${periodo.texto}. Cada ruta con su cálculo de combustible y su calidad.`} />
-      <form className="grid grid-cols-2 gap-3 rounded-xl border-2 border-linea bg-superficie p-3 md:grid-cols-5" onSubmit={(e) => e.preventDefault()}>
+      <PanelFiltros
+        columnas={4}
+        resumen={[
+          NOMBRES_PERIODO[clave],
+          unidad ? etiquetaUnidad(unidades.find((u) => u.id === unidad) ?? {}) : 'todos los camiones',
+          chofer ? (choferes.find((c) => c.id === chofer)?.nombre ?? '') : '',
+          estado ? ESTADOS[estado] : '',
+        ]}
+        activos={[clave !== 'mes', unidad, chofer, estado].filter(Boolean).length}
+        alLimpiar={() => {
+          setClave('mes');
+          setUnidad('');
+          setChofer('');
+          setEstado('');
+        }}
+      >
         <Campo etiqueta="Período">
           {(p) => (
             <Seleccion {...p} value={clave} onChange={(e) => setClave(e.target.value as ClavePeriodo)}>
@@ -102,22 +135,22 @@ export function ListaViajes() {
           {(p) => (
             <Seleccion {...p} value={estado} onChange={(e) => setEstado(e.target.value)}>
               <option value="">Todos</option>
-              <option value="en_curso">En ruta</option>
-              <option value="cerrado">Cerradas</option>
-              <option value="revisar">Para revisar</option>
-              <option value="anulado">Anuladas</option>
+              {Object.entries(ESTADOS).map(([v, texto]) => <option key={v} value={v}>{texto}</option>)}
             </Seleccion>
           )}
         </Campo>
-        <Campo etiqueta="Buscar">
-          {(p) => (
-            <div className="relative">
-              <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-tinta-2" />
-              <Entrada {...p} value={busqueda} onChange={(e) => setBusqueda(e.target.value)} placeholder="Folio, ruta, placa" className="pl-10" />
-            </div>
-          )}
-        </Campo>
-      </form>
+      </PanelFiltros>
+      <div className="relative">
+        <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-tinta-2" />
+        <Entrada
+          type="search"
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          placeholder="Buscar por folio, destino, placa o chofer"
+          aria-label="Buscar viajes"
+          className="pl-10"
+        />
+      </div>
       {consulta.error && <MensajeError error={traducirError(consulta.error)} />}
       <Tabla
         titulo={`${num(filas.length)} ${filas.length === 1 ? 'viaje' : 'viajes'}`}

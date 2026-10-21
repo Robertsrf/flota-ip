@@ -9,7 +9,7 @@ import { VerFoto } from '@/components/estructura';
 import { ConfirmarConMotivo, Hoja } from '@/components/hoja';
 import { Tabla, type Columna } from '@/components/tabla';
 import { rpc, type Ciclo, type Gasto, type Repostaje } from '@/lib/api';
-import { bs, fecha, fechaHora, litros as fLitros, num, tasa, usd } from '@/lib/formato';
+import { bs, fecha, fechaHora, kml, litros as fLitros, num, tasa, usd } from '@/lib/formato';
 import { useSesion } from '@/lib/sesion';
 import { useCategorias, usePrecios } from '@/features/cabina/datos';
 import { AccionesRegistro, HistorialAuditoria } from './Acciones';
@@ -22,17 +22,17 @@ export function TablaRepostajes({ filas, cargando, mostrarUnidad = true, nombreE
 }) {
   const [elegido, setElegido] = useState<Repostaje | null>(null);
   const columnas: Columna<Repostaje>[] = [
-    { id: 'folio', titulo: 'Folio', celda: (r) => <span className={`font-bold ${r.anulado ? 'line-through' : ''}`}>{r.folio_txt}</span>, orden: (r) => r.folio, exportar: { valor: (r) => r.folio_txt } },
+    { id: 'folio', titulo: 'Folio', celda: (r) => <span className={`font-bold ${r.anulado ? 'line-through' : ''}`}>{r.folio_txt}</span>, movilCelda: (r) => <span className={r.anulado ? 'line-through' : ''}>{r.folio_txt}</span>, orden: (r) => r.folio, exportar: { valor: (r) => r.folio_txt } },
     { id: 'fecha', titulo: 'Fecha', movil: 'principal', celda: (r) => fechaHora(r.fecha), orden: (r) => r.fecha, exportar: { valor: (r) => r.fecha, tipo: 'fechaHora' } },
-    ...(mostrarUnidad ? [{ id: 'unidad', titulo: 'Unidad', celda: (r: Repostaje) => r.unidad_nombre, orden: (r: Repostaje) => r.unidad_nombre, exportar: { valor: (r: Repostaje) => r.unidad_nombre } }] : []),
-    { id: 'lectura', titulo: 'Km / h', alinear: 'der', celda: (r) => num(r.lectura_medidor), orden: (r) => Number(r.lectura_medidor ?? -1), exportar: { valor: (r) => r.lectura_medidor, tipo: 'entero', titulo: 'Lectura (km u horas)' } },
-    { id: 'litros', titulo: 'Litros', alinear: 'der', celda: (r) => num(r.litros, 2), orden: (r) => Number(r.litros), exportar: { valor: (r) => r.litros, tipo: 'litros' } },
-    { id: 'precio', titulo: 'Precio/L', alinear: 'der', celda: (r) => `$ ${num(r.precio_usd_litro, 2)}`, orden: (r) => Number(r.precio_usd_litro), exportar: { valor: (r) => r.precio_usd_litro, tipo: 'decimal', titulo: 'Precio por litro (USD)' } },
-    { id: 'monto', titulo: 'Monto', alinear: 'der', celda: (r) => usd(r.monto_usd), orden: (r) => Number(r.monto_usd), exportar: { valor: (r) => r.monto_usd, tipo: 'usd', titulo: 'Monto' } },
-    { id: 'lleno', titulo: 'Tanque', celda: (r) => (r.tanque_lleno ? 'Lleno' : 'Parcial'), orden: (r) => (r.tanque_lleno ? 1 : 0), exportar: { valor: (r) => (r.tanque_lleno ? 'lleno' : 'parcial'), titulo: 'Tanque' } },
+    ...(mostrarUnidad ? [{ id: 'unidad', titulo: 'Unidad', celda: (r: Repostaje) => r.unidad_nombre, movilCelda: (r: Repostaje) => r.unidad_nombre, orden: (r: Repostaje) => r.unidad_nombre, exportar: { valor: (r: Repostaje) => r.unidad_nombre } }] : []),
+    { id: 'lectura', titulo: 'Km / h', alinear: 'der', movil: 'oculta', celda: (r) => num(r.lectura_medidor), orden: (r) => Number(r.lectura_medidor ?? -1), exportar: { valor: (r) => r.lectura_medidor, tipo: 'entero', titulo: 'Lectura (km u horas)' } },
+    { id: 'litros', titulo: 'Litros', alinear: 'der', movilCelda: (r) => `${fLitros(r.litros)} a $ ${num(r.precio_usd_litro, 2)}`, celda: (r) => num(r.litros, 2), orden: (r) => Number(r.litros), exportar: { valor: (r) => r.litros, tipo: 'litros' } },
+    { id: 'precio', titulo: 'Precio/L', alinear: 'der', movil: 'oculta', celda: (r) => `$ ${num(r.precio_usd_litro, 2)}`, orden: (r) => Number(r.precio_usd_litro), exportar: { valor: (r) => r.precio_usd_litro, tipo: 'decimal', titulo: 'Precio por litro (USD)' } },
+    { id: 'monto', titulo: 'Monto', alinear: 'der', movil: 'derecha', celda: (r) => usd(r.monto_usd), orden: (r) => Number(r.monto_usd), exportar: { valor: (r) => r.monto_usd, tipo: 'usd', titulo: 'Monto' } },
+    { id: 'lleno', titulo: 'Tanque', movilCelda: (r) => (r.tanque_lleno ? 'Llenó' : 'Parcial'), celda: (r) => (r.tanque_lleno ? 'Lleno' : 'Parcial'), orden: (r) => (r.tanque_lleno ? 1 : 0), exportar: { valor: (r) => (r.tanque_lleno ? 'lleno' : 'parcial'), titulo: 'Tanque' } },
     { id: 'viaje', titulo: 'Ruta', movil: 'oculta', celda: (r) => r.viaje_folio_txt ?? 'Suelta', exportar: { valor: (r) => r.viaje_folio_txt ?? '' } },
     { id: 'chofer', titulo: 'Registró', movil: 'oculta', celda: (r) => r.chofer_nombre ?? r.registrado_por_nombre ?? '—', exportar: { valor: (r) => r.registrado_por_nombre } },
-    { id: 'estado', titulo: 'Estado', movil: 'oculta', celda: (r) => (r.anulado ? <Etiqueta tono="peligro">Anulada</Etiqueta> : r.carga_previa_omitida ? <Etiqueta>Carga anterior omitida</Etiqueta> : ''), exportar: { valor: (r) => (r.anulado ? 'anulada' : '') } },
+    { id: 'estado', titulo: 'Estado', movilCelda: (r) => (r.anulado ? <Etiqueta tono="peligro">Anulada</Etiqueta> : null), celda: (r) => (r.anulado ? <Etiqueta tono="peligro">Anulada</Etiqueta> : r.carga_previa_omitida ? <Etiqueta>Carga anterior omitida</Etiqueta> : ''), exportar: { valor: (r) => (r.anulado ? 'anulada' : '') } },
   ];
   return (
     <>
@@ -103,17 +103,21 @@ export function TablaGastos({ filas, cargando, mostrarUnidad = true, nombreExpor
 }) {
   const [elegido, setElegido] = useState<Gasto | null>(null);
   const columnas: Columna<Gasto>[] = [
-    { id: 'folio', titulo: 'Folio', celda: (g) => <span className={`font-bold ${g.anulado ? 'line-through' : ''}`}>{g.folio_txt}</span>, orden: (g) => g.folio, exportar: { valor: (g) => g.folio_txt } },
-    { id: 'fecha', titulo: 'Fecha', celda: (g) => fecha(g.fecha), orden: (g) => g.fecha, exportar: { valor: (g) => g.fecha, tipo: 'fecha' } },
-    ...(mostrarUnidad ? [{ id: 'unidad', titulo: 'Unidad', celda: (g: Gasto) => g.unidad_nombre, orden: (g: Gasto) => g.unidad_nombre, exportar: { valor: (g: Gasto) => g.unidad_nombre } }] : []),
+    { id: 'folio', titulo: 'Folio', celda: (g) => <span className={`font-bold ${g.anulado ? 'line-through' : ''}`}>{g.folio_txt}</span>, movilCelda: (g) => <span className={g.anulado ? 'line-through' : ''}>{g.folio_txt}</span>, orden: (g) => g.folio, exportar: { valor: (g) => g.folio_txt } },
+    { id: 'fecha', titulo: 'Fecha', movilCelda: (g) => fecha(g.fecha), celda: (g) => fecha(g.fecha), orden: (g) => g.fecha, exportar: { valor: (g) => g.fecha, tipo: 'fecha' } },
+    ...(mostrarUnidad ? [{ id: 'unidad', titulo: 'Unidad', movilCelda: (g: Gasto) => g.unidad_nombre, celda: (g: Gasto) => g.unidad_nombre, orden: (g: Gasto) => g.unidad_nombre, exportar: { valor: (g: Gasto) => g.unidad_nombre } }] : []),
     { id: 'cat', titulo: 'Categoría', movil: 'principal', celda: (g) => g.categoria_nombre, orden: (g) => g.categoria_nombre, exportar: { valor: (g) => g.categoria_nombre } },
     { id: 'desc', titulo: 'Descripción', movil: 'oculta', envolver: true, celda: (g) => <span className="line-clamp-1">{g.descripcion ?? '—'}</span>, exportar: { valor: (g) => g.descripcion } },
-    { id: 'original', titulo: 'Monto original', alinear: 'der', celda: (g) => (g.moneda === 'VES' ? bs(g.monto) : usd(g.monto)), orden: (g) => Number(g.monto_usd), exportar: { valor: (g) => g.moneda, titulo: 'Moneda' } },
+    { id: 'original', titulo: 'Monto original', alinear: 'der', movilCelda: (g) => (g.moneda === 'VES' ? `Pagado en ${bs(g.monto)}` : null), celda: (g) => (g.moneda === 'VES' ? bs(g.monto) : usd(g.monto)), orden: (g) => Number(g.monto_usd), exportar: { valor: (g) => g.moneda, titulo: 'Moneda' } },
     { id: 'tasa', titulo: 'Tasa', alinear: 'der', movil: 'oculta', celda: (g) => (g.moneda === 'VES' ? num(g.bs_por_usd, 2) : '—'), exportar: { valor: (g) => g.bs_por_usd, tipo: 'decimal', titulo: 'Tasa BCV (Bs por USD)' } },
-    { id: 'usd', titulo: 'USD', alinear: 'der', celda: (g) => usd(g.monto_usd), orden: (g) => Number(g.monto_usd), exportar: { valor: (g) => g.monto_usd, tipo: 'usd', titulo: 'Monto' } },
+    { id: 'usd', titulo: 'USD', alinear: 'der', movil: 'derecha', celda: (g) => usd(g.monto_usd), orden: (g) => Number(g.monto_usd), exportar: { valor: (g) => g.monto_usd, tipo: 'usd', titulo: 'Monto' } },
     { id: 'bs', titulo: 'Bs', alinear: 'der', movil: 'oculta', celda: (g) => (g.monto_bs == null ? '—' : num(g.monto_bs, 2)), exportar: { valor: (g) => g.monto_bs, tipo: 'bs', titulo: 'Monto' } },
     {
       id: 'estado', titulo: 'Estado',
+      movilCelda: (g) =>
+        g.anulado ? <Etiqueta tono="peligro">Anulado</Etiqueta> : g.estado_aprobacion === 'aprobado' ? null : (
+          <Etiqueta tono={ESTADO[g.estado_aprobacion ?? 'aprobado'].tono}>{ESTADO[g.estado_aprobacion ?? 'aprobado'].texto}</Etiqueta>
+        ),
       celda: (g) => (g.anulado ? <Etiqueta tono="peligro">Anulado</Etiqueta> : <Etiqueta tono={ESTADO[g.estado_aprobacion ?? 'aprobado'].tono}>{ESTADO[g.estado_aprobacion ?? 'aprobado'].texto}</Etiqueta>),
       orden: (g) => g.estado_aprobacion, exportar: { valor: (g) => (g.anulado ? 'anulado' : g.estado_aprobacion) },
     },
@@ -230,13 +234,13 @@ function DetalleGasto({ g, alCerrar }: { g: Gasto; alCerrar: () => void }) {
 // ----- Ciclos lleno a lleno ----------------------------------------------------------------------------
 export function TablaCiclos({ filas, cargando, nombres }: { filas: Ciclo[]; cargando?: boolean; nombres?: Map<string, string> }) {
   const columnas: Columna<Ciclo>[] = [
-    ...(nombres ? [{ id: 'unidad', titulo: 'Camión', celda: (c: Ciclo) => nombres.get(c.unidad_id ?? '') ?? '—', orden: (c: Ciclo) => nombres.get(c.unidad_id ?? ''), exportar: { valor: (c: Ciclo) => nombres.get(c.unidad_id ?? '') } }] : []),
+    ...(nombres ? [{ id: 'unidad', titulo: 'Camión', movilCelda: (c: Ciclo) => nombres.get(c.unidad_id ?? '') ?? '—', celda: (c: Ciclo) => nombres.get(c.unidad_id ?? '') ?? '—', orden: (c: Ciclo) => nombres.get(c.unidad_id ?? ''), exportar: { valor: (c: Ciclo) => nombres.get(c.unidad_id ?? '') } }] : []),
     { id: 'fin', titulo: 'Cierra', movil: 'principal', celda: (c) => fecha(c.fecha_fin), orden: (c) => c.fecha_fin, exportar: { valor: (c) => c.fecha_fin, tipo: 'fecha', titulo: 'Fecha de cierre' } },
-    { id: 'tramo', titulo: 'Tramo (km)', celda: (c) => `${num(c.lectura_inicio)} a ${num(c.lectura_fin)}`, exportar: { valor: (c) => `${c.lectura_inicio}-${c.lectura_fin}`, titulo: 'Tramo' } },
-    { id: 'dist', titulo: 'Distancia', alinear: 'der', celda: (c) => num(c.distancia), orden: (c) => Number(c.distancia), exportar: { valor: (c) => c.distancia, tipo: 'km', titulo: 'Distancia' } },
-    { id: 'litros', titulo: 'Litros', alinear: 'der', celda: (c) => num(c.litros, 2), orden: (c) => Number(c.litros), exportar: { valor: (c) => c.litros, tipo: 'litros' } },
+    { id: 'tramo', titulo: 'Tramo (km)', movilCelda: (c) => `km ${num(c.lectura_inicio)} a ${num(c.lectura_fin)}`, celda: (c) => `${num(c.lectura_inicio)} a ${num(c.lectura_fin)}`, exportar: { valor: (c) => `${c.lectura_inicio}-${c.lectura_fin}`, titulo: 'Tramo' } },
+    { id: 'dist', titulo: 'Distancia', alinear: 'der', movil: 'oculta', celda: (c) => num(c.distancia), orden: (c) => Number(c.distancia), exportar: { valor: (c) => c.distancia, tipo: 'km', titulo: 'Distancia' } },
+    { id: 'litros', titulo: 'Litros', alinear: 'der', movilCelda: (c) => `${num(c.distancia)} km con ${fLitros(c.litros)}`, celda: (c) => num(c.litros, 2), orden: (c) => Number(c.litros), exportar: { valor: (c) => c.litros, tipo: 'litros' } },
     { id: 'cargas', titulo: 'Cargas', alinear: 'der', movil: 'oculta', celda: (c) => num(c.cargas), exportar: { valor: (c) => c.cargas, tipo: 'entero' } },
-    { id: 'rend', titulo: 'km/L', alinear: 'der', celda: (c) => (c.invalido ? 'No válido' : num(c.rendimiento, 2)), orden: (c) => Number(c.rendimiento ?? -1), exportar: { valor: (c) => (c.invalido ? null : c.rendimiento), tipo: 'kml' } },
+    { id: 'rend', titulo: 'km/L', alinear: 'der', movil: 'derecha', movilCelda: (c) => (c.invalido ? 'No válido' : kml(c.rendimiento)), celda: (c) => (c.invalido ? 'No válido' : num(c.rendimiento, 2)), orden: (c) => Number(c.rendimiento ?? -1), exportar: { valor: (c) => (c.invalido ? null : c.rendimiento), tipo: 'kml' } },
   ];
   return (
     <Tabla

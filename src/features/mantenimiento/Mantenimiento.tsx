@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { Boton, Campo, Seleccion } from '@/components/controles';
+import { PanelFiltros } from '@/components/filtros';
 import { EstadoVacio, MensajeError, TableroKpis } from '@/components/datos';
 import { EncabezadoPagina, Pestanas, VerFoto } from '@/components/estructura';
 import type { Gasto } from '@/lib/api';
@@ -86,7 +87,20 @@ export function Mantenimiento() {
         descripcion={`${periodo.texto}. Cada gasto en su moneda original, con la tasa BCV y su equivalente en dólares.`}
         acciones={esOficina && <Boton variante="principal" icono={<Plus aria-hidden className="size-5" />} onClick={() => setNuevo(true)}>Registrar gasto</Boton>}
       />
-      <form className="grid grid-cols-2 gap-3 rounded-xl border-2 border-linea bg-superficie p-3 md:grid-cols-3" onSubmit={(e) => e.preventDefault()}>
+      <PanelFiltros
+        columnas={3}
+        resumen={[
+          NOMBRES_PERIODO[clave],
+          unidad ? etiquetaUnidad(unidades.find((u) => u.id === unidad) ?? {}) : 'todas las unidades',
+          categorias.find((c) => c.id === categoria)?.nombre ?? '',
+        ]}
+        activos={[clave !== '90d', unidad, categoria].filter(Boolean).length}
+        alLimpiar={() => {
+          setClave('90d');
+          setUnidad('');
+          setCategoria('');
+        }}
+      >
         <Campo etiqueta="Período">
           {(p) => (
             <Seleccion {...p} value={clave} onChange={(e) => setClave(e.target.value as ClavePeriodo)}>
@@ -110,7 +124,7 @@ export function Mantenimiento() {
             </Seleccion>
           )}
         </Campo>
-      </form>
+      </PanelFiltros>
       {gastos.error && <MensajeError error={traducirError(gastos.error)} />}
       <TableroKpis
         cargando={gastos.isLoading}

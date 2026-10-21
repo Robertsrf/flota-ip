@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Plus } from 'lucide-react';
 import { Boton, Campo, Seleccion } from '@/components/controles';
+import { PanelFiltros } from '@/components/filtros';
 import { MensajeError, TableroKpis } from '@/components/datos';
 import { EncabezadoPagina, Pestanas } from '@/components/estructura';
 import type { Ciclo, Repostaje } from '@/lib/api';
@@ -52,7 +53,19 @@ export function Combustible() {
         descripcion={`${periodo.texto}. Cargas de camiones y plantas, con el precio copiado al momento de cada carga.`}
         acciones={esOficina && <Boton variante="principal" icono={<Plus aria-hidden className="size-5" />} onClick={() => setNuevo(true)}>Registrar repostaje</Boton>}
       />
-      <form className="grid grid-cols-2 gap-3 rounded-xl border-2 border-linea bg-superficie p-3 md:grid-cols-3" onSubmit={(e) => e.preventDefault()}>
+      <PanelFiltros
+        columnas={3}
+        resumen={[
+          NOMBRES_PERIODO[clave],
+          unidad ? (nombres.get(unidad) ?? '') : tipo === 'camion' ? 'solo camiones' : tipo === 'planta' ? 'solo plantas' : 'camiones y plantas',
+        ]}
+        activos={[clave !== 'mes', unidad, tipo].filter(Boolean).length}
+        alLimpiar={() => {
+          setClave('mes');
+          setUnidad('');
+          setTipo('');
+        }}
+      >
         <Campo etiqueta="Período">
           {(p) => (
             <Seleccion {...p} value={clave} onChange={(e) => setClave(e.target.value as ClavePeriodo)}>
@@ -77,15 +90,15 @@ export function Combustible() {
             </Seleccion>
           )}
         </Campo>
-      </form>
+      </PanelFiltros>
       {cargas.error && <MensajeError error={traducirError(cargas.error)} />}
       <TableroKpis
         cargando={cargas.isLoading}
         datos={[
           { titulo: 'Cargas', valor: num(validas.length) },
           { titulo: 'Litros', valor: fLitros(litros, 0) },
-          { titulo: 'Pagado', valor: usd(monto) },
-          { titulo: 'Precio promedio', valor: litros > 0 ? `${usd(monto / litros, 3)}/L` : '—' },
+          { titulo: 'Pagado', valor: usd(monto), ayuda: 'Suma de lo pagado en las cargas del período (las anuladas no cuentan).' },
+          { titulo: 'Precio promedio', valor: litros > 0 ? `${usd(monto / litros, 3)}/L` : '—', ayuda: 'Lo pagado entre los litros cargados: el precio que en realidad salió cada litro.' },
         ]}
       />
       <Pestanas
@@ -97,7 +110,7 @@ export function Combustible() {
             contenido: () => (
               <div className="flex flex-col gap-3">
                 <p className="text-base text-tinta-2">
-                  Rendimiento entre dos cargas con el tanque lleno (método Fleetio/Fuelly). Sirve para validar los viajes: si en un mes difieren más de 10 %, aparece una alerta.
+                  Rendimiento medido entre dos cargas con el tanque lleno, aunque haya km fuera de rutas registradas. Sirve para validar los viajes: si en un mes difieren más de 10 %, aparece una alerta.
                 </p>
                 <TablaCiclos filas={ciclos.data ?? []} cargando={ciclos.isLoading} nombres={nombres} />
               </div>

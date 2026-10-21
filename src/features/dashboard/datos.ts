@@ -116,6 +116,15 @@ export function useEnRuta() {
   });
 }
 
+/** A dónde lleva cada alerta: la ruta, la pantalla de vencimientos o la unidad */
+export function enlaceAlerta(x: Alerta): string {
+  if (x.viaje_id) return `/viajes/${x.viaje_id}`;
+  if (x.tipo === 'servicio') return '/vencimientos?pestana=servicios';
+  if (x.tipo === 'documento') return '/vencimientos?pestana=documentos';
+  if (x.unidad_id) return `/unidades/${x.unidad_id}`;
+  return '/revision';
+}
+
 export function useAlertas(unidad?: string | null) {
   return useQuery({
     queryKey: ['dashboard', 'alertas', unidad ?? null],

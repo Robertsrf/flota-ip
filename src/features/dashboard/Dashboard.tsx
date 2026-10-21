@@ -1,18 +1,21 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Campo, Entrada, Seleccion } from '@/components/controles';
+import { PanelFiltros } from '@/components/filtros';
 import { Etiqueta, MensajeError, Rombo, TableroKpis, type DatoKpi } from '@/components/datos';
 import { EncabezadoPagina, Portico, Seccion, type Senal } from '@/components/estructura';
 import { Tabla, type Columna } from '@/components/tabla';
 import { nombreUnidad, type Alerta, type CostoDestino, type CostoRuta, type Kpis, type ResumenUnidad } from '@/lib/api';
 import { traducirError } from '@/lib/errores';
 import { duracion, hora, km as fKm, kml, l100, litros as fLitros, mesCorto, num, usd, usdKm, variacion } from '@/lib/formato';
-import { useAhora } from '@/lib/ganchos';
+import { useAhora, useEsAncho } from '@/lib/ganchos';
+import { useSesion } from '@/lib/sesion';
+import { PrimerosPasos } from './PrimerosPasos';
 import { useTiempoReal } from '@/lib/tiempoReal';
 import { GraficoBarrasH, GraficoCostoKm, GraficoGastoMensual, GraficoTendencia, type MesGasto } from './graficos';
 import { mesesDelRango, NOMBRES_PERIODO, ultimos12Meses, type ClavePeriodo } from './periodo';
 import {
-  useAlertas, useCostoDestino, useCostoRuta, useEnRuta, useFiltros, useKpiMensual, useKpis, useMantCategoria, useOpcionesFiltro, useResumenUnidades,
+  enlaceAlerta, useAlertas, useCostoDestino, useCostoRuta, useEnRuta, useFiltros, useKpiMensual, useKpis, useMantCategoria, useOpcionesFiltro, useResumenUnidades,
 } from './datos';
 
 const TIPO_ALERTA: Record<string, string> = {
@@ -23,10 +26,13 @@ const TIPO_ALERTA: Record<string, string> = {
   divergencia: 'Divergencia de cálculo',
   revisar: 'Para revisar',
   gasto_pendiente: 'Gasto por aprobar',
+  servicio: 'Servicio por hacer',
+  documento: 'Documento por vencer',
 };
 
 export function Dashboard() {
   useTiempoReal();
+  const { esOficina } = useSesion();
   const { filtros, periodo, cambiar } = useFiltros();
   const actual = useKpis(filtros, periodo.desde, periodo.hasta);
   const anterior = useKpis(filtros, periodo.antesDesde, periodo.antesHasta);
@@ -51,15 +57,35 @@ export function Dashboard() {
   const cmp = (a?.viajes ?? 0) >= 3;
 
   const kpis: DatoKpi[] = [
-    { titulo: 'Gasto total', valor: usd(k?.gasto_total), variacion: variacion(k?.gasto_total, a?.gasto_total, cmp), mejorSiSube: false, nota: conFiltroPersona ? 'Sin mantenimiento (filtro por chofer o destino)' : undefined },
+    {
+      titulo: 'Gasto total', valor: usd(k?.gasto_total), variacion: variacion(k?.gasto_total, a?.gasto_total, cmp), mejorSiSube: false,
+      nota: conFiltroPersona ? 'Sin mantenimiento (filtro por chofer o destino)' : undefined,
+      ayuda: 'Combustible comprado más mantenimiento aprobado en el período, en dólares.',
+    },
     {
       titulo: 'Combustible', valor: usd(k?.gasto_comb), variacion: variacion(k?.gasto_comb, a?.gasto_comb, cmp), mejorSiSube: false,
       secundario: k && Number(k.gasto_comb_plantas) > 0 ? `Plantas: ${usd(k.gasto_comb_plantas)}` : undefined,
+      ayuda: 'Lo pagado en cargas de camiones y plantas. Cada carga cuenta una vez; las de una ruta, en el mes en que llegó.',
     },
-    { titulo: 'Mantenimiento', valor: k?.gasto_mant == null ? '—' : usd(k.gasto_mant), variacion: k?.gasto_mant == null ? undefined : variacion(k.gasto_mant, a?.gasto_mant, cmp), mejorSiSube: false },
-    { titulo: 'Km recorridos', valor: fKm(k?.km_total), variacion: variacion(k?.km_total, a?.km_total, cmp), mejorSiSube: true, secundario: k ? `${num(k.viajes)} viajes` : undefined },
-    { titulo: 'Rendimiento', valor: kml(k?.rendimiento), variacion: variacion(k?.rendimiento, a?.rendimiento, cmp), mejorSiSube: true, secundario: l100(k?.litros_100km) },
-    { titulo: 'Costo por km', valor: usdKm(k?.costo_km_total), variacion: variacion(k?.costo_km_total, a?.costo_km_total, cmp), mejorSiSube: false, secundario: `Solo combustible: ${usdKm(k?.costo_km_comb)}` },
+    {
+      titulo: 'Mantenimiento', valor: k?.gasto_mant == null ? '—' : usd(k.gasto_mant),
+      variacion: k?.gasto_mant == null ? undefined : variacion(k.gasto_mant, a?.gasto_mant, cmp), mejorSiSube: false,
+      ayuda: 'Gastos aprobados por flota. Los que esperan aprobación o fueron rechazados no suman.',
+    },
+    {
+      titulo: 'Km recorridos', valor: fKm(k?.km_total), variacion: variacion(k?.km_total, a?.km_total, cmp), mejorSiSube: true,
+      secundario: k ? `${num(k.viajes)} viajes` : undefined, ayuda: 'Suma de los km de las rutas que llegaron en el período.',
+    },
+    {
+      titulo: 'Rendimiento', valor: kml(k?.rendimiento), variacion: variacion(k?.rendimiento, a?.rendimiento, cmp), mejorSiSube: true,
+      secundario: l100(k?.litros_100km),
+      ayuda: 'Cuántos km hace la flota con un litro: todos los km entre todos los litros consumidos (no el promedio de los viajes). Más alto es mejor.',
+    },
+    {
+      titulo: 'Costo por km', valor: usdKm(k?.costo_km_total), variacion: variacion(k?.costo_km_total, a?.costo_km_total, cmp), mejorSiSube: false,
+      secundario: `Solo combustible: ${usdKm(k?.costo_km_comb)}`,
+      ayuda: 'Combustible más mantenimiento, dividido entre los km recorridos. Más bajo es mejor.',
+    },
   ];
 
   // Gasto mensual (12 meses)
@@ -116,9 +142,14 @@ export function Dashboard() {
 
   return (
     <div className="flex flex-col gap-6">
-      <EncabezadoPagina titulo="Dashboard" descripcion={`${periodo.texto}. Variaciones ${periodo.comparacion}.`} />
+      <EncabezadoPagina
+        titulo="Dashboard"
+        descripcion={`${periodo.texto}. ▲/▼ comparan con ${periodo.comparacion.replace(/^vs\.\s*/, '')}. Toca el nombre de una cifra para ver qué significa.`}
+      />
 
-      <FiltrosDashboard filtros={filtros} cambiar={cambiar} opciones={opciones.data} />
+      <PrimerosPasos activo={esOficina} />
+
+      <FiltrosDashboard filtros={filtros} cambiar={cambiar} opciones={opciones.data} periodoTexto={NOMBRES_PERIODO[filtros.periodo]} />
 
       {errorCarga && <MensajeError error={traducirError(errorCarga)} />}
       <TableroKpis datos={kpis} cargando={actual.isLoading} />
@@ -203,13 +234,26 @@ interface OpcionesFiltro {
   destinos: { id: string; nombre: string; activo: boolean }[];
 }
 
-function FiltrosDashboard({ filtros, cambiar, opciones }: {
+function FiltrosDashboard({ filtros, cambiar, opciones, periodoTexto }: {
   filtros: ReturnType<typeof useFiltros>['filtros'];
   cambiar: ReturnType<typeof useFiltros>['cambiar'];
   opciones?: OpcionesFiltro;
+  periodoTexto: string;
 }) {
+  const unidad = opciones?.unidades.find((u) => u.id === filtros.unidad);
   return (
-    <form aria-label="Filtros del dashboard" className="grid grid-cols-2 gap-3 rounded-xl border-2 border-linea bg-superficie p-3 md:grid-cols-3 xl:grid-cols-5" onSubmit={(e) => e.preventDefault()}>
+    <PanelFiltros
+      columnas={filtros.periodo === 'rango' ? 6 : 5}
+      resumen={[
+        periodoTexto,
+        unidad ? (unidad.placa ?? unidad.alias ?? '') : 'toda la flota',
+        opciones?.choferes.find((c) => c.id === filtros.chofer)?.nombre ?? '',
+        opciones?.destinos.find((d) => d.id === filtros.destino)?.nombre ?? '',
+        filtros.soloExactos ? 'solo exactos' : '',
+      ]}
+      activos={[filtros.periodo !== 'mes', filtros.unidad, filtros.chofer, filtros.destino, filtros.soloExactos].filter(Boolean).length}
+      alLimpiar={() => cambiar({ periodo: null, desde: null, hasta: null, unidad: null, chofer: null, destino: null, calidad: null })}
+    >
       <Campo etiqueta="Período">
         {(p) => (
           <Seleccion {...p} value={filtros.periodo} onChange={(e) => cambiar({ periodo: e.target.value as ClavePeriodo })}>
@@ -276,14 +320,17 @@ function FiltrosDashboard({ filtros, cambiar, opciones }: {
           </Seleccion>
         )}
       </Campo>
-    </form>
+    </PanelFiltros>
   );
 }
 
 // ----- Alertas ----------------------------------------------------------------------------------
 function ListaAlertas({ alertas }: { alertas: Alerta[] }) {
-  const desvios = alertas.filter((x) => x.tipo !== 'gasto_pendiente');
-  const visibles = desvios.slice(0, 6);
+  const ancho = useEsAncho(768);
+  const desvios = alertas
+    .filter((x) => x.tipo !== 'gasto_pendiente')
+    .sort((p, q) => Number(q.severidad === 'alta') - Number(p.severidad === 'alta'));
+  const visibles = desvios.slice(0, ancho ? 6 : 3);
   const ocultas = desvios.length - visibles.length;
   const pendientes = alertas.length - desvios.length;
   return (
@@ -302,10 +349,7 @@ function ListaAlertas({ alertas }: { alertas: Alerta[] }) {
         <ul className="flex flex-col gap-2">
           {visibles.map((x) => (
             <li key={x.id}>
-              <Link
-                to={x.viaje_id ? `/viajes/${x.viaje_id}` : x.unidad_id ? `/unidades/${x.unidad_id}` : '/revision'}
-                className="flex items-start gap-3 rounded-xl border-2 border-linea bg-superficie p-3 hover:border-tinta"
-              >
+              <Link to={enlaceAlerta(x)} className="flex items-start gap-3 rounded-xl border-2 border-linea bg-superficie p-3 hover:border-tinta">
                 <Rombo />
                 <span className="min-w-0">
                   <span className="block text-sm font-bold text-tinta-2">{TIPO_ALERTA[x.tipo ?? ''] ?? x.tipo}</span>
@@ -341,10 +385,10 @@ function ListaAlertas({ alertas }: { alertas: Alerta[] }) {
 function TablaDestinos({ filas, cargando }: { filas: CostoDestino[]; cargando: boolean }) {
   const columnas: Columna<CostoDestino>[] = [
     { id: 'destino', titulo: 'Destino', celda: (f) => f.destino, orden: (f) => f.destino, movil: 'principal', exportar: { valor: (f) => f.destino } },
-    { id: 'viajes', titulo: 'Viajes', celda: (f) => num(f.viajes), orden: (f) => Number(f.viajes), alinear: 'der', exportar: { valor: (f) => f.viajes, tipo: 'entero' } },
-    { id: 'km', titulo: 'Km prom.', celda: (f) => num(f.km_prom), orden: (f) => Number(f.km_prom), alinear: 'der', exportar: { valor: (f) => f.km_prom, tipo: 'km', titulo: 'Km promedio' } },
-    { id: 'costo', titulo: 'Costo prom.', celda: (f) => usd(f.costo_prom), orden: (f) => Number(f.costo_prom), alinear: 'der', exportar: { valor: (f) => f.costo_prom, tipo: 'usd', titulo: 'Costo promedio' } },
-    { id: 'rend', titulo: 'km/L', celda: (f) => num(f.rendimiento, 2), orden: (f) => Number(f.rendimiento), alinear: 'der', exportar: { valor: (f) => f.rendimiento, tipo: 'kml' } },
+    { id: 'viajes', titulo: 'Viajes', movilCelda: (f) => `${num(f.viajes)} ${Number(f.viajes) === 1 ? 'viaje' : 'viajes'}`, celda: (f) => num(f.viajes), orden: (f) => Number(f.viajes), alinear: 'der', exportar: { valor: (f) => f.viajes, tipo: 'entero' } },
+    { id: 'km', titulo: 'Km prom.', movilCelda: (f) => `${fKm(f.km_prom)} c/u`, celda: (f) => num(f.km_prom), orden: (f) => Number(f.km_prom), alinear: 'der', exportar: { valor: (f) => f.km_prom, tipo: 'km', titulo: 'Km promedio' } },
+    { id: 'costo', titulo: 'Costo prom.', movil: 'derecha', celda: (f) => usd(f.costo_prom), orden: (f) => Number(f.costo_prom), alinear: 'der', exportar: { valor: (f) => f.costo_prom, tipo: 'usd', titulo: 'Costo promedio' } },
+    { id: 'rend', titulo: 'km/L', movilCelda: (f) => kml(f.rendimiento), celda: (f) => num(f.rendimiento, 2), orden: (f) => Number(f.rendimiento), alinear: 'der', exportar: { valor: (f) => f.rendimiento, tipo: 'kml' } },
   ];
   return (
     <Tabla filas={filas} columnas={columnas} clave={(f) => f.destino_id ?? f.destino ?? ''} cargando={cargando} nombreExport="costo-por-destino"
@@ -355,11 +399,11 @@ function TablaDestinos({ filas, cargando }: { filas: CostoDestino[]; cargando: b
 function TablaRutas({ filas, cargando }: { filas: CostoRuta[]; cargando: boolean }) {
   const columnas: Columna<CostoRuta>[] = [
     { id: 'ruta', titulo: 'Ruta', envolver: true, celda: (f) => f.ruta, orden: (f) => f.ruta, movil: 'principal', exportar: { valor: (f) => f.ruta } },
-    { id: 'viajes', titulo: 'Viajes', celda: (f) => num(f.viajes), orden: (f) => Number(f.viajes), alinear: 'der', exportar: { valor: (f) => f.viajes, tipo: 'entero' } },
-    { id: 'km', titulo: 'Km prom.', celda: (f) => num(f.km_prom), orden: (f) => Number(f.km_prom), alinear: 'der', exportar: { valor: (f) => f.km_prom, tipo: 'km', titulo: 'Km promedio' } },
-    { id: 'costo', titulo: 'Costo prom.', celda: (f) => usd(f.costo_prom), orden: (f) => Number(f.costo_prom), alinear: 'der', exportar: { valor: (f) => f.costo_prom, tipo: 'usd', titulo: 'Costo promedio' } },
-    { id: 'rend', titulo: 'km/L', celda: (f) => num(f.rendimiento, 2), orden: (f) => Number(f.rendimiento), alinear: 'der', exportar: { valor: (f) => f.rendimiento, tipo: 'kml' } },
-    { id: 'total', titulo: 'Total', celda: (f) => usd(f.costo_total), orden: (f) => Number(f.costo_total), alinear: 'der', exportar: { valor: (f) => f.costo_total, tipo: 'usd', titulo: 'Costo total' } },
+    { id: 'viajes', titulo: 'Viajes', movilCelda: (f) => `${num(f.viajes)} ${Number(f.viajes) === 1 ? 'viaje' : 'viajes'}`, celda: (f) => num(f.viajes), orden: (f) => Number(f.viajes), alinear: 'der', exportar: { valor: (f) => f.viajes, tipo: 'entero' } },
+    { id: 'km', titulo: 'Km prom.', movilCelda: (f) => `${fKm(f.km_prom)} c/u`, celda: (f) => num(f.km_prom), orden: (f) => Number(f.km_prom), alinear: 'der', exportar: { valor: (f) => f.km_prom, tipo: 'km', titulo: 'Km promedio' } },
+    { id: 'costo', titulo: 'Costo prom.', movilCelda: (f) => `${usd(f.costo_prom)} c/u`, celda: (f) => usd(f.costo_prom), orden: (f) => Number(f.costo_prom), alinear: 'der', exportar: { valor: (f) => f.costo_prom, tipo: 'usd', titulo: 'Costo promedio' } },
+    { id: 'rend', titulo: 'km/L', movilCelda: (f) => kml(f.rendimiento), celda: (f) => num(f.rendimiento, 2), orden: (f) => Number(f.rendimiento), alinear: 'der', exportar: { valor: (f) => f.rendimiento, tipo: 'kml' } },
+    { id: 'total', titulo: 'Total', movil: 'derecha', celda: (f) => usd(f.costo_total), orden: (f) => Number(f.costo_total), alinear: 'der', exportar: { valor: (f) => f.costo_total, tipo: 'usd', titulo: 'Costo total' } },
   ];
   return (
     <Tabla filas={filas} columnas={columnas} clave={(f) => f.ruta ?? ''} cargando={cargando} nombreExport="costo-por-ruta"
@@ -380,12 +424,13 @@ function TablaCamiones({ filas, cargando, alElegir, kpis }: { filas: ResumenUnid
       orden: (f) => f.placa, exportar: { valor: (f) => nombreUnidad(f), titulo: 'Camión' },
     },
     {
-      id: 'estado', titulo: 'Estado', movil: 'oculta',
+      id: 'estado', titulo: 'Estado',
+      movilCelda: (f) => (f.estado === 'en_ruta' ? <Etiqueta tono="via">En ruta</Etiqueta> : f.estado === 'taller' ? <Etiqueta tono="alerta">Taller</Etiqueta> : null),
       celda: (f) => (f.estado === 'en_ruta' ? <Etiqueta tono="via">En ruta</Etiqueta> : f.estado === 'disponible' ? 'Disponible' : f.estado === 'taller' ? <Etiqueta tono="alerta">Taller</Etiqueta> : 'Inactivo'),
       orden: (f) => f.estado, exportar: { valor: (f) => f.estado },
     },
-    { id: 'viajes', titulo: 'Viajes', celda: (f) => num(f.viajes), orden: (f) => Number(f.viajes), alinear: 'der', exportar: { valor: (f) => f.viajes, tipo: 'entero' } },
-    { id: 'km', titulo: 'Km período', celda: (f) => num(f.km_total), orden: (f) => Number(f.km_total), alinear: 'der', exportar: { valor: (f) => f.km_total, tipo: 'km', titulo: 'Km del período' } },
+    { id: 'viajes', titulo: 'Viajes', movil: 'oculta', celda: (f) => num(f.viajes), orden: (f) => Number(f.viajes), alinear: 'der', exportar: { valor: (f) => f.viajes, tipo: 'entero' } },
+    { id: 'km', titulo: 'Km período', movilCelda: (f) => `${fKm(f.km_total)} en ${num(f.viajes)} ${Number(f.viajes) === 1 ? 'viaje' : 'viajes'}`, celda: (f) => num(f.km_total), orden: (f) => Number(f.km_total), alinear: 'der', exportar: { valor: (f) => f.km_total, tipo: 'km', titulo: 'Km del período' } },
     {
       id: 'rend', titulo: 'km/L', alinear: 'der',
       celda: (f) => {
@@ -393,12 +438,17 @@ function TablaCamiones({ filas, cargando, alElegir, kpis }: { filas: ResumenUnid
         const bajo = r != null && prom != null && r < Number(prom) * 0.85;
         return <span className={bajo ? 'font-extrabold text-peligro' : ''}>{r == null ? '—' : num(r, 2)}{bajo && <span className="sr-only"> (15 % o más bajo que la flota)</span>}</span>;
       },
+      movilCelda: (f) => {
+        const r = f.rendimiento == null ? null : Number(f.rendimiento);
+        const bajo = r != null && prom != null && r < Number(prom) * 0.85;
+        return <span className={bajo ? 'font-extrabold text-peligro' : ''}>{kml(r)}{bajo && ' (bajo)'}</span>;
+      },
       orden: (f) => Number(f.rendimiento ?? -1), exportar: { valor: (f) => f.rendimiento, tipo: 'kml' },
     },
     { id: 'litros', titulo: 'Litros', celda: (f) => num(f.litros, 0), orden: (f) => Number(f.litros), alinear: 'der', movil: 'oculta', exportar: { valor: (f) => f.litros, tipo: 'litros', titulo: 'Litros consumidos' } },
-    { id: 'comb', titulo: 'Combustible', celda: (f) => usd(f.gasto_comb), orden: (f) => Number(f.gasto_comb), alinear: 'der', exportar: { valor: (f) => f.gasto_comb, tipo: 'usd', titulo: 'Gasto combustible' } },
-    { id: 'mant', titulo: 'Mantenimiento', celda: (f) => (f.gasto_mant == null ? '—' : usd(f.gasto_mant)), orden: (f) => Number(f.gasto_mant ?? 0), alinear: 'der', exportar: { valor: (f) => f.gasto_mant, tipo: 'usd', titulo: 'Gasto mantenimiento' } },
-    { id: 'ckm', titulo: '$/km', celda: (f) => num(f.costo_km_total, 4), orden: (f) => Number(f.costo_km_total ?? 0), alinear: 'der', exportar: { valor: (f) => f.costo_km_total, tipo: 'usdKm', titulo: 'Costo por km' } },
+    { id: 'comb', titulo: 'Combustible', movil: 'oculta', celda: (f) => usd(f.gasto_comb), orden: (f) => Number(f.gasto_comb), alinear: 'der', exportar: { valor: (f) => f.gasto_comb, tipo: 'usd', titulo: 'Gasto combustible' } },
+    { id: 'mant', titulo: 'Mantenimiento', movil: 'oculta', celda: (f) => (f.gasto_mant == null ? '—' : usd(f.gasto_mant)), orden: (f) => Number(f.gasto_mant ?? 0), alinear: 'der', exportar: { valor: (f) => f.gasto_mant, tipo: 'usd', titulo: 'Gasto mantenimiento' } },
+    { id: 'ckm', titulo: '$/km', movil: 'derecha', movilCelda: (f) => usdKm(f.costo_km_total), celda: (f) => num(f.costo_km_total, 4), orden: (f) => Number(f.costo_km_total ?? 0), alinear: 'der', exportar: { valor: (f) => f.costo_km_total, tipo: 'usdKm', titulo: 'Costo por km' } },
   ];
   return (
     <Tabla titulo="Camiones" filas={filas} columnas={columnas} clave={(f) => f.unidad_id ?? ''} cargando={cargando} alElegir={alElegir} nombreExport="camiones-periodo"
@@ -409,11 +459,11 @@ function TablaCamiones({ filas, cargando, alElegir, kpis }: { filas: ResumenUnid
 function TablaPlantas({ filas, alElegir }: { filas: ResumenUnidad[]; alElegir: (r: ResumenUnidad) => void }) {
   const columnas: Columna<ResumenUnidad>[] = [
     { id: 'planta', titulo: 'Planta eléctrica', celda: (f) => <span className="font-bold">{f.alias ?? f.nombre}</span>, orden: (f) => f.alias, movil: 'principal', exportar: { valor: (f) => f.alias ?? f.nombre, titulo: 'Planta' } },
-    { id: 'cargas', titulo: 'Cargas', celda: (f) => num(f.cargas), orden: (f) => Number(f.cargas), alinear: 'der', exportar: { valor: (f) => f.cargas, tipo: 'entero' } },
-    { id: 'litros', titulo: 'Litros cargados', celda: (f) => fLitros(f.litros_cargados), orden: (f) => Number(f.litros_cargados), alinear: 'der', exportar: { valor: (f) => f.litros_cargados, tipo: 'litros' } },
+    { id: 'cargas', titulo: 'Cargas', movil: 'oculta', celda: (f) => num(f.cargas), orden: (f) => Number(f.cargas), alinear: 'der', exportar: { valor: (f) => f.cargas, tipo: 'entero' } },
+    { id: 'litros', titulo: 'Litros cargados', movilCelda: (f) => `${fLitros(f.litros_cargados)} en ${num(f.cargas)} ${Number(f.cargas) === 1 ? 'carga' : 'cargas'}`, celda: (f) => fLitros(f.litros_cargados), orden: (f) => Number(f.litros_cargados), alinear: 'der', exportar: { valor: (f) => f.litros_cargados, tipo: 'litros' } },
     { id: 'comb', titulo: 'Combustible', celda: (f) => usd(f.gasto_comb), orden: (f) => Number(f.gasto_comb), alinear: 'der', exportar: { valor: (f) => f.gasto_comb, tipo: 'usd', titulo: 'Gasto combustible' } },
     { id: 'mant', titulo: 'Mantenimiento', celda: (f) => (f.gasto_mant == null ? '—' : usd(f.gasto_mant)), orden: (f) => Number(f.gasto_mant ?? 0), alinear: 'der', exportar: { valor: (f) => f.gasto_mant, tipo: 'usd', titulo: 'Gasto mantenimiento' } },
-    { id: 'total', titulo: 'Total', celda: (f) => usd(f.gasto_total), orden: (f) => Number(f.gasto_total), alinear: 'der', exportar: { valor: (f) => f.gasto_total, tipo: 'usd', titulo: 'Gasto total' } },
+    { id: 'total', titulo: 'Total', movil: 'derecha', celda: (f) => usd(f.gasto_total), orden: (f) => Number(f.gasto_total), alinear: 'der', exportar: { valor: (f) => f.gasto_total, tipo: 'usd', titulo: 'Gasto total' } },
   ];
   return (
     <Tabla titulo="Plantas eléctricas" filas={filas} columnas={columnas} clave={(f) => f.unidad_id ?? ''} alElegir={alElegir} nombreExport="plantas-periodo"

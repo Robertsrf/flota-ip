@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { AreaTexto, Boton, Campo } from './controles';
 import { MensajeError } from './datos';
@@ -17,6 +17,7 @@ interface PropsHoja {
 /** Hoja: sube desde abajo en el teléfono; ventana centrada en escritorio. Usa <dialog> nativo. */
 export function Hoja({ abierta, alCerrar, titulo, descripcion, children, pie, ancho = 'normal' }: PropsHoja) {
   const ref = useRef<HTMLDialogElement>(null);
+  const idTitulo = useId();
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
@@ -35,14 +36,14 @@ export function Hoja({ abierta, alCerrar, titulo, descripcion, children, pie, an
       onClick={(e) => {
         if (e.target === ref.current) alCerrar();
       }}
-      aria-labelledby="hoja-titulo"
+      aria-labelledby={idTitulo}
       className={`fixed m-0 max-h-[92dvh] w-full max-w-none overflow-hidden bg-transparent p-0 text-tinta backdrop:bg-black/50
         inset-x-0 bottom-0 top-auto md:inset-0 md:m-auto md:h-fit ${ancho === 'ancho' ? 'md:max-w-3xl' : 'md:max-w-lg'}`}
     >
       <div className="flex max-h-[92dvh] flex-col rounded-t-2xl border-2 border-linea bg-superficie md:rounded-xl">
         <div className="flex items-start justify-between gap-3 border-b border-linea px-5 pb-3 pt-4">
           <div>
-            <h2 id="hoja-titulo" className="text-xl font-extrabold">
+            <h2 id={idTitulo} className="text-xl font-extrabold">
               {titulo}
             </h2>
             {descripcion && <p className="mt-1 text-sm text-tinta-2">{descripcion}</p>}

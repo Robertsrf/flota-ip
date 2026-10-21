@@ -1,5 +1,5 @@
-import type { ReactNode } from 'react';
-import { CircleAlert, CircleCheck, Gauge } from 'lucide-react';
+import { useId, useState, type ReactNode } from 'react';
+import { CircleAlert, CircleCheck, Gauge, Info } from 'lucide-react';
 import type { ErrorApp } from '@/lib/errores';
 import { aNumero, num } from '@/lib/formato';
 
@@ -66,6 +66,49 @@ export interface DatoKpi {
   variacion?: number | null;
   mejorSiSube?: boolean;
   nota?: string;
+  /** qué significa la cifra y cómo se calcula; se abre al tocar el título */
+  ayuda?: string;
+}
+
+function Kpi({ d, cargando }: { d: DatoKpi; cargando?: boolean }) {
+  const [abierta, setAbierta] = useState(false);
+  const id = useId();
+  return (
+    <div className="flex flex-col gap-1 bg-superficie p-4 max-md:odd:last:col-span-2">
+      <dt className="text-sm font-semibold text-tinta-2">
+        {d.ayuda ? (
+          <button
+            type="button"
+            aria-expanded={abierta}
+            aria-controls={id}
+            aria-label={`${d.titulo}: qué significa`}
+            onClick={() => setAbierta((a) => !a)}
+            className="-mx-1.5 -my-3 inline-flex min-h-11 items-center gap-1.5 rounded-md px-1.5 text-left hover:text-tinta"
+          >
+            {d.titulo}
+            <Info aria-hidden className="size-4 shrink-0" />
+          </button>
+        ) : (
+          d.titulo
+        )}
+      </dt>
+      <dd className="cifra text-2xl font-extrabold leading-tight text-tinta">
+        {cargando ? <span className="inline-block h-7 w-28 animate-pulse rounded bg-superficie-2" /> : d.valor}
+      </dd>
+      {!cargando && d.secundario && <dd className="cifra text-sm text-tinta-2">{d.secundario}</dd>}
+      {!cargando && d.variacion !== undefined && (
+        <dd>
+          <Variacion valor={d.variacion} mejorSiSube={d.mejorSiSube ?? true} />
+        </dd>
+      )}
+      {!cargando && d.nota && <dd className="text-xs text-tinta-2">{d.nota}</dd>}
+      {d.ayuda && (
+        <dd id={id} hidden={!abierta} className="mt-1 border-t-2 border-linea pt-2 text-sm leading-snug text-tinta">
+          {d.ayuda}
+        </dd>
+      )}
+    </div>
+  );
 }
 
 /** Fila de indicadores en un solo tablero con divisiones (no tarjetas sueltas) */
@@ -73,19 +116,7 @@ export function TableroKpis({ datos, cargando }: { datos: DatoKpi[]; cargando?: 
   return (
     <dl className={`grid grid-cols-2 gap-px overflow-hidden rounded-xl border-2 border-linea bg-linea ${COLUMNAS_KPI[Math.min(datos.length, 6)] ?? 'md:grid-cols-3 xl:grid-cols-6'}`}>
       {datos.map((d) => (
-        <div key={d.titulo} className="flex flex-col gap-1 bg-superficie p-4">
-          <dt className="text-sm font-semibold text-tinta-2">{d.titulo}</dt>
-          <dd className="cifra text-2xl font-extrabold leading-tight text-tinta">
-            {cargando ? <span className="inline-block h-7 w-28 animate-pulse rounded bg-superficie-2" /> : d.valor}
-          </dd>
-          {!cargando && d.secundario && <dd className="cifra text-sm text-tinta-2">{d.secundario}</dd>}
-          {!cargando && d.variacion !== undefined && (
-            <dd>
-              <Variacion valor={d.variacion} mejorSiSube={d.mejorSiSube ?? true} />
-            </dd>
-          )}
-          {!cargando && d.nota && <dd className="text-xs text-tinta-2">{d.nota}</dd>}
-        </div>
+        <Kpi key={d.titulo} d={d} cargando={cargando} />
       ))}
     </dl>
   );

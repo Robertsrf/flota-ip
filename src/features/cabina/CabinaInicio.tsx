@@ -9,6 +9,7 @@ import { duracion, hora, km as fKm, kml, litros as fLitros, num, usd } from '@/l
 import { traducirError } from '@/lib/errores';
 import { useAhora, usePreferenciaLocal } from '@/lib/ganchos';
 import { useSesion } from '@/lib/sesion';
+import { AvisosVencimiento } from './AvisosVencimiento';
 import { FichaCamion } from './piezas';
 import { useCamiones, useEstadoCabina } from './datos';
 
@@ -52,6 +53,7 @@ export function CabinaInicio() {
           </div>
         </CabeceraCabina>
         <div className="flex flex-1 flex-col gap-4 px-4 pb-4 pt-5">
+          <AvisosVencimiento unidadId={abierto.unidad_id} enRuta />
           <div className="flex flex-wrap items-center gap-2">
             <p className="text-xl font-extrabold">
               {abierto.placa} <span className="font-semibold text-tinta-2">{abierto.unidad_nombre.replace(` (${abierto.placa})`, '')}</span>
@@ -127,6 +129,7 @@ export function CabinaInicio() {
       </CabeceraCabina>
       <div className="flex flex-1 flex-col gap-4 px-4 pb-4 pt-5">
         {error && <MensajeError error={traducirError(error)} />}
+        <AvisosVencimiento unidadId={unidad.id} />
         {ocupado && (
           <MensajeError
             error={{

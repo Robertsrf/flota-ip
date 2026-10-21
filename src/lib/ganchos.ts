@@ -16,6 +16,20 @@ export function useEnLinea(): boolean {
   return useSyncExternalStore(suscribirRed, () => navigator.onLine, () => true);
 }
 
+/** true si la pantalla mide al menos `px` de ancho (1024 = escritorio, donde caben tablas y filtros en línea) */
+export function useEsAncho(px = 1024): boolean {
+  const consulta = `(min-width: ${px}px)`;
+  return useSyncExternalStore(
+    (cb) => {
+      const mq = window.matchMedia(consulta);
+      mq.addEventListener('change', cb);
+      return () => mq.removeEventListener('change', cb);
+    },
+    () => window.matchMedia(consulta).matches,
+    () => true,
+  );
+}
+
 /** Fecha actual que se refresca cada `ms` (para "hace 2 h 15 min") */
 export function useAhora(ms = 30_000): Date {
   const [ahora, setAhora] = useState(() => new Date());

@@ -6,8 +6,13 @@ test('flota ve el dashboard con KPI, rutas en curso y alertas', async ({ page })
   await expect(page).toHaveURL(/\/dashboard/);
   await expect(page.getByRole('heading', { name: 'Dashboard', level: 1 })).toBeVisible();
   for (const kpi of ['Gasto total', 'Combustible', 'Mantenimiento', 'Km recorridos', 'Rendimiento', 'Costo por km']) {
-    await expect(page.getByRole('term').filter({ hasText: new RegExp(`^${kpi}$`) })).toBeVisible();
+    await expect(page.getByRole('button', { name: `${kpi}: qué significa` })).toBeVisible();
   }
+  // Tocar el nombre de una cifra la explica
+  const rendimiento = page.getByRole('button', { name: 'Rendimiento: qué significa' });
+  await rendimiento.click();
+  await expect(rendimiento).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.getByText(/no el promedio de los viajes/)).toBeVisible();
   await expect(page.getByRole('heading', { name: /Ahora mismo: \d/ })).toBeVisible();
   await expect(page.getByRole('heading', { name: /Alertas \(\d+\)/ })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Gasto mensual' })).toBeVisible();

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { Fuel, Gauge, Receipt, Truck, Zap } from 'lucide-react';
 import { Boton, BotonEnlace, Campo, Seleccion } from '@/components/controles';
-import { Calidad, Cargando, Dato, EstadoVacio, MensajeError, TableroKpis, type DatoKpi } from '@/components/datos';
+import { Cargando, Dato, EstadoVacio, MensajeError, TableroKpis, type DatoKpi } from '@/components/datos';
 import { EncabezadoPagina, Panel, Pestanas, Seccion } from '@/components/estructura';
 import { Tabla, type Columna } from '@/components/tabla';
 import { rpc, type Ciclo, type Gasto, type Kpis, type Repostaje, type Unidad, type Viaje } from '@/lib/api';
@@ -17,7 +17,8 @@ import { GraficoBarrasH, GraficoGastoMensual, GraficoViajesEnElTiempo } from '@/
 import { calcularPeriodo, mesesDelRango, NOMBRES_PERIODO, ultimos12Meses, type ClavePeriodo } from '@/features/dashboard/periodo';
 import { FormGastoOficina, FormRepostajeOficina } from '@/features/registros/FormulariosOficina';
 import { TablaCiclos, TablaGastos, TablaRepostajes } from '@/features/registros/Tablas';
-import { EstadoViaje } from '@/features/viajes/ListaViajes';
+import { EstadoYCalidad } from '@/features/viajes/ListaViajes';
+import { VencimientosUnidad } from '@/features/vencimientos/Vencimientos';
 import { FormUnidad } from './FormUnidad';
 import { EtiquetaEstado } from './ListaUnidades';
 
@@ -104,6 +105,7 @@ export function FichaUnidad() {
           ...(esCamion ? [{ id: 'viajes', titulo: 'Viajes', contenido: () => <ViajesUnidad id={u.id!} /> }] : []),
           { id: 'combustible', titulo: 'Combustible', contenido: () => <CombustibleUnidad u={u} /> },
           { id: 'mantenimiento', titulo: 'Mantenimiento', contenido: () => <MantenimientoUnidad id={u.id!} /> },
+          { id: 'vencimientos', titulo: 'Vencimientos', contenido: () => <VencimientosUnidad unidadId={u.id!} /> },
           {
             id: 'datos',
             titulo: 'Datos',
@@ -212,17 +214,17 @@ function ViajesUnidad({ id }: { id: string }) {
     queryFn: async () => exigir(await supabase.from('v_viajes').select('*').eq('unidad_id', id).order('salida_at', { ascending: false }).limit(300)) as Viaje[],
   });
   const columnas: Columna<Viaje>[] = [
-    { id: 'folio', titulo: 'Folio', celda: (v) => <span className="font-bold">{v.folio_txt}</span>, orden: (v) => v.folio, exportar: { valor: (v) => v.folio_txt } },
-    { id: 'salida', titulo: 'Salida', celda: (v) => fechaHora(v.salida_at), orden: (v) => v.salida_at, exportar: { valor: (v) => v.salida_at, tipo: 'fechaHora' } },
+    { id: 'folio', titulo: 'Folio', celda: (v) => <span className="font-bold">{v.folio_txt}</span>, movilCelda: (v) => v.folio_txt, orden: (v) => v.folio, exportar: { valor: (v) => v.folio_txt } },
+    { id: 'salida', titulo: 'Salida', celda: (v) => fechaHora(v.salida_at), movilCelda: (v) => fechaHora(v.salida_at), orden: (v) => v.salida_at, exportar: { valor: (v) => v.salida_at, tipo: 'fechaHora' } },
     { id: 'llegada', titulo: 'Llegada', movil: 'oculta', celda: (v) => fechaHora(v.llegada_at), orden: (v) => v.llegada_at, exportar: { valor: (v) => v.llegada_at, tipo: 'fechaHora' } },
     { id: 'ruta', titulo: 'Ruta', movil: 'principal', envolver: true, celda: (v) => v.ruta, exportar: { valor: (v) => v.ruta } },
     { id: 'chofer', titulo: 'Chofer', movil: 'oculta', celda: (v) => v.chofer_nombre, exportar: { valor: (v) => v.chofer_nombre } },
-    { id: 'km', titulo: 'Km', alinear: 'der', celda: (v) => num(v.km_recorridos), orden: (v) => Number(v.km_recorridos ?? -1), exportar: { valor: (v) => v.km_recorridos, tipo: 'km' } },
-    { id: 'litros', titulo: 'Litros', alinear: 'der', celda: (v) => num(v.litros_consumidos, 2), orden: (v) => Number(v.litros_consumidos ?? -1), exportar: { valor: (v) => v.litros_consumidos, tipo: 'litros' } },
-    { id: 'rend', titulo: 'km/L', alinear: 'der', celda: (v) => num(v.rendimiento_kml, 2), orden: (v) => Number(v.rendimiento_kml ?? -1), exportar: { valor: (v) => v.rendimiento_kml, tipo: 'kml' } },
-    { id: 'costo', titulo: 'Costo', alinear: 'der', celda: (v) => usd(v.costo_combustible_usd), orden: (v) => Number(v.costo_combustible_usd ?? -1), exportar: { valor: (v) => v.costo_combustible_usd, tipo: 'usd' } },
+    { id: 'km', titulo: 'Km', alinear: 'der', movilCelda: (v) => fKm(v.km_recorridos), celda: (v) => num(v.km_recorridos), orden: (v) => Number(v.km_recorridos ?? -1), exportar: { valor: (v) => v.km_recorridos, tipo: 'km' } },
+    { id: 'litros', titulo: 'Litros', alinear: 'der', movil: 'oculta', celda: (v) => num(v.litros_consumidos, 2), orden: (v) => Number(v.litros_consumidos ?? -1), exportar: { valor: (v) => v.litros_consumidos, tipo: 'litros' } },
+    { id: 'rend', titulo: 'km/L', alinear: 'der', movilCelda: (v) => kml(v.rendimiento_kml), celda: (v) => num(v.rendimiento_kml, 2), orden: (v) => Number(v.rendimiento_kml ?? -1), exportar: { valor: (v) => v.rendimiento_kml, tipo: 'kml' } },
+    { id: 'costo', titulo: 'Costo', alinear: 'der', movil: 'derecha', celda: (v) => usd(v.costo_combustible_usd), orden: (v) => Number(v.costo_combustible_usd ?? -1), exportar: { valor: (v) => v.costo_combustible_usd, tipo: 'usd' } },
     { id: 'ckm', titulo: '$/km', alinear: 'der', movil: 'oculta', celda: (v) => num(v.costo_km_usd, 4), orden: (v) => Number(v.costo_km_usd ?? -1), exportar: { valor: (v) => v.costo_km_usd, tipo: 'usdKm' } },
-    { id: 'calidad', titulo: 'Calidad', celda: (v) => (v.estado === 'cerrado' ? <Calidad valor={v.calidad} compacta /> : <EstadoViaje v={v} />), exportar: { valor: (v) => v.calidad } },
+    { id: 'calidad', titulo: 'Calidad', celda: (v) => <EstadoYCalidad v={v} />, movilCelda: (v) => <EstadoYCalidad v={v} />, exportar: { valor: (v) => v.calidad } },
   ];
   return (
     <Tabla filas={consulta.data ?? []} columnas={columnas} clave={(v) => v.id!} cargando={consulta.isLoading} alElegir={(v) => navegar(`/viajes/${v.id}`)}

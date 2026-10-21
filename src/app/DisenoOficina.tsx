@@ -2,7 +2,8 @@ import { useState, type ComponentType } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import {
-  ClipboardCheck, CloudOff, Fuel, Gauge, LayoutDashboard, LogOut, Menu, Monitor, Moon, Route, Settings, Sun, Truck, UserRound, Users, Wrench,
+  CalendarClock, CircleHelp, ClipboardCheck, CloudOff, Fuel, Gauge, LayoutDashboard, LogOut, Menu, Monitor, Moon, Route, Settings, Sparkles, Sun, Truck,
+  UserRound, Users, Wrench,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { NOMBRE_ROL, useSesion, type Rol } from '@/lib/sesion';
@@ -28,6 +29,7 @@ const ITEMS: Item[] = [
   { a: '/viajes', texto: 'Viajes', Icono: Route, roles: TODOS, movil: true },
   { a: '/combustible', texto: 'Combustible', Icono: Fuel, roles: ['superusuario', 'flota', 'consulta'] },
   { a: '/mantenimiento', texto: 'Mantenimiento', Icono: Wrench, roles: ['superusuario', 'flota', 'consulta'] },
+  { a: '/vencimientos', texto: 'Vencimientos', Icono: CalendarClock, roles: ['superusuario', 'flota', 'consulta'] },
   { a: '/revision', texto: 'Revisión', Icono: ClipboardCheck, roles: OFICINA, movil: true },
   { a: '/catalogos', texto: 'Catálogos', Icono: Settings, roles: OFICINA },
   { a: '/usuarios', texto: 'Usuarios', Icono: Users, roles: OFICINA },
@@ -114,12 +116,18 @@ export function DisenoOficina() {
               <span className="block text-xs opacity-90">{rol ? NOMBRE_ROL[rol] : ''}</span>
             </span>
           </NavLink>
+          <NavLink to="/ayuda" className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold hover:bg-via-fuerte">
+            <CircleHelp aria-hidden className="size-5" /> Ayuda
+          </NavLink>
           <button type="button" onClick={() => setTema(SIGUIENTE_TEMA[tema])} className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold hover:bg-via-fuerte">
             <IconoTema aria-hidden className="size-5" /> {NOMBRE_TEMA[tema]}
           </button>
           <button type="button" onClick={() => void salir()} className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm font-semibold hover:bg-via-fuerte">
             <LogOut aria-hidden className="size-5" /> Salir
           </button>
+          <NavLink to="/novedades" className="cifra mt-1 flex min-h-11 items-center gap-2 rounded-lg px-3 text-xs font-semibold opacity-90 hover:bg-via-fuerte hover:opacity-100">
+            <Sparkles aria-hidden className="size-4" /> Versión {__VERSION__} • Novedades
+          </NavLink>
         </div>
       </aside>
       </div>
@@ -164,11 +172,17 @@ export function DisenoOficina() {
             <button type="button" onClick={() => { setMas(false); navegar('/cuenta'); }} className="flex min-h-14 items-center gap-3 rounded-lg border-2 border-linea px-4 text-lg font-bold hover:bg-superficie-2">
               <UserRound aria-hidden className="size-6" /> Mi cuenta
             </button>
+            <button type="button" onClick={() => { setMas(false); navegar('/ayuda'); }} className="flex min-h-14 items-center gap-3 rounded-lg border-2 border-linea px-4 text-lg font-bold hover:bg-superficie-2">
+              <CircleHelp aria-hidden className="size-6" /> Ayuda
+            </button>
             <button type="button" onClick={() => setTema(SIGUIENTE_TEMA[tema])} className="flex min-h-14 items-center gap-3 rounded-lg border-2 border-linea px-4 text-lg font-bold hover:bg-superficie-2">
               <IconoTema aria-hidden className="size-6" /> {NOMBRE_TEMA[tema]}
             </button>
             <button type="button" onClick={() => void salir()} className="flex min-h-14 items-center gap-3 rounded-lg px-4 text-lg font-bold hover:bg-superficie-2">
               <LogOut aria-hidden className="size-6" /> Salir
+            </button>
+            <button type="button" onClick={() => { setMas(false); navegar('/novedades'); }} className="cifra flex min-h-12 items-center gap-2 rounded-lg px-4 text-sm font-semibold text-tinta-2 hover:bg-superficie-2">
+              <Sparkles aria-hidden className="size-4" /> Versión {__VERSION__} • Novedades
             </button>
           </nav>
         </Hoja>
