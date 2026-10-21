@@ -1,7 +1,7 @@
 {
   "name": "flota-ip",
   "private": true,
-  "version": "0.6.0",
+  "version": "0.6.1",
   "type": "module",
   "description": "Control de flota y combustible para Distribuidora y Suministros IP",
   "engines": {

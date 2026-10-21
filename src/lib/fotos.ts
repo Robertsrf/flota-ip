@@ -24,8 +24,18 @@ export function rutaComprobante(uid: string, registroId: string, campo: string, 
   return `${uid}/${registroId}-${campo.replace(/^p_/, '')}.${ext}`;
 }
 
+/**
+ * Ruta del archivo de un documento: documentos/<documento_id>/archivo.jpg. Va en su propio bucket
+ * porque una licencia o un certificado médico solo lo ven su dueño y la oficina (migración 09).
+ */
+export function rutaDocumento(documentoId: string, tipo = 'image/jpeg'): string {
+  return `${documentoId}/archivo.${tipo === 'application/pdf' ? 'pdf' : 'jpg'}`;
+}
+
+export type Bucket = 'comprobantes' | 'unidades' | 'documentos';
+
 /** Sube (o reemplaza) un archivo; reintentar con la misma ruta no duplica nada. */
-export async function subirArchivo(bucket: 'comprobantes' | 'unidades', ruta: string, datos: Blob): Promise<string> {
+export async function subirArchivo(bucket: Bucket, ruta: string, datos: Blob): Promise<string> {
   const { error } = await supabase.storage.from(bucket).upload(ruta, datos, {
     upsert: true,
     contentType: datos.type || 'image/jpeg',
@@ -38,7 +48,7 @@ export async function subirArchivo(bucket: 'comprobantes' | 'unidades', ruta: st
 const cacheUrls = new Map<string, { url: string; vence: number }>();
 
 /** URL firmada (los buckets son privados). Se guarda en memoria hasta poco antes de vencer. */
-export async function urlFirmada(bucket: 'comprobantes' | 'unidades', ruta: string | null | undefined): Promise<string | null> {
+export async function urlFirmada(bucket: Bucket, ruta: string | null | undefined): Promise<string | null> {
   if (!ruta) return null;
   const clave = `${bucket}/${ruta}`;
   const c = cacheUrls.get(clave);

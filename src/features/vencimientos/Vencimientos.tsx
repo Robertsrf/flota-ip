@@ -9,7 +9,7 @@ import { CampoFoto, EncabezadoPagina, Pestanas, VerFoto } from '@/components/est
 import { Hoja } from '@/components/hoja';
 import { rpc, type Documento, type Recordatorio, type Situacion } from '@/lib/api';
 import { traducirError, type ErrorApp } from '@/lib/errores';
-import { comprimirFoto, rutaComprobante, subirArchivo } from '@/lib/fotos';
+import { comprimirFoto, rutaDocumento, subirArchivo } from '@/lib/fotos';
 import { fecha, hoyIso, km as fKm, leerNumero, num } from '@/lib/formato';
 import { NOMBRE_ROL, useSesion } from '@/lib/sesion';
 import { useCategorias } from '@/features/cabina/datos';
@@ -390,7 +390,7 @@ export function ListaDocumentos({ filas, cargando, unidadFija, verTitular = true
               extra={
                 <>
                   {d.notas && <p className="text-sm">{d.notas}</p>}
-                  {d.archivo_path && <div className="mt-1"><VerFoto ruta={d.archivo_path} etiqueta={d.tipo ?? 'Documento'} /></div>}
+                  {d.archivo_path && <div className="mt-1"><VerFoto bucket="documentos" ruta={d.archivo_path} etiqueta={d.tipo ?? 'Documento'} /></div>}
                 </>
               }
               acciones={
@@ -416,14 +416,14 @@ export function ListaDocumentos({ filas, cargando, unidadFija, verTitular = true
   );
 }
 
-async function subirArchivoDocumento(uid: string, id: string, archivo: Blob | null): Promise<string | null> {
+/** El archivo va al bucket "documentos", en la carpeta del documento: lo leen solo quienes ven el documento */
+async function subirArchivoDocumento(id: string, archivo: Blob | null): Promise<string | null> {
   if (!archivo) return null;
   const blob = await comprimirFoto(archivo);
-  return subirArchivo('comprobantes', rutaComprobante(uid, id, 'documento', blob.type), blob);
+  return subirArchivo('documentos', rutaDocumento(id, blob.type), blob);
 }
 
 function FormDocumento({ d, unidadFija, alCerrar }: { d: Documento | null; unidadFija?: string; alCerrar: () => void }) {
-  const { sesion } = useSesion();
   const { data: unidades = [] } = useUnidadesLista();
   const { data: personas = [] } = usePersonas();
   const [de, setDe] = useState<'unidad' | 'persona'>(d?.persona_id ? 'persona' : 'unidad');
@@ -449,7 +449,7 @@ function FormDocumento({ d, unidadFija, alCerrar }: { d: Documento | null; unida
     const id = d?.id ?? crypto.randomUUID();
     void e.enviar(
       async () => {
-        const ruta = await subirArchivoDocumento(sesion!.user.id, id, archivo);
+        const ruta = await subirArchivoDocumento(id, archivo);
         return rpc('guardar_documento', {
           p_id: id,
           p_unidad_id: de === 'unidad' ? unidadId : null,
@@ -531,7 +531,6 @@ function FormDocumento({ d, unidadFija, alCerrar }: { d: Documento | null; unida
 }
 
 function FormRenovar({ d, alCerrar }: { d: Documento; alCerrar: () => void }) {
-  const { sesion } = useSesion();
   const [vence, setVence] = useState('');
   const [numero, setNumero] = useState(d.numero ?? '');
   const [emisor, setEmisor] = useState(d.emisor ?? '');
@@ -543,7 +542,7 @@ function FormRenovar({ d, alCerrar }: { d: Documento; alCerrar: () => void }) {
     const nuevoId = crypto.randomUUID();
     void e.enviar(
       async () => {
-        const ruta = await subirArchivoDocumento(sesion!.user.id, nuevoId, archivo);
+        const ruta = await subirArchivoDocumento(nuevoId, archivo);
         return rpc('renovar_documento', { p_id: d.id!, p_nuevo_id: nuevoId, p_vence: vence, p_numero: numero.trim() || null, p_emisor: emisor.trim() || null, p_archivo: ruta });
       },
       `${d.tipo} renovado`,

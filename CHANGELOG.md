@@ -8,6 +8,13 @@ Todas las versiones del sistema, de la más nueva a la más vieja. Se lee tambi�
 
 ## [Sin publicar]
 
+## [0.6.1] - 2026-10-20 - Fotos de documentos protegidas
+
+### Seguridad
+
+- Las fotos y PDF de los documentos (licencias, certificados médicos, pólizas) se guardan aparte de los recibos y solo los abren la oficina y quien puede ver ese documento. Antes quedaban junto a los recibos, que cualquier usuario puede abrir: otro chofer habría podido ver el certificado médico de un compañero.
+- Un documento solo puede llevar un archivo de su propia carpeta.
+
 ## [0.6.0] - 2026-10-20 - Más fácil en el teléfono, vencimientos y ayuda
 
 ### Agregado

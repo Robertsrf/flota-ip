@@ -35,6 +35,7 @@ const RESTRICCIONES: Record<string, string> = {
   categorias_mantenimiento_nombre_key: 'Ya existe una categoría con ese nombre.',
   perfiles_usuario_key: 'Ese usuario ya existe.',
   tasas_bcv_pkey: 'Ya hay una tasa registrada para esa fecha.',
+  documentos_archivo_ck: 'El archivo no corresponde a este documento. Vuelve a elegir la foto o el PDF.',
 };
 
 export function esErrorDeRed(e: unknown): boolean {

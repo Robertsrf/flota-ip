@@ -3,7 +3,7 @@
 Control de flota y combustible de **Distribuidora y Suministros IP** (Trujillo, Mérida y Zulia, Venezuela): 6 a 10 camiones y 2 plantas eléctricas. Cliente y dueño del proyecto: **Roberts Flores** (Emory Studios). Fuente de verdad completa: `docs/HANDOFF.md`. Decisiones: `docs/DECISIONES.md`. Historial por fase: `docs/BITACORA.md`. Versiones: `CHANGELOG.md`. Diseño: `DESIGN.md` y `PRODUCT.md`. Mantén este archivo al día (≤150 líneas).
 
 ## Estado
-Versión **0.6.0** (20/10/2026): F0–F8 más la renovación (teléfono, vencimientos, ayuda, novedades, CSP). Todo probado en local (sin Docker, con PGlite). Falta la puesta en marcha real con Roberts (será la **1.0.0**): repo público en GitHub, proyecto Supabase, secrets y primer superusuario → `docs/PUESTA_EN_MARCHA.md`. Después, mudanza a un VPS con dominio propio → `docs/MIGRACION_VPS.md`. Datos demo (`DEMO-*`) solo en local; `supabase/sql/limpiar_demo.sql` los borra.
+Versión **0.6.1** (20/10/2026): F0–F8 más la renovación (teléfono, vencimientos, ayuda, novedades, CSP) y el bucket privado de documentos. Todo probado en local (sin Docker, con PGlite). Falta la puesta en marcha real con Roberts (será la **1.0.0**): repo público en GitHub, proyecto Supabase, secrets y primer superusuario → `docs/PUESTA_EN_MARCHA.md`. Después, mudanza a un VPS con dominio propio → `docs/MIGRACION_VPS.md`. Datos demo (`DEMO-*`) solo en local; `supabase/sql/limpiar_demo.sql` los borra.
 
 ## CHANGELOG (obligatorio)
 - **Todo cambio** que alguien note (pantalla, cálculo, permiso, dato, seguridad, documentación de uso) se anota en `CHANGELOG.md` **el mismo día**, en `## [Sin publicar]`, bajo su tipo: Agregado, Cambiado, Corregido, Eliminado, Obsoleto o Seguridad.
@@ -14,7 +14,7 @@ Versión **0.6.0** (20/10/2026): F0–F8 más la renovación (teléfono, vencimi
 ## Stack
 - Vite 8 + React 19 + TypeScript 6.0 (typescript-eslint exige <6.1) + Tailwind v4 (`@tailwindcss/vite`, tokens en `src/styles/index.css`).
 - React Router 8, TanStack Query 5, ECharts 6 modular (renderer SVG), Dexie 4 (cola offline), vite-plugin-pwa 2, SheetJS (desde cdn.sheetjs.com), lucide-react, Overpass.
-- Supabase plan **gratuito**: Postgres + RLS, Auth, Storage (`unidades`, `comprobantes`), Realtime (`viajes`, `unidades`), Edge Functions (`admin-usuarios`, `tasa-bcv`), pg_cron + Vault. Límites: 500 MB de base, 1 GB de Storage, 5 GB de transferencia; **se pausa tras 7 días sin peticiones** y **no tiene respaldos** → `respaldo.yml` hace consulta cada 3 días y `pg_dump` semanal cifrado con age.
+- Supabase plan **gratuito**: Postgres + RLS, Auth, Storage (`unidades`, `comprobantes`, `documentos`), Realtime (`viajes`, `unidades`), Edge Functions (`admin-usuarios`, `tasa-bcv`), pg_cron + Vault. Límites: 500 MB de base, 1 GB de Storage, 5 GB de transferencia; **se pausa tras 7 días sin peticiones** y **no tiene respaldos** → `respaldo.yml` hace consulta cada 3 días y `pg_dump` semanal cifrado con age.
 - Hosting: GitHub Pages desde `main` (repo **público**: Roberts no tiene GitHub Pro).
 
 ## Comandos
@@ -35,7 +35,7 @@ npm run icons         # regenera public/iconos con Playwright
 - Playwright usa Edge (`channel: msedge`) en local y Chromium en CI.
 
 ## Estructura
-- `supabase/migrations/` 01 esquema · 02 motor y RPC · 03 RLS · 04 vistas y RPC del dashboard · 05 Storage y Realtime · 06 datos iniciales de producción · 07 permisos de ejecución (lista blanca) · 08 recordatorios de servicio y documentos con vencimiento (más `v_alertas` con la novedad del chofer).
+- `supabase/migrations/` 01 esquema · 02 motor y RPC · 03 RLS · 04 vistas y RPC del dashboard · 05 Storage y Realtime · 06 datos iniciales de producción · 07 permisos de ejecución (lista blanca) · 08 recordatorios de servicio y documentos con vencimiento (más `v_alertas` con la novedad del chofer) · 09 bucket `documentos` (archivo en `<documento_id>/`, lo lee la oficina o quien ve el documento).
 - `supabase/seed.sql` (solo demo), `supabase/sql/` (limpieza demo, cron de la tasa), `supabase/tests/` (Vitest + PGlite), `supabase/functions/`.
 - `scripts/pglite/` shim que imita Supabase (auth.uid, roles anon/authenticated/service_role); `scripts/backend-local/` emulador HTTP.
 - `src/app` (rutas, layouts Cabina y Oficina), `src/components` (controles, tabla, filtros, hoja, datos, estructura), `src/lib` (supabase, api, formato, consumo, offline/cola, exportar, fotos, sesión), `src/features/<módulo>` (incluye `vencimientos` y `ayuda`: Ayuda, Novedades y el lector del changelog).
@@ -82,6 +82,7 @@ npm run icons         # regenera public/iconos con Playwright
 - **CSP** en el `<meta>` del build (`scripts/csp.mjs`, probada en `tests/unit/csp.test.ts`): solo código propio y el origen de `VITE_SUPABASE_URL`. Ningún script ni recurso de terceros en tiempo de ejecución (por eso la compresión de fotos va sin web worker). Si se agrega un servicio externo, se agrega a la CSP y a su prueba.
 - Edge Functions: errores internos genéricos al cliente (`errorInterno`), CORS limitado por el secret `ORIGENES_APP`, secreto del cron comparado en tiempo constante.
 - Tablas nuevas: `revoke all ... from anon, authenticated` + `grant select` + RLS; escritura solo por RPC.
+- Archivos con datos personales (licencias, certificados) nunca en `comprobantes` (lo lee cualquier usuario activo): van al bucket `documentos`, cuya lectura sigue la RLS de la tabla. El emulador local aplica la misma regla.
 
 ## Decisiones clave (detalle en DECISIONES.md)
 Navegación mixta (cabina sin barra / oficina con barra lateral e inferior) · dirección visual "Señal vial" · botón En ruta a todo el ancho con Deshacer 10 s · offline nivel 2 (cola Dexie; vaciado al abrir, `online`, `visibilitychange` y cada 30 s, porque Safari no tiene Background Sync) · ECharts · paradas múltiples, destino principal = última parada · fotos opcionales · `unidades` con `tipo` camión/planta y `medidor` · folios V-/R-/M- · choferes rotan de camión · combustible mixto con precios $0,50 y $0,60 por litro para ambos.

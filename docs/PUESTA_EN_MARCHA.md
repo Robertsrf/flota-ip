@@ -42,7 +42,7 @@ Desde la carpeta del proyecto (la CLI ya viene en `devDependencies`):
 ```
 npx supabase login
 npx supabase link --project-ref <ref>
-npx supabase db push            # aplica las 8 migraciones; el seed demo NO se sube
+npx supabase db push            # aplica las 9 migraciones; el seed demo NO se sube
 npx supabase functions deploy admin-usuarios
 npx supabase functions deploy tasa-bcv --no-verify-jwt
 npx supabase secrets set CRON_SECRET=<cadena aleatoria de 32+ caracteres>

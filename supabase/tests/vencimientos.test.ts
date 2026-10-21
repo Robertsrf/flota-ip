@@ -212,6 +212,27 @@ describe('documentos con vencimiento', () => {
     expect(audit.accion).toBe('renovar');
   });
 
+  it('el archivo tiene que estar en la carpeta del propio documento', async () => {
+    const id = uuid();
+    const ajeno = await error(rpc(e.db, e.u.flota, 'guardar_documento', {
+      p_id: id, p_unidad_id: null, p_persona_id: e.u.chofer2, p_tipo: 'Certificado médico', p_vence: await dias(90),
+      p_archivo: `${e.u.chofer1}/${uuid()}-documento.jpg`,
+    }));
+    expect(ajeno.code).toBe('23514');
+    expect(ajeno.message).toContain('documentos_archivo_ck');
+    const d = await rpc<Fila>(e.db, e.u.flota, 'guardar_documento', {
+      p_id: id, p_unidad_id: null, p_persona_id: e.u.chofer2, p_tipo: 'Certificado médico', p_vence: await dias(90),
+      p_archivo: `${id}/archivo.jpg`,
+    });
+    expect(d.archivo_path).toBe(`${id}/archivo.jpg`);
+    const nuevo = uuid();
+    expect((await error(rpc(e.db, e.u.flota, 'renovar_documento', {
+      p_id: id, p_nuevo_id: nuevo, p_vence: await dias(400), p_archivo: `${id}/archivo.jpg`,
+    }))).code).toBe('23514');
+    const r = await rpc<Fila>(e.db, e.u.flota, 'renovar_documento', { p_id: id, p_nuevo_id: nuevo, p_vence: await dias(400), p_archivo: `${nuevo}/archivo.pdf` });
+    expect(r.archivo_path).toBe(`${nuevo}/archivo.pdf`);
+  });
+
   it('un documento es de una unidad o de una persona, no de ambas', async () => {
     const err = await error(rpc(e.db, e.u.flota, 'guardar_documento', {
       p_id: uuid(), p_unidad_id: camion, p_persona_id: e.u.chofer1, p_tipo: 'X', p_vence: hoy,

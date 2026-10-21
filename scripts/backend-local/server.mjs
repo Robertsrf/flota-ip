@@ -485,22 +485,42 @@ function rutaSegura(bucket, ruta) {
   return completa;
 }
 
+// Bucket "documentos": las mismas políticas que la migración 09 en Supabase. Lee la oficina o quien
+// ve el documento según la RLS de public.documentos; solo la oficina sube.
+async function permitidoDocumento(ctx, ruta, escribir) {
+  if (ctx.rol === 'service_role') return true;
+  if (ctx.rol !== 'authenticated') return false;
+  return comoRol(ctx, async (tx) => {
+    if ((await tx.query('select public.es_oficina() as ok')).rows[0]?.ok) return true;
+    if (escribir) return false;
+    return (await tx.query('select 1 from public.documentos where id::text = $1', [ruta.split('/')[0]])).rows.length > 0;
+  });
+}
+
 async function storage(req, res, url, ctx) {
   const ruta = decodeURIComponent(url.pathname.replace('/storage/v1', ''));
   try {
     let m = ruta.match(/^\/object\/sign\/([^/]+)$/);
     if (m && req.method === 'POST') {
       const cuerpo = JSON.parse((await leerCuerpo(req)).toString() || '{}');
-      const salida = (cuerpo.paths ?? []).map((p) => {
+      const salida = [];
+      for (const p of cuerpo.paths ?? []) {
+        if (m[1] === 'documentos' && !(await permitidoDocumento(ctx, p, false))) {
+          salida.push({ path: p, signedURL: null, error: 'No autorizado' });
+          continue;
+        }
         const token = randomUUID();
         tokensFirmados.set(token, { bucket: m[1], ruta: p });
-        return { path: p, signedURL: `/object/sign/${m[1]}/${p}?token=${token}`, error: null };
-      });
+        salida.push({ path: p, signedURL: `/object/sign/${m[1]}/${p}?token=${token}`, error: null });
+      }
       return enviar(res, 200, salida);
     }
     m = ruta.match(/^\/object\/sign\/([^/]+)\/(.+)$/);
     if (m && req.method === 'POST') {
       if (ctx.rol === 'anon') return enviar(res, 401, { message: 'No autorizado' });
+      if (m[1] === 'documentos' && !(await permitidoDocumento(ctx, m[2], false))) {
+        return enviar(res, 400, { statusCode: '404', error: 'not_found', message: 'Object not found' });
+      }
       const token = randomUUID();
       tokensFirmados.set(token, { bucket: m[1], ruta: m[2] });
       return enviar(res, 200, { signedURL: `/object/sign/${m[1]}/${m[2]}?token=${token}` });
@@ -516,6 +536,9 @@ async function storage(req, res, url, ctx) {
     m = ruta.match(/^\/object\/([^/]+)\/(.+)$/);
     if (m && (req.method === 'POST' || req.method === 'PUT')) {
       if (ctx.rol === 'anon') return enviar(res, 401, { message: 'No autorizado' });
+      if (m[1] === 'documentos' && !(await permitidoDocumento(ctx, m[2], true))) {
+        return enviar(res, 403, { statusCode: '403', error: 'Unauthorized', message: 'new row violates row-level security policy' });
+      }
       const archivo = rutaSegura(m[1], m[2]);
       if (existsSync(archivo) && req.headers['x-upsert'] !== 'true' && req.method === 'POST') {
         return enviar(res, 400, { statusCode: '409', error: 'Duplicate', message: 'The resource already exists' });

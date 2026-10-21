@@ -88,7 +88,7 @@ Conviene cuando el plan gratuito queda corto (500 MB de base, 1 GB de fotos, pau
    ```
    Probar primero en una instancia de prueba. Los usuarios y sus claves (`auth.users`) vienen en el volcado: los choferes conservan su PIN, pero todas las sesiones se cierran porque cambian las llaves.
 4. **Lo que el volcado no trae:**
-   - **Fotos** de los buckets `unidades` y `comprobantes`: copiarlas aparte (por la API S3 de Storage con una herramienta como rclone, o con un script que baje y suba cada archivo) y comparar el conteo de archivos.
+   - **Fotos** de los buckets `unidades`, `comprobantes` y `documentos`: copiarlas aparte (por la API S3 de Storage con una herramienta como rclone, o con un script que baje y suba cada archivo) y comparar el conteo de archivos.
    - **Funciones** `admin-usuarios` y `tasa-bcv`: copiar `supabase/functions/*` a `volumes/functions/` y cargar sus secretos (`CRON_SECRET`, `DOMINIO_USUARIOS`, `ORIGENES_APP`).
    - **Tasa BCV programada:** confirmar que `pg_cron` y `pg_net` existen (`select * from pg_extension;`) y volver a correr `supabase/sql/cron_tasa_bcv.sql` con la dirección nueva.
 5. **Verificar** con conteos en los dos lados (`viajes`, `repostajes`, `mantenimientos`, `auth.users`, archivos) y correr la lista del paso 6 de `PUESTA_EN_MARCHA.md`.

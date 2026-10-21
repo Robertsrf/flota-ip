@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { Camera, ChevronLeft, ImageOff, Trash2 } from 'lucide-react';
-import { urlFirmada } from '@/lib/fotos';
+import { urlFirmada, type Bucket } from '@/lib/fotos';
 
 // ----- Encabezado de página ----------------------------------------------------------
 export function EncabezadoPagina({ titulo, descripcion, acciones, volver }: { titulo: ReactNode; descripcion?: ReactNode; acciones?: ReactNode; volver?: { a: string; texto: string } }) {
@@ -170,7 +170,7 @@ export function CampoFoto({ etiqueta, archivo, alCambiar, id }: { etiqueta: stri
 }
 
 /** Miniatura de un archivo privado (URL firmada); abre la imagen completa */
-export function VerFoto({ bucket = 'comprobantes', ruta, etiqueta }: { bucket?: 'comprobantes' | 'unidades'; ruta: string | null | undefined; etiqueta: string }) {
+export function VerFoto({ bucket = 'comprobantes', ruta, etiqueta }: { bucket?: Bucket; ruta: string | null | undefined; etiqueta: string }) {
   const [url, setUrl] = useState<string | null>(null);
   const [fallo, setFallo] = useState(false);
   useEffect(() => {

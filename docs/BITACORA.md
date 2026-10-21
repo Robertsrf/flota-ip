@@ -92,6 +92,8 @@ Pedido de Roberts: pasar los tres flujos directores (diseño, ingeniería y segu
 
 **Estado de las pruebas:** 85 Vitest (antes 62: 16 de vencimientos, 4 de CSP y 3 del changelog nuevas) y 15 Playwright (antes 11: vencimientos y oficina desde el teléfono) en verde; TypeScript y ESLint sin errores; `npm audit` sin vulnerabilidades; la app compilada recorrida con la CSP sin ningún bloqueo.
 
+**0.6.1 (mismo día):** la revisión automática de seguridad marcó que las fotos de documentos personales se subían a `comprobantes`, que lee y lista cualquier usuario activo. Migración 09: bucket `documentos` con lectura atada a la RLS de la tabla, subida solo de la oficina y restricción `documentos_archivo_ck` sobre la ruta; el emulador local aplica la misma regla. Comprobado contra el servidor local: el dueño y la gerencia abren el certificado; otro chofer no puede abrirlo ni subir. 1 prueba SQL nueva.
+
 **Incidente:** al reiniciarse la sesión, el archivo de la rama `version-0.6.0` quedó con bytes nulos (git no encontraba `HEAD`). Se restauró desde el reflog al último commit (`0fee573`), `git fsck` quedó limpio y ningún archivo de trabajo tenía daños.
 
 **Falta (con Roberts):** lo mismo de F8 (repo, Supabase, secrets, primer superusuario, teléfono real) más cargar los recordatorios y documentos reales. Logo de IP.
