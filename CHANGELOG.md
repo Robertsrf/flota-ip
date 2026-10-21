@@ -8,6 +8,10 @@ Todas las versiones del sistema, de la más nueva a la más vieja. Se lee tambi�
 
 ## [Sin publicar]
 
+### Agregado
+
+- `PASO_A_PASO_PUBLICAR.md`: guía en orden para mover el proyecto a otra computadora, subirlo a GitHub, conectarlo a Supabase y cerrar la versión 1.0.0.
+
 ## [0.6.1] - 2026-10-20 - Fotos de documentos protegidas
 
 ### Seguridad

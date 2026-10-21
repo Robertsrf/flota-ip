@@ -35,6 +35,7 @@ npm run test:e2e    # flujos completos con Playwright
 
 - [`CLAUDE.md`](CLAUDE.md): guía operativa (comandos, convenciones, reglas de cálculo, roles).
 - [`CHANGELOG.md`](CHANGELOG.md): todas las versiones, de la más nueva a la más vieja.
+- [`PASO_A_PASO_PUBLICAR.md`](PASO_A_PASO_PUBLICAR.md): mover el proyecto a otra PC, subirlo a GitHub y conectarlo a Supabase, en orden.
 - [`docs/PUESTA_EN_MARCHA.md`](docs/PUESTA_EN_MARCHA.md): GitHub, Supabase, secrets y respaldos.
 - [`docs/MIGRACION_VPS.md`](docs/MIGRACION_VPS.md): mudanza a un servidor propio con dominio.
 - [`docs/MANUAL_CHOFER.md`](docs/MANUAL_CHOFER.md): manual de una página para choferes.
