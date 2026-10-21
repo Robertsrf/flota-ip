@@ -42,7 +42,7 @@ Desde la carpeta del proyecto (la CLI ya viene en `devDependencies`):
 ```
 npx supabase login
 npx supabase link --project-ref <ref>
-npx supabase db push            # aplica las 7 migraciones; el seed demo NO se sube
+npx supabase db push            # aplica las 8 migraciones; el seed demo NO se sube
 npx supabase functions deploy admin-usuarios
 npx supabase functions deploy tasa-bcv --no-verify-jwt
 npx supabase secrets set CRON_SECRET=<cadena aleatoria de 32+ caracteres>
@@ -50,6 +50,7 @@ npx supabase secrets set CRON_SECRET=<cadena aleatoria de 32+ caracteres>
 
 - Si el proyecto solo tiene las llaves nuevas (sin `service_role`), agregar también `npx supabase secrets set SUPABASE_SECRET_KEY=<sb_secret_…>`.
 - Si se usa otro dominio para los usuarios (ver paso 4), `npx supabase secrets set DOMINIO_USUARIOS=<dominio>`.
+- Recomendado: limitar quién llama a las funciones desde el navegador con `npx supabase secrets set ORIGENES_APP=https://<usuario>.github.io` (separar con comas si hay más de un dominio, por ejemplo al pasar al VPS).
 - Alternativa sin la CLI local: cargar los secrets del paso 5 y correr a mano el flujo **Aplicar migraciones y funciones en Supabase** (Actions → Run workflow). El `CRON_SECRET` se carga igual en el panel: Edge Functions → Secrets.
 
 Después, en el **SQL Editor**:
@@ -98,14 +99,19 @@ Imprime la clave pública (`age1…`): esa va al secret. El archivo `flota-ip-re
    - [ ] Catálogos → Tasa BCV: "Consultar BCV ahora" trae la tasa del día.
    - [ ] Camiones y plantas: dar de alta un camión real y las 2 plantas (sin medidor).
    - [ ] Usuarios: crear el superusuario de IP, un usuario de flota y un chofer con PIN.
+   - [ ] Vencimientos: programar el cambio de aceite de cada camión y cargar su póliza RCV; cargar la licencia de cada chofer.
+   - [ ] El dashboard muestra **Primeros pasos** mientras falte algo de lo anterior; desaparece solo al completarse.
    - [ ] En un teléfono: entrar como chofer, instalar la app (Agregar a pantalla de inicio), iniciar una ruta, poner el teléfono en modo avión, finalizarla con repostaje y comprobar que se envía al volver la señal.
    - [ ] En el dashboard: ver la ruta en "Ahora mismo" mientras está abierta y su costo al cerrarla.
    - [ ] Anular la ruta de prueba con motivo (queda en la auditoría, no se borra).
    - [ ] Actions → **Respaldo semanal y mantener activo** → Run workflow con "Hacer el respaldo ahora"; descargar el artefacto y abrirlo:
      `age -d -i flota-ip-respaldo.txt flota-ip-<fecha>.dump.age > respaldo.dump` y `pg_restore --list respaldo.dump`.
-3. Opcional: regenerar los tipos desde el proyecto real con `SUPABASE_PROJECT_REF=<ref> npm run gen:types:remote` y comprobar que no cambian.
+3. Revisar en el navegador (F12 → Consola) que no aparezcan avisos de *Content Security Policy*: la política del sitio se arma con `VITE_SUPABASE_URL` al compilar.
+4. Opcional: regenerar los tipos desde el proyecto real con `SUPABASE_PROJECT_REF=<ref> npm run gen:types:remote` y comprobar que no cambian.
 
 ## 7. Operación
+
+- **Versiones:** la primera publicación con datos reales es la **1.0.0**. Cada cambio se anota en `CHANGELOG.md` (sección "Sin publicar") el mismo día; al publicar, esa sección pasa a ser la versión nueva con su fecha, se sube el número en `package.json` y se crea la etiqueta `git tag v1.0.0`. Dentro de la app se lee en **Novedades**.
 
 - **Cambios de base:** cada cambio es una migración nueva (las aplicadas no se editan). Revisar el CI y correr a mano **Aplicar migraciones y funciones en Supabase**. Nada se aplica a producción automáticamente.
 - **Plan gratuito:** el proyecto se pausa tras 7 días sin peticiones; el flujo de respaldo hace una consulta cada 3 días. GitHub desactiva los flujos programados de un repo público tras 60 días sin commits: si no hay cambios en dos meses, reactivarlos en Actions.

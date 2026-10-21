@@ -76,3 +76,18 @@ Registro de lo que se asumió o decidió sin bloquear el trabajo (handoff, secci
 | 029 | 06/10/2026 | Íconos de la app provisionales (panel verde con "IP"), generados con `npm run icons` | Falta el archivo del logo de IP | provisional |
 | 030 | 03/10/2026 | Seed demo generado con las RPC reales (3 meses, 3 camiones, 2 plantas, ruta olvidada, gastos pendientes y rechazados); `limpiar_demo.sql` lo borra y `db push` nunca lo sube | Anexo A del handoff | aplicada |
 
+## Decisiones de la renovación (F9 · versión 0.6.0)
+
+| # | Fecha | Decisión o supuesto | Motivo | Estado |
+|---|---|---|---|---|
+| 031 | 20/10/2026 | Se adelantan dos funciones de la Fase 2: recordatorios de servicio por km o fecha y documentos con vencimiento (de unidades y de personas) | Roberts las eligió en la pregunta de alcance; todos los sistemas comparables las traen | aprobada |
+| 032 | 20/10/2026 | Un recordatorio se cumple solo cuando flota **aprueba** un gasto de su categoría en esa unidad. Si el gasto no trae km y es de los últimos 7 días, se toma el último km conocido; si es más viejo, solo se mueve la fecha | Evita registrar dos veces sin inventar km para gastos cargados tarde | aplicada |
+| 033 | 20/10/2026 | "Renovar" un documento crea uno nuevo y archiva el anterior (`renovado_por`) en vez de editar la fecha | Nada se borra: queda el historial de pólizas | aplicada |
+| 034 | 20/10/2026 | Los documentos de una persona (licencia, certificado médico) los ven ella y la oficina, no los demás choferes | Privacidad básica entre choferes | aplicada |
+| 035 | 20/10/2026 | En teléfono y tableta (hasta 1024 px) las tablas son listas de renglones compactos y cada columna declara cómo se ve ahí. Las acciones de una fila viven en la hoja que abre la fila | Con 8 renglones por fila las listas medían hasta 12 pantallas; las acciones ocultas dejaban funciones sin uso en el teléfono | aplicada |
+| 036 | 20/10/2026 | Filtros resumidos en un botón en el teléfono (`PanelFiltros`); en escritorio siguen en línea | Los números primero (principio 3 de `PRODUCT.md`) | aplicada |
+| 037 | 20/10/2026 | `CHANGELOG.md` con Keep a Changelog en español; versiones 0.1.0 a 0.5.0 reconstruidas desde la bitácora; 1.0.0 = primera puesta en marcha. Se muestra en la app (Novedades) y una prueba exige que coincida con `package.json` | Pedido de Roberts: ver siempre toda versión desde el principio | aplicada |
+| 038 | 20/10/2026 | CSP en `<meta>` generada al compilar con el origen de Supabase y el hash del script del tema; `frame-ancestors` y HSTS quedan para las cabeceras del VPS | GitHub Pages no permite cabeceras HTTP | aplicada |
+| 039 | 20/10/2026 | Compresión de fotos sin web worker | El worker descargaba la librería de un CDN: código de terceros en tiempo de ejecución, falla sin señal y choca con la CSP | aplicada |
+| 040 | 20/10/2026 | Mudanza al VPS en dos etapas: primero solo la app (Supabase sigue en la nube); después, si hace falta, Supabase autoalojado (`docs/MIGRACION_VPS.md`) | La primera etapa no toca datos; la segunda exige mantenimiento propio | propuesta |
+

@@ -142,3 +142,23 @@
 - PWA en iOS, Background Sync: https://www.magicbell.com/blog/pwa-ios-limitations-safari-support-complete-guide
 - ECharts, importación modular: https://echarts.apache.org/handbook/en/basics/import
 - DolarApi Venezuela: https://ve.dolarapi.com/v1/dolares/oficial · https://dolarapi.com/docs
+
+---
+
+## 8. Investigación de la renovación · 20/10/2026
+
+| Tema | Hallazgo | Cómo se usó |
+|---|---|---|
+| Fleetio Go | Ficha por vehículo con su historial (combustible, servicios, documentos) y alta rápida; los recibos de los choferes se revisan y aprueban desde una sola cola en la web | Pestaña "Vencimientos" en la ficha de la unidad; la revisión como cola única |
+| Simply Fleet | El chofer completa viajes y registra cargas, peajes y multas en la app; el kilometraje alimenta los recordatorios de servicio por km o tiempo | Recordatorios por km o fecha que leen el último km conocido |
+| Tablas en móvil | Tres patrones: contenedor con desplazamiento (datos densos para comparar), filas apiladas (registros que se leen de a uno) y columnas por prioridad | Renglón compacto con prioridad por columna en el teléfono; tabla completa en escritorio |
+| Keep a Changelog 2.0 | Escrito para personas, no para máquinas; sección "Unreleased" arriba; fechas AAAA-MM-DD; tipos Added, Changed, Deprecated, Removed, Fixed y Security | `CHANGELOG.md` en español con los mismos tipos |
+| Supabase autoalojado | Mínimo 4 GB de RAM, 2 núcleos y 40 GB; `supabase db dump` (roles, esquema y datos) y `psql`; fotos y funciones se copian aparte; las sesiones se cierran | `docs/MIGRACION_VPS.md` |
+
+Fuentes:
+- Fleetio Go, cargas: https://help.fleetio.com/en_US/fuel-entries-in-fleetio-go
+- Fleetio, revisión de recibos: https://updates.fleetio.com/turn-fuel-receipts-into-reliable-fuel-data-without-the-manual-entry-3VKdcA
+- Simply Fleet, viajes: https://www.fleetowner.com/product-spotlight/product/55399565/simply-fleet-fleet-management-software-connects-trip-tracking-driver-data-and-maintenance
+- Tablas responsivas: https://sizzy.co/blog/responsive-tables · https://uxmovement.com/mobile/stacked-lists-the-best-pattern-to-display-mobile-tables/
+- Keep a Changelog: https://keepachangelog.com/en/2.0.0/ · https://keepachangelog.com/es-ES/1.1.0/
+- Supabase autoalojado: https://supabase.com/docs/guides/self-hosting/docker · https://supabase.com/docs/guides/self-hosting/restore-from-platform

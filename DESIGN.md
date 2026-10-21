@@ -258,10 +258,26 @@ Esquinas suaves y pocas: 8 px en controles (botones, campos, paneles de señal),
 - **Deshabilitado:** fondo hombrillo, texto asfalto suave.
 - **Números:** teclado numérico, coma decimal es-VE, unidad visible dentro del campo.
 
+### Lists on the phone (filas de tabla)
+- Hasta 1024 px cada tabla es una lista de renglones compactos dentro de un panel con divisiones: arriba, el título de la fila en 700 (la columna `principal`) y a la derecha la cifra que más importa en 800 (`derecha`); abajo, en 14 px, los datos clave como "Título valor" o, si el valor se entiende solo ("213 km", "Exacto"), sin título. Un dato vacío no se muestra.
+- Si la fila se puede tocar, lleva un chevron a la derecha y abre su detalle u hoja de edición. **Las acciones de una fila (editar, eliminar, reactivar, nuevo PIN) viven en esa hoja**, nunca en una columna que el teléfono oculta.
+- Desde 1024 px, la tabla completa con encabezado fijo y columnas ordenables.
+
+### Filters
+- En escritorio, los campos en línea dentro de un panel. En el teléfono, un botón de 48 px a todo el ancho con el ícono de filtros, la palabra "Filtros" (y cuántos se apartan de lo normal) y el resumen en 14 px ("Este mes • DEMO-001"); abre una hoja con los campos en una columna y "Ver resultados". "Limpiar" aparece solo si hay filtros activos.
+
+### Explicación de una cifra
+- El nombre de cada indicador es un botón (ícono de información de 16 px a su lado, área táctil de 44 px). Al tocarlo se abre debajo de la cifra, separado por una línea de 2 px, qué significa y si más alto es mejor. Nada de tooltips: en el teléfono no existen.
+
+### Vencimientos
+- Insignia de situación: **Vencido** en rojo pare (y borde rojo del panel), **Por vencer** en amarillo preventivo (es una alerta), **Al día** en verde vía, **Archivado** neutra.
+- Barra de 8 px bajo el estado: cuánto del intervalo ya se consumió, en el color de la situación. El texto dice siempre el dato ("Faltan 350 km", "Venció el 16/10/2026 (hace 4 días)"); la barra solo acompaña.
+- En la cabina, un aviso amarillo con el rombo: "Antes de salir" (o "Pendientes de papeles y servicios" si ya está en ruta).
+
 ### Navigation
-- **Barra lateral (oficina, escritorio):** fondo verde vía, texto blanco 700 de 14 px, ítems de 44 px. El activo es un panel de señal: verde fuerte con filete blanco interior de 2 px. Conteo de la bandeja de revisión en insignia amarilla.
-- **Barra inferior (oficina, móvil):** cuatro destinos con ícono y rótulo, más "Más" para el resto.
-- **Cabina:** sin barra; cabecera verde con nombre del chofer, acceso al dashboard y menú.
+- **Barra lateral (oficina, escritorio):** fondo verde vía, texto blanco 700 de 14 px, ítems de 44 px. El activo es un panel de señal: verde fuerte con filete blanco interior de 2 px. Conteo de la bandeja de revisión en insignia amarilla. Al pie: cuenta, Ayuda, tema, Salir y "Versión X • Novedades" en 12 px.
+- **Barra inferior (oficina, móvil):** cuatro destinos con ícono y rótulo, más "Más" para el resto (incluidos Vencimientos, Ayuda y la versión).
+- **Cabina:** sin barra; cabecera verde con nombre del chofer, acceso al dashboard y menú (que incluye Ayuda y la versión).
 
 ### El pórtico (firma)
 Paneles verdes de 288 px colgados de una viga oscura, uno por camión en ruta: arriba quién y en qué camión, al centro el destino en 24 px / 900, abajo desde cuándo, con insignia "Revisar" amarilla si la ruta lleva demasiado abierta. Se desplaza en horizontal si no cabe. En la cabina, la cabecera es la versión a pantalla completa del mismo panel.
@@ -275,6 +291,8 @@ Paneles verdes de 288 px colgados de una viga oscura, uno por camión en ruta: a
 - **Do** dar a cada gráfico su tabla equivalente ("Ver como tabla") y patrones además de color.
 - **Do** mantener 48 px de área táctil mínima y 72 px en la acción principal del chofer.
 - **Do** probar cada pantalla nueva a 360 px y a 1440 px, en claro y en oscuro.
+- **Do** declarar en cada columna nueva cómo se ve en el teléfono (`movil`, `movilCelda`) y medir cuántas pantallas de alto ocupa la lista.
+- **Do** dar a cada cifra nueva su explicación (`ayuda`) y su entrada en la pantalla de Ayuda.
 
 ### Don't:
 - **Don't** usar el amarillo preventivo fuera de alertas.

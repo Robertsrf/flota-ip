@@ -5,6 +5,8 @@ Control de flota y combustible para **Distribuidora y Suministros IP** (Venezuel
 - **Cabina del chofer:** iniciar y finalizar ruta con paradas, repostajes, gastos (pendientes de aprobación), historial. Funciona sin conexión (cola local que se envía sola).
 - **Oficina:** dashboard con KPI, rutas en curso, alertas y gráficos; camiones y plantas; viajes; combustible; mantenimiento; bandeja de revisión; catálogos; usuarios. Exporta a CSV y Excel.
 - **Cálculo en el servidor:** litros consumidos por viaje (nivel al salir + cargas − nivel al llegar), rendimiento, costo por viaje y por km, con la calidad del dato (exacto, estimado, incompleto). Montos en USD; Bs solo como referencia con la tasa BCV del día.
+- **Vencimientos:** recordatorios de servicio por km o fecha (cambio de aceite, cauchos) y documentos con fecha de vencimiento (póliza RCV, permisos, licencias). Avisan antes y se marcan hechos solos al aprobarse el gasto.
+- **Fácil de entender:** cada cifra se explica al tocar su nombre; pantalla de Ayuda por rol y Novedades con todas las versiones (`CHANGELOG.md`).
 - **Nada se borra:** los registros se anulan con motivo y toda corrección queda auditada.
 
 ## Tecnología
@@ -32,7 +34,9 @@ npm run test:e2e    # flujos completos con Playwright
 ## Documentación
 
 - [`CLAUDE.md`](CLAUDE.md): guía operativa (comandos, convenciones, reglas de cálculo, roles).
+- [`CHANGELOG.md`](CHANGELOG.md): todas las versiones, de la más nueva a la más vieja.
 - [`docs/PUESTA_EN_MARCHA.md`](docs/PUESTA_EN_MARCHA.md): GitHub, Supabase, secrets y respaldos.
+- [`docs/MIGRACION_VPS.md`](docs/MIGRACION_VPS.md): mudanza a un servidor propio con dominio.
 - [`docs/MANUAL_CHOFER.md`](docs/MANUAL_CHOFER.md): manual de una página para choferes.
 - [`docs/DECISIONES.md`](docs/DECISIONES.md) y [`docs/BITACORA.md`](docs/BITACORA.md): decisiones y avance por fase.
 - [`DESIGN.md`](DESIGN.md): sistema visual "Señal vial".

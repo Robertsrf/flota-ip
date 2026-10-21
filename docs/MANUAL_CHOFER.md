@@ -35,4 +35,8 @@ Con Flota IP anotas cada ruta, cada carga de combustible y cada gasto del camió
 
 **Si la app te avisa algo en rojo**, lee el mensaje: siempre dice qué número no cuadra y cómo arreglarlo (por ejemplo, un km de llegada menor que el de salida).
 
+**Papeles y servicios.** Si la póliza o el permiso del camión, o tu licencia, están por vencer, o al camión ya le toca el cambio de aceite, la cabina te lo avisa en un recuadro amarillo. Avísale a flota si no lo sabe.
+
+**¿Dudas?** En el menú ☰ → *Ayuda* está explicado cada paso y qué significa cada cifra.
+
 **¿Olvidaste el PIN?** Pídele a flota que te lo restablezca.

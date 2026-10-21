@@ -67,3 +67,31 @@
 **Estado de las pruebas:** 62 Vitest (motor, RLS, T1–T14, lista blanca de funciones, formato y consumo) y 11 Playwright en verde; TypeScript y ESLint sin errores; detector de impeccable sin hallazgos.
 
 **Falta (con Roberts):** crear el repo público y el proyecto Supabase, cargar secrets, primer superusuario, sede y destinos reales, prueba en un teléfono real y prueba del respaldo (`docs/PUESTA_EN_MARCHA.md`). Logo de IP y nombre del superusuario de IP.
+
+## F9 — Renovación: teléfono, vencimientos, ayuda y seguridad · 20/10/2026 · ✅ en local (versión 0.6.0)
+
+Pedido de Roberts: pasar los tres flujos directores (diseño, ingeniería y seguridad) por todo el sitio, investigar sistemas similares, dejarlo claro y usable en teléfono y PC, y llevar un changelog desde el inicio.
+
+**Diagnóstico (capturas a 390 y 1440 px de cada pantalla, con datos demo)**
+- La cabina del chofer ya estaba bien resuelta. El problema estaba en la oficina usada desde el teléfono: cada fila de tabla ocupaba 8 renglones de "rótulo: valor" (Viajes medía 9,8 pantallas de alto; Combustible 12,7) y los filtros ocupaban la primera pantalla antes de cualquier número.
+- Errores: en el teléfono no se podía editar ni eliminar ubicaciones, precios ni categorías, ni dar un PIN nuevo (la columna de acciones estaba oculta); en escritorio "Nuevo PIN" abría dos hojas; la tabla de Viajes no cabía en 1440 px; todas las hojas compartían el mismo id de título.
+- La revisión decía "el chofer dejó una novedad" sin mostrarla.
+- Seguridad: la compresión de fotos descargaba su web worker desde cdn.jsdelivr.net; no había CSP; las funciones devolvían mensajes internos; `vite` 8.3.2 con un aviso alto (solo servidor de desarrollo en Windows).
+
+**Investigación:** Fleetio Go (ficha por unidad, cola única de revisión), Simply Fleet (viajes y gastos del chofer, recordatorios por km), patrones de tablas en móvil, Keep a Changelog 2.0 y la guía oficial de Supabase autoalojado. Ver `docs/INVESTIGACION.md`, sección 8.
+
+**Qué se hizo**
+- Tabla con renglón compacto en teléfono y tableta (hasta 1024 px): título y cifra principal arriba, datos clave abajo, sin datos vacíos. Viajes bajó de 9,8 a 4,5 pantallas; Combustible de 12,7 a 6,4; Mantenimiento de 7,2 a 4,3.
+- `PanelFiltros`: en el teléfono, un botón con el resumen que abre una hoja. Buscador de viajes siempre visible. Calidad y estado en una columna (la tabla cabe en 1440 px).
+- Catálogos y usuarios: la fila abre la ficha; eliminar, reactivar y "Nuevo PIN" dentro.
+- Explicación de cada indicador al tocar su nombre. Primeros pasos para la base vacía. Pantallas de Ayuda y Novedades (lee `CHANGELOG.md`). Versión en la barra lateral.
+- Fase 2 adelantada (Roberts la pidió en esta fase): migración 08 con recordatorios de servicio y documentos con vencimiento, alertas `servicio` y `documento`, trigger que marca hecho el servicio al aprobarse un gasto de su categoría, pantalla Vencimientos, pestaña en la ficha de la unidad y aviso en la cabina.
+- Revisión: muestra el texto de la novedad, "Dar por revisada" en la fila, grupos de vencimientos, lo urgente primero.
+- Seguridad: CSP en el build (`scripts/csp.mjs`), sin worker de CDN, `vite` 8.3.3, funciones con errores genéricos, CORS por `ORIGENES_APP`, largos máximos y comparación del secreto en tiempo constante.
+- Documentación: `CHANGELOG.md` desde la 0.1.0 con su regla en `CLAUDE.md`, `docs/MIGRACION_VPS.md`, guía de puesta en marcha, manual del chofer, `DESIGN.md`.
+
+**Estado de las pruebas:** 85 Vitest (antes 62: 16 de vencimientos, 4 de CSP y 3 del changelog nuevas) y 15 Playwright (antes 11: vencimientos y oficina desde el teléfono) en verde; TypeScript y ESLint sin errores; `npm audit` sin vulnerabilidades; la app compilada recorrida con la CSP sin ningún bloqueo.
+
+**Incidente:** al reiniciarse la sesión, el archivo de la rama `version-0.6.0` quedó con bytes nulos (git no encontraba `HEAD`). Se restauró desde el reflog al último commit (`0fee573`), `git fsck` quedó limpio y ningún archivo de trabajo tenía daños.
+
+**Falta (con Roberts):** lo mismo de F8 (repo, Supabase, secrets, primer superusuario, teléfono real) más cargar los recordatorios y documentos reales. Logo de IP.
